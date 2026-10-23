@@ -39,7 +39,7 @@ class WalletError implements FrbException {
 }
 
 /// What went wrong, in terms the app can act on. The numbers in [`WalletErrorKind::code`] are
-/// part of the API and never change meaning; `bindings/flutter/README.md` lists them.
+/// part of the API and never change meaning; the binding's README lists them.
 enum WalletErrorKind {
   invalidMnemonic,
   wrongPassword,

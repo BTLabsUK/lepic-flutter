@@ -1,0 +1,5 @@
+lepic, the Flutter binding of LEPIC
+Copyright The LEPIC Developers
+
+The generated bindings are produced from LEPIC (https://github.com/BTLabs-EPIC/lepic) by
+flutter_rust_bridge. See LEPIC's NOTICE for the origin of the wallet engine itself.

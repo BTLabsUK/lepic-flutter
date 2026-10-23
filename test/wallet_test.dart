@@ -1,6 +1,6 @@
 // Runs on Linux against the library the build hook bundles from `test_native/`, which holds
 // lepic-ffi built with the mock node. From the repository root:
-//   cargo xtask mobile --host-test
+//   tool/lepic.sh test
 
 import 'dart:async';
 import 'dart:convert';
@@ -9,6 +9,8 @@ import 'dart:io';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lepic/lepic.dart';
+
+import 'lepic_checkout.dart';
 
 const password = 'correct horse battery staple';
 
@@ -52,7 +54,7 @@ String libraryPath() {
   if (!manifest.existsSync()) {
     throw StateError(
       'No ${manifest.path}: the build hook bundled no library. '
-      'Run `cargo xtask mobile --host-test` from the LEPIC repository.',
+      'Run the tests with `tool/lepic.sh test`.',
     );
   }
   return switch (jsonDecode(manifest.readAsStringSync())) {
@@ -74,7 +76,7 @@ WalletConfig configFor(Directory dir) => WalletConfig(
   epicboxPort: 443,
 );
 
-/// The stable codes of `bindings/flutter/README.md`, which apps may store.
+/// The stable codes of README.md, which apps may store.
 const errorCodes = {
   WalletErrorKind.invalidMnemonic: 1,
   WalletErrorKind.wrongPassword: 2,
@@ -164,7 +166,7 @@ Matcher isWalletError(WalletErrorKind kind) => isA<WalletError>()
 ({String file, String password, String wrongPassword, String phrase})
 walletSeedVector() {
   final vector = jsonDecode(
-    File('../../testdata/vectors/keys/wallet_seed_seed32.json')
+    File(lepicPath('testdata/vectors/keys/wallet_seed_seed32.json'))
         .readAsStringSync(),
   ) as Map<String, dynamic>;
   final inputs = vector['inputs'] as Map<String, dynamic>;
@@ -922,7 +924,7 @@ void main() {
   );
 
   test('inspect_slate reads every stage of V2 and V3 slates', () async {
-    final vectors = Directory('../../testdata/vectors/slates')
+    final vectors = Directory(lepicPath('testdata/vectors/slates'))
         .listSync()
         .whereType<File>()
         .where((file) => file.path.endsWith('.json'))
@@ -975,7 +977,7 @@ void main() {
 
   test('inspect_slate names the sender and receiver messages', () async {
     final vector = jsonDecode(
-      File('../../testdata/vectors/slates/send_file_messages_s2_file.json')
+      File(lepicPath('testdata/vectors/slates/send_file_messages_s2_file.json'))
           .readAsStringSync(),
     ) as Map<String, dynamic>;
     final options = vector['inputs']['options'] as Map<String, dynamic>;
@@ -994,7 +996,7 @@ void main() {
   });
 
   test('inspect_slate accepts what the file method accepts', () async {
-    final vectors = Directory('../../testdata/vectors/slates')
+    final vectors = Directory(lepicPath('testdata/vectors/slates'))
         .listSync()
         .whereType<File>()
         .where((file) => file.path.contains('/malformed_'))

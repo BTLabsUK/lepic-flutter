@@ -27,6 +27,6 @@ dev_dependencies:
 hooks:
   user_defines:
     lepic:
-      # Written by `cargo xtask mobile --host-test`: lepic-ffi built with the `mock` feature, which
+      # Written by `tool/lepic.sh test`: lepic-ffi built with the `mock` feature, which
       # an app build never uses, so it is kept apart from `native/`.
       native_dir: test_native

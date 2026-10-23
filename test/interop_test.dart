@@ -1,10 +1,9 @@
 // Runs the binding against the local interop chain: a reference node, an Epicbox relay and
 // the epic-wallet funder of interop/acceptance. Skipped unless LEPIC_INTEROP=1. With the stack
 // running (interop/acceptance/run.sh --stack-only, see README.md), from the repository root:
-//   cargo xtask mobile --host-test
-//   cd bindings/flutter && LEPIC_INTEROP=1 flutter test test/interop_test.dart
-// The first command fills `test_native/`, which the build hook bundles as wallet_test.dart
-// describes; the mock build reaches the real node and relay like any other.
+//   LEPIC_INTEROP=1 tool/lepic.sh test test/interop_test.dart
+// That fills `test_native/`, which the build hook bundles as wallet_test.dart describes; the
+// mock build reaches the real node and relay like any other.
 
 import 'dart:convert';
 import 'dart:io';
@@ -13,13 +12,15 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lepic/lepic.dart';
 
+import 'lepic_checkout.dart';
+
 const password = 'interop test password';
 const epic = 100000000;
 
 final bool enabled = Platform.environment['LEPIC_INTEROP'] == '1';
 
 final String chainScript =
-    '${Directory.current.path}/../../interop/acceptance/chain.sh';
+    lepicPath('interop/acceptance/chain.sh');
 
 /// The library the build hook installed, as recorded in its manifest; see wallet_test.dart.
 String libraryPath() {
@@ -28,7 +29,7 @@ String libraryPath() {
   if (!manifest.existsSync()) {
     throw StateError(
       'No ${manifest.path}: the build hook bundled no library. '
-      'Run `cargo xtask mobile --host-test` from the LEPIC repository.',
+      'Run the tests with `tool/lepic.sh test`.',
     );
   }
   return switch (jsonDecode(manifest.readAsStringSync())) {

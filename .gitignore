@@ -1,7 +1,15 @@
 .dart_tool/
 build/
 pubspec.lock
-# Built by `cargo xtask mobile --package`.
+# The LEPIC clone at lepic.rev, made by `tool/lepic.sh sync`.
+/third_party/
+# Built by `tool/lepic.sh build`.
 /native/
-# Built by `cargo xtask mobile --host-test`.
+# Built by `tool/lepic.sh test`.
 /test_native/
+
+# Local tool settings
+/.kiro/
+/.claude/
+/AGENTS.md
+/CLAUDE.md
