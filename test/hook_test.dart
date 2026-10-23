@@ -22,7 +22,7 @@ PackageUserDefines nativeDirDefine() => PackageUserDefines(
 const standInSha256 =
     '6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d';
 
-/// A stand-in library and, unless [manifest] is false, its `SHA256SUMS` as xtask writes it.
+/// A stand-in library and, unless [manifest] is false, its `SHA256SUMS` as LEPIC's xtask writes it.
 File standIn(String target, String fileName, {bool manifest = true}) {
   final library = File('${nativeDir.path}/$target/$fileName')
     ..createSync(recursive: true)
@@ -120,7 +120,7 @@ void main() {
         isA<StateError>().having(
           (e) => e.message,
           'message',
-          contains('cargo xtask mobile --package'),
+          contains('tool/lepic.sh build'),
         ),
       ),
     );

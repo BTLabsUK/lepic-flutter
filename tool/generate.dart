@@ -2,14 +2,27 @@
 // decode its errors as `WalletError`.
 //
 // flutter_rust_bridge 2.13.0 always decodes a `StreamSink` error as `AnyhowException`. Every
-// stream call of `crates/lepic-ffi` ends its stream with a `WalletError` instead, the type every
+// stream call of LEPIC's `lepic-ffi` ends its stream with a `WalletError` instead, the type every
 // other call throws, so the decoder of each stream sink is replaced here.
 //
-// Run from `bindings/flutter`: dart run tool/generate.dart
+// This file is the codegen configuration: the API is `crate::api` of LEPIC's `lepic-ffi`, and the
+// Dart half goes to `lib/src/rust`. Run it through `tool/lepic.sh generate`, which passes the
+// `lepic-ffi` directory of a LEPIC checkout and the Dart output directory:
+//
+//   dart <package>/tool/generate.dart <lepic>/crates/lepic-ffi <package>/lib/src/rust
 
 import 'dart:io';
 
-const generated = 'lib/src/rust/frb_generated.dart';
+const rustInput = 'crate::api';
+
+/// The library file stem, `lepic-ffi`'s lib target, which the build hook bundles under that name.
+const libraryStem = 'lepic_ffi';
+
+/// The codegen derives `ioDirectory`, a fallback directory searched first for the library, from
+/// where the LEPIC checkout sits. It is fixed to the value the package has always had, so the
+/// output does not depend on that location and loading behaves as before.
+const ioDirectory = '../../crates/lepic-ffi/target/release/';
+final ioDirectoryItem = RegExp(r"ioDirectory:\s*'[^']*',");
 const anyhowDecoder = 'decodeErrorData: sse_decode_AnyhowException,';
 const walletErrorDecoder = 'decodeErrorData: sse_decode_wallet_error,';
 
@@ -20,10 +33,22 @@ final streamSinkEncoder = RegExp(
   dotAll: true,
 );
 
-Future<void> main() async {
+Future<void> main(List<String> args) async {
+  if (args.length != 2) {
+    stderr.writeln('usage: dart tool/generate.dart <lepic-ffi directory> <dart output>');
+    exit(2);
+  }
+  final [rustRoot, dartOutput] = args;
+  final generated = '$dartOutput/frb_generated.dart';
   final codegen = await Process.start('flutter_rust_bridge_codegen', [
     'generate',
-  ], mode: ProcessStartMode.inheritStdio);
+    '--rust-root',
+    rustRoot,
+    '--rust-input',
+    rustInput,
+    '--dart-output',
+    dartOutput,
+  ], mode: ProcessStartMode.inheritStdio, workingDirectory: rustRoot);
   final exitCode = await codegen.exitCode;
   if (exitCode != 0) {
     stderr.writeln(
@@ -33,7 +58,19 @@ Future<void> main() async {
   }
 
   final file = File(generated);
-  final source = await file.readAsString();
+  var source = await file.readAsString();
+  if (!source.contains("stem: '$libraryStem',")) {
+    stderr.writeln(
+      '$generated does not load the library as $libraryStem: the codegen could not read '
+      '$rustRoot/Cargo.toml with LEPIC\'s toolchain.',
+    );
+    exit(1);
+  }
+  if (ioDirectoryItem.allMatches(source).length != 1) {
+    stderr.writeln('expected one ioDirectory in $generated: check tool/generate.dart');
+    exit(1);
+  }
+  source = source.replaceFirst(ioDirectoryItem, "ioDirectory: '$ioDirectory',");
   var sinks = 0;
   var replaced = 0;
   final patched = source.replaceAllMapped(streamSinkEncoder, (match) {

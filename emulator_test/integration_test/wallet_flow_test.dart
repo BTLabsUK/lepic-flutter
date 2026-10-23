@@ -1,5 +1,5 @@
 // Runs on an Android device or emulator against the bundled liblepic_ffi.so built with the mock
-// node. Start it with `cargo xtask mobile --emulator-test` from the repository root.
+// node. Start it with `tool/lepic.sh emulator-test` from the package root.
 
 import 'dart:io';
 

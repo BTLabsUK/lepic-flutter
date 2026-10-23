@@ -1,6 +1,6 @@
 // Runs on Linux against the library the build hook bundles from `test_native/`, which holds
 // lepic-ffi built with the mock node. From the repository root:
-//   cargo xtask mobile --host-test
+//   tool/lepic.sh test
 
 import 'dart:convert';
 import 'dart:io';
@@ -9,13 +9,14 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lepic/lepic.dart';
 
+import 'lepic_checkout.dart';
 import 'wallet_test.dart'
     show MemoryStore, configFor, libraryPath, password, throwsWalletError;
 
 /// A `.wfeh` file sealed by an implementation independent of LEPIC's, and the phrase of its
 /// wallet (`testdata/vectors/app_data`).
 Map<String, dynamic> goldenVector() => jsonDecode(
-  File('../../testdata/vectors/app_data/wfeh_seed_a.json').readAsStringSync(),
+  File(lepicPath('testdata/vectors/app_data/wfeh_seed_a.json')).readAsStringSync(),
 ) as Map<String, dynamic>;
 
 Uint8List unhex(String text) => Uint8List.fromList([

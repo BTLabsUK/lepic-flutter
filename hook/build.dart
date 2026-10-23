@@ -1,7 +1,7 @@
 // Bundles the prebuilt lepic-ffi library for the Android, iOS, Linux or Windows target being
-// built, so an app gets it by depending on this package. `cargo xtask mobile --package` puts the
-// libraries in `native/<rust target>/` next to a `SHA256SUMS` manifest, which is checked before
-// bundling; the `native_dir` user define points elsewhere.
+// built, so an app gets it by depending on this package. `tool/lepic.sh build` puts the libraries,
+// built from the pinned LEPIC, in `native/<rust target>/` next to a `SHA256SUMS` manifest, which
+// is checked before bundling; the `native_dir` user define points elsewhere.
 //
 // `flutter test` on Linux runs this hook for the host too, so the package's own tests load the
 // library it bundles. macOS builds get no asset.
@@ -15,18 +15,19 @@ import 'package:hooks/hooks.dart';
 /// The library file stem flutter_rust_bridge opens (`stem` in `lib/src/rust/frb_generated.dart`).
 const libraryStem = 'lepic_ffi';
 
-/// Must match `ANDROID_API_LEVEL` in `xtask/src/mobile.rs`: the libraries link against this API.
+/// Must match `ANDROID_API_LEVEL` in LEPIC's `xtask/src/mobile.rs`: the libraries link against
+/// this API.
 const androidApiLevel = 24;
 
-/// Must match `MANIFEST_FILE` in `xtask/src/mobile.rs`: the `sha256sum` file written next to
-/// each library.
+/// Must match `MANIFEST_FILE` in LEPIC's `xtask/src/mobile.rs`: the `sha256sum` file written
+/// next to each library.
 const manifestFileName = 'SHA256SUMS';
 
 /// Throws unless [manifest] exists and records the SHA-256 of [library], so a truncated,
 /// mixed-up or replaced library is not bundled into the app.
 void verifyLibrary(File library, File manifest, String target) {
   final repackage =
-      'Run `cargo xtask mobile --package --target $target` in the LEPIC repository.';
+      'Run `tool/lepic.sh build $target` in the lepic package.';
   if (!manifest.existsSync()) {
     throw StateError(
       'No $manifestFileName next to ${library.path}. $repackage',
@@ -79,7 +80,7 @@ void main(List<String> args) async {
     if (!library.existsSync()) {
       throw StateError(
         'No $target library at ${library.path}. Run '
-        '`cargo xtask mobile --package --target $target` in the LEPIC repository.',
+        '`tool/lepic.sh build $target` in the lepic package.',
       );
     }
     final manifest = File.fromUri(library.uri.resolve(manifestFileName));

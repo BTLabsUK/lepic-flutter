@@ -1,6 +1,6 @@
 // Invoices over Epicbox between two wallets on the mock chain and the mock relay. Runs as
 // wallet_test.dart does; from the repository root:
-//   cargo xtask mobile --host-test
+//   tool/lepic.sh test
 
 import 'dart:async';
 import 'dart:io';
