@@ -615,6 +615,15 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Posts the stored final transaction of `tx_id` to the node again.
   Future<void> repostTransaction({required int txId});
 
+  /// Delivers the slate of send `tx_id` again over Epicbox, to the address it was sent to,
+  /// after [`EpicWallet::send_epicbox`] failed with `TransportFailed` or
+  /// [`TransactionDetails::undelivered`] says no attempt got through. The listener or a
+  /// drain finalizes and posts it when the answer arrives; a wallet that answered the slate
+  /// before answers it again the same way. Fails with `InvalidArgument` when `tx_id` is not
+  /// a send over Epicbox waiting for its answer, and with `TransportFailed` when the relay fails
+  /// again.
+  Future<void> resendEpicbox({required int txId});
+
   /// Delivers the slate of send `tx_id` again, to the wallet listening at `url`, which may
   /// be another address or method than the first attempt, then finalizes and posts as
   /// [`EpicWallet::send_http`] does. Use it after a delivery failed. A wallet that answered

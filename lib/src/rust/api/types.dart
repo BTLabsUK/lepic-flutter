@@ -1199,6 +1199,14 @@ class TransactionDetails {
   /// `releasable_from` missed its kernel; the release asks the node once more.
   final bool releasable;
 
+  /// A send waiting for its answer whose slate no delivery attempt got to the other party
+  /// yet: every attempt failed, or none finished, as when the app was killed before the
+  /// first. Show it as not delivered and offer
+  /// [`crate::api::wallet::EpicWallet::resend_epicbox`] (or the resend of the transport it
+  /// used). Also `true` while the send call that makes it is still running; `false` once an
+  /// attempt delivered it, and for any other transaction.
+  final bool undelivered;
+
   /// The parties' messages whose signatures verify, in the order the parties joined, as the
   /// latest stored stage of the slate carries them. Empty for a restored output.
   final List<SlateMessage> messages;
@@ -1234,6 +1242,7 @@ class TransactionDetails {
     this.ttlCutoffHeight,
     this.releasableFrom,
     required this.releasable,
+    required this.undelivered,
     required this.messages,
     required this.flow,
     required this.origin,
@@ -1259,6 +1268,7 @@ class TransactionDetails {
       ttlCutoffHeight.hashCode ^
       releasableFrom.hashCode ^
       releasable.hashCode ^
+      undelivered.hashCode ^
       messages.hashCode ^
       flow.hashCode ^
       origin.hashCode ^
@@ -1286,6 +1296,7 @@ class TransactionDetails {
           ttlCutoffHeight == other.ttlCutoffHeight &&
           releasableFrom == other.releasableFrom &&
           releasable == other.releasable &&
+          undelivered == other.undelivered &&
           messages == other.messages &&
           flow == other.flow &&
           origin == other.origin &&
