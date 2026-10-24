@@ -242,7 +242,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   Future<void> declineInvoice({required String slateId});
 
   /// Connects to the relay once, handles every pending message and disconnects: the call for
-  /// background work.
+  /// background work. While the listener runs it does nothing and reports nothing handled,
+  /// as the listener receives the same messages.
   Future<InboxReport> drainEpicbox();
 
   /// Connects to the relay as the invoice address once, handles every pending message and

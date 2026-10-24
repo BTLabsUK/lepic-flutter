@@ -252,6 +252,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   TorFailureKind dco_decode_box_autoadd_tor_failure_kind(dynamic raw);
 
   @protected
+  TransportConnection dco_decode_box_autoadd_transport_connection(dynamic raw);
+
+  @protected
   TransportState dco_decode_box_autoadd_transport_state(dynamic raw);
 
   @protected
@@ -444,6 +447,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   TorFailureKind? dco_decode_opt_box_autoadd_tor_failure_kind(dynamic raw);
 
   @protected
+  TransportConnection? dco_decode_opt_box_autoadd_transport_connection(
+    dynamic raw,
+  );
+
+  @protected
   TransportState? dco_decode_opt_box_autoadd_transport_state(dynamic raw);
 
   @protected
@@ -547,6 +555,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TransactionDetails dco_decode_transaction_details(dynamic raw);
+
+  @protected
+  TransportConnection dco_decode_transport_connection(dynamic raw);
 
   @protected
   TransportState dco_decode_transport_state(dynamic raw);
@@ -803,6 +814,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  TransportConnection sse_decode_box_autoadd_transport_connection(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   TransportState sse_decode_box_autoadd_transport_state(
     SseDeserializer deserializer,
   );
@@ -1039,6 +1055,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  TransportConnection? sse_decode_opt_box_autoadd_transport_connection(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   TransportState? sse_decode_opt_box_autoadd_transport_state(
     SseDeserializer deserializer,
   );
@@ -1146,6 +1167,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TransactionDetails sse_decode_transaction_details(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  TransportConnection sse_decode_transport_connection(
     SseDeserializer deserializer,
   );
 
@@ -1469,6 +1495,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_transport_connection(
+    TransportConnection self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_transport_state(
     TransportState self,
     SseSerializer serializer,
@@ -1751,6 +1783,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_opt_box_autoadd_transport_connection(
+    TransportConnection? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_transport_state(
     TransportState? self,
     SseSerializer serializer,
@@ -1879,6 +1917,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_transaction_details(
     TransactionDetails self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_transport_connection(
+    TransportConnection self,
     SseSerializer serializer,
   );
 
