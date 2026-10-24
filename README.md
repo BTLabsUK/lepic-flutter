@@ -350,13 +350,19 @@ meaning. `message` is English for logs and bug reports and holds no secret; do n
 | 48 | `invoiceAlreadyPaid` | `payInvoice` or the issuer's finalize found the invoice already paid: this wallet holds its payment, or finalized it with another answer. Nothing was signed or posted again. |
 | 49 | `invoiceLockedAboveTip` | The invoice's lock height is above the chain tip, so its transaction cannot be mined yet. Nothing was signed. |
 | 50 | `invoiceChanged` | The payer's answer changed a field the issuer set (amount, lock height, offset, outputs or the issuer's key). Nothing was finalized or posted. |
+| 51 | `notUrCode` | `decodeUrSlate` got a QR text that is no slate code, such as an address or a web link. Drop that scan and keep the others. |
+| 52 | `foreignUrCode` | `decodeUrSlate` got a UR code of another type, such as another wallet's transaction. Drop that scan and keep the others. |
+| 53 | `mixedUrCodes` | The scanned parts belong to two different slate codes. Start over with the newest scan. |
+| 54 | `invalidUrCode` | A slate code is damaged, or of a newer version than this LEPIC reads. |
+| 55 | `urCodeTooLarge` | The slate is too large for QR codes (over 64 KiB or 256 fragments), or the scans exceed what one code holds. Use a file. |
 
 Kinds 22 to 24 used to arrive as `other`. Kinds 25 and 26 are new with `sealAppData` and
 `openAppData`, 27 and 28 with `releaseTransaction`, 29 to 31 with the invoice calls, 40 and
 41 with the HTTP calls, 42 to 44 with the Tor calls, 45 and 46 with `SendOptions` (before, both
 arrived as `invalidArgument`), 47 with `consolidateOutputs` (before, `notEnoughFunds` or a
 consolidation of one output), 48 to 50 with the invoice refusals of U-23 (before, all three
-arrived as `invalidSlate`). An exhaustive `switch` over `WalletErrorKind` must handle them.
+arrived as `invalidSlate`), 51 to 55 with the QR slate calls. An exhaustive `switch` over
+`WalletErrorKind` must handle them.
 
 ## Direct transactions over HTTP
 
@@ -624,6 +630,25 @@ issued ones cancelled, each with an `invoiceExpired` event. A payment whose time
 with the transaction neither on chain nor in the node's pool is listed in
 `InvoiceSweep.cancellable`; offer the user `cancelTransaction`. Pass the same `expirySecs` to
 `pendingInvoices` and `sweepInvoices`.
+
+## Slates as QR codes
+
+Two phones side by side can exchange slates without a relay or a file: one shows its slate as a
+looping animated QR code, the other scans it, and the answer comes back the same way. The codes
+are `ur:epic-slate` (LEPIC's `docs/compat/ur-epic-slate.md`, ADR 0025). They are not encrypted:
+whoever sees the screen can read the slate, as with a slate file. Both calls need no wallet.
+
+- `encodeUrSlate(json, maxFragmentLen)` returns the QR texts of the slate text the file method
+  writes (`Slate.json`), uppercase for the QR alphanumeric mode. Show them in order, in a loop,
+  a few per second, at error correction level L. Use `maxFragmentLen: 200`: a typical S1 is 7
+  codes and an S2 12, each fitting a version 11 code. A short slate is one code.
+- `decodeUrSlate(parts)` takes every distinct text scanned so far, in any order, and holds no
+  state. `UrSlateProgress` says how many of `fragmentCount` fragments were recovered; once
+  `complete`, `json` is the slate text. Pass it to `inspectSlate` to show it, then to
+  `receiveSlate` or `finalizeAndPost` exactly as text from a file.
+- Keep a scan only if the call with it succeeds: on `notUrCode` or `foreignUrCode` drop the new
+  scan and keep scanning, on `mixedUrCodes` start over with the new scan alone, and on
+  `invalidUrCode` or `urCodeTooLarge` stop and suggest a file.
 
 ## Switching the app from its earlier binding
 

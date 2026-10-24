@@ -121,6 +121,11 @@ const errorCodes = {
   WalletErrorKind.invoiceAlreadyPaid: 48,
   WalletErrorKind.invoiceLockedAboveTip: 49,
   WalletErrorKind.invoiceChanged: 50,
+  WalletErrorKind.notUrCode: 51,
+  WalletErrorKind.foreignUrCode: 52,
+  WalletErrorKind.mixedUrCodes: 53,
+  WalletErrorKind.invalidUrCode: 54,
+  WalletErrorKind.urCodeTooLarge: 55,
 };
 
 Matcher throwsWalletError(WalletErrorKind kind) => throwsA(
@@ -410,19 +415,22 @@ void main() {
     },
   );
 
-  test('epicbox over tor is on when a wallet opens and follows the app', () async {
-    final wallet = await EpicWallet.create(
-      runtime: runtime,
-      config: configFor(walletDir('epicbox-over-tor')),
-      store: lepicSecretStore(MemoryStore()),
-      password: password,
-    );
-    expect(wallet.epicboxOverTor(), isTrue);
-    wallet.setEpicboxOverTor(enabled: false);
-    expect(wallet.epicboxOverTor(), isFalse);
-    wallet.setEpicboxOverTor(enabled: true);
-    expect(wallet.epicboxOverTor(), isTrue);
-  });
+  test(
+    'epicbox over tor is on when a wallet opens and follows the app',
+    () async {
+      final wallet = await EpicWallet.create(
+        runtime: runtime,
+        config: configFor(walletDir('epicbox-over-tor')),
+        store: lepicSecretStore(MemoryStore()),
+        password: password,
+      );
+      expect(wallet.epicboxOverTor(), isTrue);
+      wallet.setEpicboxOverTor(enabled: false);
+      expect(wallet.epicboxOverTor(), isFalse);
+      wallet.setEpicboxOverTor(enabled: true);
+      expect(wallet.epicboxOverTor(), isTrue);
+    },
+  );
 
   test('a panic inside the engine reaches Dart as an error', () async {
     final wallet = await EpicWallet.create(
@@ -1036,6 +1044,60 @@ void main() {
     );
   });
 
+  test('a slate crosses as animated QR codes and inspects as its text', () async {
+    final vector = jsonDecode(
+      File(lepicPath('testdata/vectors/slates/send_file_plain_s2_file.json'))
+          .readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final text = vector['expected']['json'] as String;
+    final parts = await encodeUrSlate(json: text, maxFragmentLen: 200);
+    expect(parts.first, startsWith('UR:EPIC-SLATE/1-12/'));
+    expect(parts, hasLength(36));
+    // A scanner that missed the second frame completes from the fountain parts.
+    final scanned = [...parts]..removeAt(1);
+    final partial = await decodeUrSlate(parts: scanned.take(5).toList());
+    expect(partial.complete, isFalse);
+    expect(partial.receivedFragments, 5);
+    expect(partial.fragmentCount, 12);
+    final progress = await decodeUrSlate(parts: scanned);
+    expect(progress.complete, isTrue);
+    expect(progress.json, text);
+    final info = await inspectSlate(json: progress.json!, chain: Chain.floonet);
+    expect(info.stage, SlateStage.s2);
+  });
+
+  test(
+    'decode_ur_slate tells foreign, mixed and damaged codes apart',
+    () async {
+      final short = await encodeUrSlate(json: '{"a":1}', maxFragmentLen: 200);
+      final other = await encodeUrSlate(json: '{"b":2}', maxFragmentLen: 200);
+      final cases = {
+        'esgxyz@epicbox.epiccash.com': WalletErrorKind.notUrCode,
+        'UR:BYTES/AEAEAEAE': WalletErrorKind.foreignUrCode,
+        'UR:EPIC-SLATE/AEAE': WalletErrorKind.invalidUrCode,
+      };
+      for (final MapEntry(key: scan, value: kind) in cases.entries) {
+        await expectLater(
+          decodeUrSlate(parts: [scan]),
+          throwsWalletError(kind),
+          reason: scan,
+        );
+      }
+      await expectLater(
+        decodeUrSlate(parts: [short.single, other.single]),
+        throwsWalletError(WalletErrorKind.mixedUrCodes),
+      );
+      await expectLater(
+        decodeUrSlate(parts: List.filled(1025, short.single)),
+        throwsWalletError(WalletErrorKind.urCodeTooLarge),
+      );
+      await expectLater(
+        encodeUrSlate(json: 'not json', maxFragmentLen: 200),
+        throwsWalletError(WalletErrorKind.invalidSlate),
+      );
+    },
+  );
+
   test('a pasted send carries its message to both parties', () async {
     final (alice, bob, _) = await fundedPair('message-text');
     final s1 = await alice.createSendSlate(
@@ -1054,24 +1116,27 @@ void main() {
     expect((await alice.transaction(txId: s1.txId)).messages, [sender]);
   });
 
-  test('a long message is cut on a character boundary and still verifies', () async {
-    final (alice, bob, _) = await fundedPair('message-file');
-    // Three bytes each, so the 256-byte limit falls inside a character.
-    final long = '€' * 100;
-    final file = '${root.path}/message.slate';
-    final sent = await alice.sendFile(
-      amount: BigInt.from(epic),
-      minimumConfirmations: BigInt.one,
-      path: file,
-      message: long,
-    );
-    final cut = SlateMessage(role: SlateRole.sender, text: '€' * 85);
-    expect((await alice.transaction(txId: sent.txId)).messages, [cut]);
+  test(
+    'a long message is cut on a character boundary and still verifies',
+    () async {
+      final (alice, bob, _) = await fundedPair('message-file');
+      // Three bytes each, so the 256-byte limit falls inside a character.
+      final long = '€' * 100;
+      final file = '${root.path}/message.slate';
+      final sent = await alice.sendFile(
+        amount: BigInt.from(epic),
+        minimumConfirmations: BigInt.one,
+        path: file,
+        message: long,
+      );
+      final cut = SlateMessage(role: SlateRole.sender, text: '€' * 85);
+      expect((await alice.transaction(txId: sent.txId)).messages, [cut]);
 
-    // A receive refuses a message whose signature does not verify.
-    final received = await bob.receiveFile(path: file);
-    expect((await bob.transaction(txId: received.txId)).messages, [cut]);
-  });
+      // A receive refuses a message whose signature does not verify.
+      final received = await bob.receiveFile(path: file);
+      expect((await bob.transaction(txId: received.txId)).messages, [cut]);
+    },
+  );
 
   test('a split is mined into that many spendable outputs', () async {
     final (alice, _, _) = await fundedPair('split');
@@ -1273,54 +1338,59 @@ void main() {
     expect((await reopened.summary(refresh: true)).total, BigInt.zero);
   });
 
-  test('a changed password opens the wallet and the old one does not', () async {
-    final dir = walletDir('change-password');
-    final store = MemoryStore();
-    const newPassword = 'a new password';
-    final wallet = await EpicWallet.create(
-      runtime: runtime,
-      config: configFor(dir),
-      store: lepicSecretStore(store),
-      password: password,
-    );
-    await expectLater(
-      wallet.changePassword(
-        currentPassword: 'wrong password',
-        newPassword: newPassword,
-      ),
-      throwsWalletError(WalletErrorKind.wrongPassword),
-    );
-    await expectLater(
-      wallet.changePassword(currentPassword: password, newPassword: 'short'),
-      throwsWalletError(WalletErrorKind.invalidArgument),
-    );
-    await wallet.changePassword(
-      currentPassword: password,
-      newPassword: newPassword,
-    );
-    expect(store.values.keys.toSet(), {'lepic.vault'});
-    wallet.dispose();
-
-    await expectLater(
-      EpicWallet.open(
+  test(
+    'a changed password opens the wallet and the old one does not',
+    () async {
+      final dir = walletDir('change-password');
+      final store = MemoryStore();
+      const newPassword = 'a new password';
+      final wallet = await EpicWallet.create(
         runtime: runtime,
         config: configFor(dir),
         store: lepicSecretStore(store),
         password: password,
-      ),
-      throwsWalletError(WalletErrorKind.wrongPassword),
-    );
-    final reopened = await EpicWallet.open(
-      runtime: runtime,
-      config: configFor(dir),
-      store: lepicSecretStore(store),
-      password: newPassword,
-    );
-    expect(
-      validateMnemonic(phrase: await reopened.mnemonic(password: newPassword)),
-      isTrue,
-    );
-  });
+      );
+      await expectLater(
+        wallet.changePassword(
+          currentPassword: 'wrong password',
+          newPassword: newPassword,
+        ),
+        throwsWalletError(WalletErrorKind.wrongPassword),
+      );
+      await expectLater(
+        wallet.changePassword(currentPassword: password, newPassword: 'short'),
+        throwsWalletError(WalletErrorKind.invalidArgument),
+      );
+      await wallet.changePassword(
+        currentPassword: password,
+        newPassword: newPassword,
+      );
+      expect(store.values.keys.toSet(), {'lepic.vault'});
+      wallet.dispose();
+
+      await expectLater(
+        EpicWallet.open(
+          runtime: runtime,
+          config: configFor(dir),
+          store: lepicSecretStore(store),
+          password: password,
+        ),
+        throwsWalletError(WalletErrorKind.wrongPassword),
+      );
+      final reopened = await EpicWallet.open(
+        runtime: runtime,
+        config: configFor(dir),
+        store: lepicSecretStore(store),
+        password: newPassword,
+      );
+      expect(
+        validateMnemonic(
+          phrase: await reopened.mnemonic(password: newPassword),
+        ),
+        isTrue,
+      );
+    },
+  );
 
   test('pin unlock keeps the wallet password inside rust', () async {
     final dir = walletDir('pin');
@@ -1538,7 +1608,10 @@ void main() {
         );
 
     // Until the change is confirmed each pin opens its own sealed text, and only that one.
-    for (final (pin, sealed) in [('123456', newSealed), ('987654', oldSealed)]) {
+    for (final (pin, sealed) in [
+      ('123456', newSealed),
+      ('987654', oldSealed),
+    ]) {
       await expectLater(
         open(pin, sealed),
         throwsWalletError(WalletErrorKind.wrongPassword),
@@ -1566,7 +1639,10 @@ void main() {
     expect(store.values.keys.toSet(), {'lepic.vault', 'lepic.pin-key'});
     withNew.dispose();
     // Two attempts, so the right pin below does not wait out a third failure.
-    for (final (pin, sealed) in [('123456', oldSealed), ('987654', oldSealed)]) {
+    for (final (pin, sealed) in [
+      ('123456', oldSealed),
+      ('987654', oldSealed),
+    ]) {
       await expectLater(
         open(pin, sealed),
         throwsWalletError(WalletErrorKind.wrongPassword),
@@ -1601,7 +1677,10 @@ void main() {
     runtime.dispose();
 
     runtime = chain.runtime(logLevel: LogLevel.info);
-    for (final (pin, sealed) in [('123456', oldSealed), ('987654', newSealed)]) {
+    for (final (pin, sealed) in [
+      ('123456', oldSealed),
+      ('987654', newSealed),
+    ]) {
       final opened = await EpicWallet.openWithPin(
         runtime: runtime,
         config: configFor(dir),

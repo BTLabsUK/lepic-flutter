@@ -175,7 +175,25 @@ enum WalletErrorKind {
 
   /// The payer's answer changed a field of the invoice this wallet issued: the amount, the
   /// lock height, the offset, the issuer's outputs or its data. Nothing was finalized or posted.
-  invoiceChanged;
+  invoiceChanged,
+
+  /// The scanned QR code is not a slate code at all, for example an address or a web link.
+  /// Drop that scan and keep the parts scanned before it.
+  notUrCode,
+
+  /// The scanned QR code is a uniform resource of another type, such as another wallet's
+  /// transaction code. Drop that scan and keep the parts scanned before it.
+  foreignUrCode,
+
+  /// The scanned parts belong to two different slate codes. Start over with the newest scan.
+  mixedUrCodes,
+
+  /// A slate code is damaged or of a newer version than this LEPIC reads.
+  invalidUrCode,
+
+  /// The slate is too large to show as QR codes, or scanned parts exceed what one code
+  /// holds. Use a file instead.
+  urCodeTooLarge;
 
   /// The stable number of this kind.
   Future<int> code() =>

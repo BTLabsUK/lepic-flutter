@@ -36,6 +36,30 @@ bool validateEpicboxAddress({required String address, required Chain chain}) =>
 Future<SlateInfo> inspectSlate({required String json, required Chain chain}) =>
     RustLib.instance.api.crateApiWalletInspectSlate(json: json, chain: chain);
 
+/// The slate text `json` as the QR texts of an animated `ur:epic-slate` code
+/// (`docs/compat/ur-epic-slate.md`), uppercase for the QR alphanumeric mode. Show them in a
+/// loop, in order. `max_fragment_len` bounds each part's payload in bytes, 16 to 1024; 200 fits
+/// a typical part into a version 11 QR code at level L. A slate that fits one fragment is a single
+/// code. Nothing is encrypted: whoever sees the screen can read the slate. Fails with
+/// `InvalidSlate` for empty or non-JSON text, `InvalidArgument` for a fragment length outside
+/// the limits, and `UrCodeTooLarge` for text over 64 KiB or more than 256 fragments.
+Future<List<String>> encodeUrSlate({
+  required String json,
+  required int maxFragmentLen,
+}) => RustLib.instance.api.crateApiWalletEncodeUrSlate(
+  json: json,
+  maxFragmentLen: maxFragmentLen,
+);
+
+/// Reads the distinct QR texts scanned so far, in any order and case; pass all of them on each
+/// call. Holds no state. Once `complete`, `json` is the slate text, not yet checked as a slate.
+/// Fails with `NotUrCode` or `ForeignUrCode` when a scan is not a slate code (drop that scan
+/// and keep the others), `MixedUrCodes` for parts of two codes (start over with the newest
+/// scan), `InvalidUrCode` for a damaged code or an unknown version, and `UrCodeTooLarge` for
+/// more than 1024 parts or text past the limits.
+Future<UrSlateProgress> decodeUrSlate({required List<String> parts}) =>
+    RustLib.instance.api.crateApiWalletDecodeUrSlate(parts: parts);
+
 /// True when `store` holds a wallet vault.
 Future<bool> walletExists({
   required LepicRuntime runtime,
