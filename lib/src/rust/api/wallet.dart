@@ -519,9 +519,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   Future<List<WalletOutput>> outputs();
 
   /// Pays the waiting invoice `slate_id` and delivers the payment over Epicbox to the
-  /// sender's allowed address. `amount` is what the user typed: an invoice for any other
-  /// amount is refused, as `epic-wallet pay` refuses it. Inputs need `minimum_confirmations`;
-  /// `message` goes to the sender signed and `options` choose the inputs and change, as in
+  /// sender's allowed address, and to the relay the invoice came from when that differs.
+  /// `amount` is what the user typed: an invoice for any other amount is refused, as
+  /// `epic-wallet pay` refuses it. Inputs need `minimum_confirmations`; `message` goes to the
+  /// sender signed and `options` choose the inputs and change, as in
   /// [`EpicWallet::create_send_slate`].
   ///
   /// Fails with `InvoiceNotFound` when no invoice with that id waits, `AmountMismatch`,
@@ -583,8 +584,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Tells the wallet's tor that the app is back: call it when the app returns to the
   /// foreground and, with `network_changed`, when the device's network changed (Wi-Fi to
   /// mobile data, or back online). Tor leaves its dormant state, and after a network change
-  /// it drops every connection, whose routes may be gone, and builds new ones: sends over
-  /// Tor in progress then fail, and the onion stays this wallet's and is republished by tor
+  /// it drops every connection, whose routes may be gone, builds new ones and forgets the
+  /// onion services that failed while the network was gone: sends over Tor in progress then
+  /// fail, and the onion stays this wallet's and is republished by tor
   /// itself, so `Ready` is not reported again. A bootstrap in progress gets its full time
   /// again. Returns once tor has taken the commands, in at most about 15 seconds.
   ///
@@ -639,7 +641,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   });
 
   /// Delivers the stored payment `tx_id` of an invoice again, to the sender's allowed
-  /// address, after [`EpicWallet::pay_invoice`] failed with `NotDelivered`. Fails with
+  /// address and, when it differs, the relay the invoice came from, after
+  /// [`EpicWallet::pay_invoice`] failed with `NotDelivered` or nothing came of it. Fails with
   /// `InvalidArgument` for a transaction that is not an undelivered payment of an invoice,
   /// and with `TransportFailed` when the relay fails again.
   Future<void> resendInvoicePayment({required int txId});
@@ -925,6 +928,18 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `InvalidArgument` for 0 or more than two days, `NodeUnreachable` when a payment past its
   /// time to live cannot be looked up, and as `cancel_transaction` does.
   Future<InvoiceSweep> sweepInvoices({BigInt? expirySecs});
+
+  /// Tells the wallet's tor that the device has no network: call it when the device's
+  /// network goes (airplane mode, no signal). Tor turns its network off at once and makes no
+  /// connection attempt until the next [`EpicWallet::refresh_tor`], which turns it on again
+  /// whatever its `network_changed`; attempts made without a network would mark the relays
+  /// tor enters the Tor network through as unreachable, and slow its return for minutes.
+  /// Sends over Tor in progress fail. Does nothing when no tor runs, while the wallet is
+  /// locked, or while tor is still being started (a network turned off would stall it).
+  ///
+  /// A tor that does not answer is ended, as by [`EpicWallet::refresh_tor`]: the call fails
+  /// with `TorNotRunning`.
+  Future<void> torNetworkLost();
 
   TorStatus torStatus();
 
