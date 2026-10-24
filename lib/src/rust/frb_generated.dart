@@ -79,13 +79,12 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   @override
   int get rustContentHash => -1814006489;
 
-  static const kDefaultExternalLibraryLoaderConfig =
-      ExternalLibraryLoaderConfig(
-        stem: 'lepic_ffi',
-        ioDirectory: '../../crates/lepic-ffi/target/release/',
-        webPrefix: 'pkg/',
-        wasmBindgenName: 'wasm_bindgen',
-      );
+  static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
+    stem: 'lepic_ffi',
+    ioDirectory: '../../crates/lepic-ffi/target/release/',
+    webPrefix: 'pkg/',
+    wasmBindgenName: 'wasm_bindgen',
+  );
 }
 
 abstract class RustLibApi extends BaseApi {
@@ -6657,8 +6656,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TransactionDetails dco_decode_transaction_details(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 22)
-      throw Exception('unexpected arr length: expect 22 but see ${arr.length}');
+    if (arr.length != 23)
+      throw Exception('unexpected arr length: expect 23 but see ${arr.length}');
     return TransactionDetails(
       txId: dco_decode_u_32(arr[0]),
       direction: dco_decode_tx_direction(arr[1]),
@@ -6682,6 +6681,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       origin: dco_decode_tx_origin(arr[19]),
       imported: dco_decode_opt_box_autoadd_imported_tx(arr[20]),
       found: dco_decode_opt_box_autoadd_scan_found(arr[21]),
+      outputCommits: dco_decode_list_String(arr[22]),
     );
   }
 
@@ -8441,6 +8441,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_origin = sse_decode_tx_origin(deserializer);
     var var_imported = sse_decode_opt_box_autoadd_imported_tx(deserializer);
     var var_found = sse_decode_opt_box_autoadd_scan_found(deserializer);
+    var var_outputCommits = sse_decode_list_String(deserializer);
     return TransactionDetails(
       txId: var_txId,
       direction: var_direction,
@@ -8464,6 +8465,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       origin: var_origin,
       imported: var_imported,
       found: var_found,
+      outputCommits: var_outputCommits,
     );
   }
 
@@ -10205,6 +10207,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_tx_origin(self.origin, serializer);
     sse_encode_opt_box_autoadd_imported_tx(self.imported, serializer);
     sse_encode_opt_box_autoadd_scan_found(self.found, serializer);
+    sse_encode_list_String(self.outputCommits, serializer);
   }
 
   @protected

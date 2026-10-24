@@ -1225,6 +1225,13 @@ class TransactionDetails {
   /// origin, and for an entry a scan stored before LEPIC recorded this.
   final ScanFound? found;
 
+  /// Hex of the commitments of the outputs the transaction created for this wallet, change
+  /// included, spent or not. The same after the outputs are spent, and for an output a scan
+  /// found, the same after a restore finds it again. For an imported entry, and for one a
+  /// scan stored before LEPIC recorded this, only the outputs no transaction has spent yet.
+  /// Empty when the wallet stores none, as for a cancelled send.
+  final List<String> outputCommits;
+
   const TransactionDetails({
     required this.txId,
     required this.direction,
@@ -1248,6 +1255,7 @@ class TransactionDetails {
     required this.origin,
     this.imported,
     this.found,
+    required this.outputCommits,
   });
 
   @override
@@ -1273,7 +1281,8 @@ class TransactionDetails {
       flow.hashCode ^
       origin.hashCode ^
       imported.hashCode ^
-      found.hashCode;
+      found.hashCode ^
+      outputCommits.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1301,7 +1310,8 @@ class TransactionDetails {
           flow == other.flow &&
           origin == other.origin &&
           imported == other.imported &&
-          found == other.found;
+          found == other.found &&
+          outputCommits == other.outputCommits;
 }
 
 /// Which of a transport's connections changed. A drain connects on its own beside a running
