@@ -77,7 +77,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.13.0';
 
   @override
-  int get rustContentHash => -1377140798;
+  int get rustContentHash => -2126921465;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -640,10 +640,19 @@ abstract class RustLibApi extends BaseApi {
     required String text,
   });
 
+  Future<UrSlateProgress> crateApiWalletDecodeUrSlate({
+    required List<String> parts,
+  });
+
   Future<void> crateApiWalletDeleteWallet({
     required LepicRuntime runtime,
     required WalletConfig config,
     required AppSecretStore store,
+  });
+
+  Future<List<String>> crateApiWalletEncodeUrSlate({
+    required String json,
+    required int maxFragmentLen,
   });
 
   Future<InboxReport> crateApiTypesInboxReportDefault();
@@ -5009,6 +5018,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<UrSlateProgress> crateApiWalletDecodeUrSlate({
+    required List<String> parts,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_String(parts, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 113,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_ur_slate_progress,
+          decodeErrorData: sse_decode_wallet_error,
+        ),
+        constMeta: kCrateApiWalletDecodeUrSlateConstMeta,
+        argValues: [parts],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletDecodeUrSlateConstMeta =>
+      const TaskConstMeta(debugName: "decode_ur_slate", argNames: ["parts"]);
+
+  @override
   Future<void> crateApiWalletDeleteWallet({
     required LepicRuntime runtime,
     required WalletConfig config,
@@ -5030,7 +5069,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 113,
+            funcId: 114,
             port: port_,
           );
         },
@@ -5051,6 +5090,41 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
+  Future<List<String>> crateApiWalletEncodeUrSlate({
+    required String json,
+    required int maxFragmentLen,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(json, serializer);
+          sse_encode_u_32(maxFragmentLen, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 115,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_String,
+          decodeErrorData: sse_decode_wallet_error,
+        ),
+        constMeta: kCrateApiWalletEncodeUrSlateConstMeta,
+        argValues: [json, maxFragmentLen],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletEncodeUrSlateConstMeta =>
+      const TaskConstMeta(
+        debugName: "encode_ur_slate",
+        argNames: ["json", "maxFragmentLen"],
+      );
+
+  @override
   Future<InboxReport> crateApiTypesInboxReportDefault() {
     return handler.executeNormal(
       NormalTask(
@@ -5059,7 +5133,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 114,
+            funcId: 116,
             port: port_,
           );
         },
@@ -5086,7 +5160,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 115,
+            funcId: 117,
             port: port_,
           );
         },
@@ -5118,7 +5192,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 116,
+            funcId: 118,
             port: port_,
           );
         },
@@ -5155,7 +5229,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 117,
+            funcId: 119,
             port: port_,
           );
         },
@@ -5189,7 +5263,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           return pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 118,
+            funcId: 120,
           )!;
         },
         codec: SseCodec(
@@ -5219,7 +5293,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           return pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 119,
+            funcId: 121,
           )!;
         },
         codec: SseCodec(
@@ -5246,7 +5320,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           return pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 120,
+            funcId: 122,
           )!;
         },
         codec: SseCodec(
@@ -5278,7 +5352,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 121,
+            funcId: 123,
             port: port_,
           );
         },
@@ -5319,7 +5393,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 122,
+            funcId: 124,
             port: port_,
           );
         },
@@ -6794,6 +6868,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void dco_decode_unit(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return;
+  }
+
+  @protected
+  UrSlateProgress dco_decode_ur_slate_progress(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return UrSlateProgress(
+      complete: dco_decode_bool(arr[0]),
+      receivedFragments: dco_decode_u_32(arr[1]),
+      fragmentCount: dco_decode_u_32(arr[2]),
+      json: dco_decode_opt_String(arr[3]),
+    );
   }
 
   @protected
@@ -8588,6 +8676,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  UrSlateProgress sse_decode_ur_slate_progress(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_complete = sse_decode_bool(deserializer);
+    var var_receivedFragments = sse_decode_u_32(deserializer);
+    var var_fragmentCount = sse_decode_u_32(deserializer);
+    var var_json = sse_decode_opt_String(deserializer);
+    return UrSlateProgress(
+      complete: var_complete,
+      receivedFragments: var_receivedFragments,
+      fragmentCount: var_fragmentCount,
+      json: var_json,
+    );
+  }
+
+  @protected
   BigInt sse_decode_usize(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getBigUint64();
@@ -10324,6 +10427,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_unit(void self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+  }
+
+  @protected
+  void sse_encode_ur_slate_progress(
+    UrSlateProgress self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_bool(self.complete, serializer);
+    sse_encode_u_32(self.receivedFragments, serializer);
+    sse_encode_u_32(self.fragmentCount, serializer);
+    sse_encode_opt_String(self.json, serializer);
   }
 
   @protected
