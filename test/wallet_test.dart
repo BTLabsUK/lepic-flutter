@@ -144,6 +144,7 @@ const errorCodes = {
   WalletErrorKind.pairingWordsNotFound: 71,
   WalletErrorKind.invalidPairingWords: 72,
   WalletErrorKind.contactRefusesInvoices: 73,
+  WalletErrorKind.invoiceNotForThisChain: 75,
 };
 
 Matcher throwsWalletError(WalletErrorKind kind) => throwsA(
