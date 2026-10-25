@@ -261,6 +261,10 @@ enum WalletErrorKind {
   /// The contact's wallet says it does not pay invoices. Nothing was sent.
   contactRefusesInvoices,
 
+  /// The recovery phrase given to `reset_password` belongs to another wallet than the
+  /// database in the wallet directory. Nothing was changed.
+  phraseMismatch,
+
   /// The invoice was made for another network, or its heights are wrong: its time to live
   /// ends further ahead than any issuer sets it, or it was made at a height the chain cannot
   /// have reached. Nothing was paid or stored.

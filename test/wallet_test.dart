@@ -144,6 +144,7 @@ const errorCodes = {
   WalletErrorKind.pairingWordsNotFound: 71,
   WalletErrorKind.invalidPairingWords: 72,
   WalletErrorKind.contactRefusesInvoices: 73,
+  WalletErrorKind.phraseMismatch: 74,
   WalletErrorKind.invoiceNotForThisChain: 75,
 };
 
@@ -1278,10 +1279,84 @@ void main() {
       restored.receiveSlate(slateJson: s1.json),
       throwsWalletError(WalletErrorKind.restoreScanRequired),
     );
+    expect(await restored.restoreScanRequired(), isTrue);
     await scanToEnd(restored);
+    expect(await restored.restoreScanRequired(), isFalse);
     final s2 = await restored.receiveSlate(slateJson: s1.json);
     expect(s2.slateId, s1.slateId);
   });
+
+  test(
+    'a forgotten password is reset from the phrase, and only from its own',
+    () async {
+      final dir = walletDir('reset-password');
+      final store = MemoryStore();
+      const newPassword = 'a new password';
+      final wallet = await EpicWallet.create(
+        runtime: runtime,
+        config: configFor(dir),
+        store: lepicSecretStore(store),
+        password: password,
+      );
+      final phrase = await wallet.mnemonic(password: password);
+      final fingerprint = await wallet.fingerprint();
+      expect(
+        walletFingerprint(mnemonic: phrase, chain: Chain.floonet),
+        fingerprint,
+      );
+      expect(
+        walletFingerprint(mnemonic: bobPhrase, chain: Chain.floonet),
+        isNot(fingerprint),
+      );
+      await expectLater(
+        resetPassword(
+          runtime: runtime,
+          config: configFor(dir),
+          store: lepicSecretStore(store),
+          mnemonic: phrase,
+          newPassword: newPassword,
+        ),
+        throwsWalletError(WalletErrorKind.walletBusy),
+      );
+      wallet.dispose();
+
+      await expectLater(
+        resetPassword(
+          runtime: runtime,
+          config: configFor(dir),
+          store: lepicSecretStore(store),
+          mnemonic: bobPhrase,
+          newPassword: newPassword,
+        ),
+        throwsWalletError(WalletErrorKind.phraseMismatch),
+      );
+      await resetPassword(
+        runtime: runtime,
+        config: configFor(dir),
+        store: lepicSecretStore(store),
+        mnemonic: phrase,
+        newPassword: newPassword,
+      );
+
+      await expectLater(
+        EpicWallet.open(
+          runtime: runtime,
+          config: configFor(dir),
+          store: lepicSecretStore(store),
+          password: password,
+        ),
+        throwsWalletError(WalletErrorKind.wrongPassword),
+      );
+      final reopened = await EpicWallet.open(
+        runtime: runtime,
+        config: configFor(dir),
+        store: lepicSecretStore(store),
+        password: newPassword,
+      );
+      expect(await reopened.fingerprint(), fingerprint);
+      expect(await reopened.restoreScanRequired(), isFalse);
+    },
+  );
 
   test('a send the node took cannot be cancelled', () async {
     final (alice, bob, _) = await fundedPair('on-chain');
