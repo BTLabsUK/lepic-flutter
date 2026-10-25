@@ -88,6 +88,50 @@ Future<void> deleteWallet({
   store: store,
 );
 
+/// Gives the wallet in `config.data_dir` a new vault in `store`, sealed under `new_password`,
+/// for a user who forgot the password: the seed of `mnemonic` is stored, once the database
+/// shows the phrase is this wallet's. The database, with its transaction history, labels and
+/// outputs, is kept as it is; no scan is needed. The PIN key and failure count are removed, as
+/// [`delete_wallet`] removes them, so a wallet from [`EpicWallet::create_with_pin`] opens with
+/// `new_password` afterwards; drop its sealed password. Call it with the wallet closed.
+///
+/// The new vault is written and read back as `lepic.vault-next` before it replaces
+/// `lepic.vault`, as [`EpicWallet::change_password`] describes, so the store never lacks a
+/// vault that opens: if the app stops part way, the old password or the new one opens the
+/// wallet, and calling this again finishes the reset.
+///
+/// Fails, with nothing changed, with `InvalidArgument` when `new_password` has fewer than eight
+/// characters, `InvalidMnemonic`, `PhraseMismatch` when the database belongs to another seed,
+/// `ForeignWallet` when it belongs to another chain, `WalletNotFound` when the directory holds
+/// no database a wallet has used (nothing to check the phrase against: delete the wallet with
+/// [`delete_wallet`] and restore it), `WalletBusy` while a wallet on the directory is open in
+/// any runtime, and `DamagedDatabase` as [`EpicWallet::open`] does; with `SecretStore` when the
+/// store fails while the vault is replaced, which leaves the old or the new password working.
+Future<void> resetPassword({
+  required LepicRuntime runtime,
+  required WalletConfig config,
+  required AppSecretStore store,
+  required String mnemonic,
+  required String newPassword,
+}) => RustLib.instance.api.crateApiWalletResetPassword(
+  runtime: runtime,
+  config: config,
+  store: store,
+  mnemonic: mnemonic,
+  newPassword: newPassword,
+);
+
+/// The fingerprint of the wallet of `mnemonic` on `chain`: the value its database stores and
+/// [`EpicWallet::fingerprint`] returns, as lowercase hex. It tells whether a phrase belongs to
+/// a wallet the app already has without opening it. It is no secret, but it identifies the
+/// wallet, so keep it with the wallet's other data, not in logs. Case and extra whitespace are
+/// ignored; fails with `InvalidMnemonic`.
+String walletFingerprint({required String mnemonic, required Chain chain}) =>
+    RustLib.instance.api.crateApiWalletWalletFingerprint(
+      mnemonic: mnemonic,
+      chain: chain,
+    );
+
 /// The configured node's tip, version, readiness and tip block time, without opening a
 /// wallet. Fails with `NodeUnreachable` when the tip or version cannot be had; readiness and
 /// the block time are `None` when only they fail.
@@ -547,6 +591,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// [`EpicWallet::finalize_and_post`] for the answer file at `path`.
   Future<FinalizedTx> finalizeFile({required String path});
 
+  /// The fingerprint of the wallet's seed that its database stores, as lowercase hex: the
+  /// value [`wallet_fingerprint`] gives for its recovery phrase. It is no secret, but it
+  /// identifies the wallet, so keep it with the wallet's other data, not in logs.
+  Future<String> fingerprint();
+
   /// The running HTTP listener, or `None`.
   HttpListenerInfo? httpListenerStatus();
 
@@ -694,7 +743,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// one shorter than `create` accepts today. Fails with `WrongPassword`, `WalletNotFound`
   /// when `store` holds no vault, `ForeignWallet` and `WalletBusy`, and with
   /// `DamagedDatabase` when the database was damaged and has just been set aside: open again
-  /// to rebuild it, then `scan`.
+  /// to rebuild it, then `scan` without a start height, which then starts at genesis, to the
+  /// end; [`EpicWallet::restore_scan_required`] says when it has.
   ///
   /// Every attempt is counted in `store` as `lepic.pin-failures`, and waits, as
   /// [`EpicWallet::open_with_pin`] describes; a right password clears the count. Attempts of
@@ -992,11 +1042,26 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// [`EpicWallet::send_tor`].
   Future<HttpResentTx> resendTor({required int txId, required String onion});
 
+  /// Whether the wallet's database was rebuilt from its seed, by a restore from the phrase or
+  /// a `wallet.seed`, or by an open after a damaged or missing database, and no scan from
+  /// genesis has completed since. While it is, the wallet refuses every new output: receiving,
+  /// the change of a send and invoices fail with `RestoreScanRequired`. A [`EpicWallet::scan`]
+  /// without a start height starts at genesis while it is, and ends it when it completes.
+  Future<bool> restoreScanRequired();
+
   /// Scans the chain for this wallet's outputs from `start_height`, or, by default, from
-  /// shortly before the last completed scan (the whole chain after a restore), streaming
-  /// progress until an event with `finished`, which carries its `result`. A failure
-  /// ends the stream with its [`WalletError`] as the stream's error; a cancelled scan ends it
-  /// with `Cancelled`.
+  /// shortly before the last completed scan, streaming progress until an event with
+  /// `finished`, which carries its `result`. A failure ends the stream with its
+  /// [`WalletError`] as the stream's error; a cancelled scan ends it with `Cancelled`.
+  ///
+  /// While [`EpicWallet::restore_scan_required`] is true, a scan without `start_height`
+  /// starts at genesis, so it resumes a restore scan that stopped, and once it completes the
+  /// wallet creates outputs again. `Some(0)` scans from genesis too and ends the restore scan
+  /// the same way. A scan from a higher `start_height` finds the outputs above it, for a
+  /// balance soon after a restore from a known height, but leaves the restore scan pending:
+  /// run one without `start_height` after it. A `start_height` above the chain tip scans
+  /// nothing: the last event's message says the scan was skipped, and its `result` has a
+  /// `start_height` above its `end_height`.
   ///
   /// With `delete_unconfirmed` the scan also runs the repair of `epic-wallet scan
   /// --delete_unconfirmed` and always starts from the beginning of the chain, so

@@ -715,8 +715,8 @@ enum LegacyImportStatus {
   /// The folder holds no wallet database.
   noHistory,
 
-  /// The wallet was made by an epic-wallet older than 3.3 (GUI 5.3 or older), whose
-  /// database is not read. The scan restores its funds.
+  /// The folder holds an older wallet database format, from an epic-wallet older than 3.3,
+  /// which is not read. The scan restores its funds.
   oldFormat,
 
   /// The database is encrypted, damaged or not an epic-wallet database.
@@ -1429,7 +1429,9 @@ class ScanProgress {
           result == other.result;
 }
 
-/// What a completed `EpicWallet::scan` did. Counts are outputs of this wallet.
+/// What a completed `EpicWallet::scan` did. Counts are outputs of this wallet. A
+/// `start_height` above `end_height` means the start was above the chain tip and nothing was
+/// scanned.
 class ScanResult {
   final BigInt startHeight;
   final BigInt endHeight;
