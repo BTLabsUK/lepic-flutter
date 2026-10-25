@@ -7267,8 +7267,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ContactInvoiceView dco_decode_contact_invoice_view(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 8)
-      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
+    if (arr.length != 9)
+      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
     return ContactInvoiceView(
       slateId: dco_decode_String(arr[0]),
       contactId: dco_decode_String(arr[1]),
@@ -7276,8 +7276,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       purpose: dco_decode_opt_box_autoadd_slate_purpose(arr[3]),
       reference: dco_decode_opt_String(arr[4]),
       expires: dco_decode_opt_box_autoadd_u_64(arr[5]),
-      receivedAtMs: dco_decode_i_64(arr[6]),
-      sameAmount: dco_decode_list_String(arr[7]),
+      message: dco_decode_opt_String(arr[6]),
+      receivedAtMs: dco_decode_i_64(arr[7]),
+      sameAmount: dco_decode_list_String(arr[8]),
     );
   }
 
@@ -8203,8 +8204,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   SealedSlateView dco_decode_sealed_slate_view(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 8)
-      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
+    if (arr.length != 9)
+      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
     return SealedSlateView(
       contactId: dco_decode_opt_String(arr[0]),
       stage: dco_decode_slate_stage(arr[1]),
@@ -8214,6 +8215,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       purpose: dco_decode_opt_box_autoadd_slate_purpose(arr[5]),
       reference: dco_decode_opt_String(arr[6]),
       expires: dco_decode_opt_box_autoadd_u_64(arr[7]),
+      messages: dco_decode_list_slate_message(arr[8]),
     );
   }
 
@@ -8554,8 +8556,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   WalletEvent dco_decode_wallet_event(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 24)
-      throw Exception('unexpected arr length: expect 24 but see ${arr.length}');
+    if (arr.length != 25)
+      throw Exception('unexpected arr length: expect 25 but see ${arr.length}');
     return WalletEvent(
       kind: dco_decode_wallet_event_kind(arr[0]),
       session: dco_decode_opt_box_autoadd_session_state(arr[1]),
@@ -8585,6 +8587,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       purpose: dco_decode_opt_box_autoadd_slate_purpose(arr[21]),
       reference: dco_decode_opt_String(arr[22]),
       expires: dco_decode_opt_box_autoadd_u_64(arr[23]),
+      message: dco_decode_opt_String(arr[24]),
     );
   }
 
@@ -9171,6 +9174,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_purpose = sse_decode_opt_box_autoadd_slate_purpose(deserializer);
     var var_reference = sse_decode_opt_String(deserializer);
     var var_expires = sse_decode_opt_box_autoadd_u_64(deserializer);
+    var var_message = sse_decode_opt_String(deserializer);
     var var_receivedAtMs = sse_decode_i_64(deserializer);
     var var_sameAmount = sse_decode_list_String(deserializer);
     return ContactInvoiceView(
@@ -9180,6 +9184,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       purpose: var_purpose,
       reference: var_reference,
       expires: var_expires,
+      message: var_message,
       receivedAtMs: var_receivedAtMs,
       sameAmount: var_sameAmount,
     );
@@ -10407,6 +10412,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_purpose = sse_decode_opt_box_autoadd_slate_purpose(deserializer);
     var var_reference = sse_decode_opt_String(deserializer);
     var var_expires = sse_decode_opt_box_autoadd_u_64(deserializer);
+    var var_messages = sse_decode_list_slate_message(deserializer);
     return SealedSlateView(
       contactId: var_contactId,
       stage: var_stage,
@@ -10416,6 +10422,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       purpose: var_purpose,
       reference: var_reference,
       expires: var_expires,
+      messages: var_messages,
     );
   }
 
@@ -10830,6 +10837,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_purpose = sse_decode_opt_box_autoadd_slate_purpose(deserializer);
     var var_reference = sse_decode_opt_String(deserializer);
     var var_expires = sse_decode_opt_box_autoadd_u_64(deserializer);
+    var var_message = sse_decode_opt_String(deserializer);
     return WalletEvent(
       kind: var_kind,
       session: var_session,
@@ -10855,6 +10863,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       purpose: var_purpose,
       reference: var_reference,
       expires: var_expires,
+      message: var_message,
     );
   }
 
@@ -11592,6 +11601,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_slate_purpose(self.purpose, serializer);
     sse_encode_opt_String(self.reference, serializer);
     sse_encode_opt_box_autoadd_u_64(self.expires, serializer);
+    sse_encode_opt_String(self.message, serializer);
     sse_encode_i_64(self.receivedAtMs, serializer);
     sse_encode_list_String(self.sameAmount, serializer);
   }
@@ -12610,6 +12620,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_slate_purpose(self.purpose, serializer);
     sse_encode_opt_String(self.reference, serializer);
     sse_encode_opt_box_autoadd_u_64(self.expires, serializer);
+    sse_encode_list_slate_message(self.messages, serializer);
   }
 
   @protected
@@ -12936,6 +12947,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_slate_purpose(self.purpose, serializer);
     sse_encode_opt_String(self.reference, serializer);
     sse_encode_opt_box_autoadd_u_64(self.expires, serializer);
+    sse_encode_opt_String(self.message, serializer);
   }
 
   @protected
