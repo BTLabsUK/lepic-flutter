@@ -259,7 +259,12 @@ enum WalletErrorKind {
   invalidPairingWords,
 
   /// The contact's wallet says it does not pay invoices. Nothing was sent.
-  contactRefusesInvoices;
+  contactRefusesInvoices,
+
+  /// The invoice was made for another network, or its heights are wrong: its time to live
+  /// ends further ahead than any issuer sets it, or it was made at a height the chain cannot
+  /// have reached. Nothing was paid or stored.
+  invoiceNotForThisChain;
 
   /// The stable number of this kind.
   Future<int> code() =>

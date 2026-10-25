@@ -630,6 +630,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `message` goes to the payer signed with the invoice, cut to its first 256 bytes on a
   /// character boundary.
   ///
+  /// The I1 carries a time to live of 1,440 blocks, a day, from the node's tip: a payer
+  /// refuses the invoice from then on, this wallet refuses to finalize a payment of it, and a
+  /// refresh expires it unpaid.
+  ///
   /// Fails with `InvalidArgument` for an amount of 0 and `NodeUnreachable` when the node's
   /// tip cannot be read; nothing is stored then.
   Future<Slate> issueInvoiceSlate({required BigInt amount, String? message});
@@ -880,7 +884,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Fails with `InvalidSlate` for text that is not an I1 or whose message signature does not
   /// verify, `AmountMismatch`, `InvoiceAlreadyPaid` for an invoice this wallet paid before,
   /// `PaymentExpired` when the chain reached the invoice's time to live,
-  /// `InvoiceLockedAboveTip`, `NotEnoughFunds` and `NodeUnreachable`. Nothing is stored then.
+  /// `InvoiceNotForThisChain` when the invoice was made for another network or at a wrong
+  /// height, `InvoiceLockedAboveTip`, `NotEnoughFunds` and `NodeUnreachable`. Nothing is
+  /// stored then. A payment the issuer never finalizes, for example the second payment of one
+  /// request, expires once the chain reaches the invoice's time to live, and a refresh then
+  /// releases its inputs unless the node holds the transaction.
   Future<PaidInvoiceSlate> payInvoiceSlate({
     required String slateJson,
     required BigInt amount,

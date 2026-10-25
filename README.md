@@ -375,13 +375,16 @@ meaning. `message` is English for logs and bug reports and holds no secret; do n
 | 71 | `pairingWordsNotFound` | No invite was found for these words: wrong, expired, or used. |
 | 72 | `invalidPairingWords` | A word is not in the pairing words table, or there are not five. |
 | 73 | `contactRefusesInvoices` | The contact's wallet says it does not pay invoices. Nothing was sent. |
+| 75 | `invoiceNotForThisChain` | The invoice was made for another network, or its heights are wrong. Nothing was paid or stored. |
 
 Kinds 22 to 24 used to arrive as `other`. Kinds 25 and 26 are new with `sealAppData` and
 `openAppData`, 27 and 28 with `releaseTransaction`, 29 to 31 with the invoice calls, 40 and
 41 with the HTTP calls, 42 to 44 with the Tor calls, 45 and 46 with `SendOptions` (before, both
 arrived as `invalidArgument`), 47 with `consolidateOutputs` (before, `notEnoughFunds` or a
 consolidation of one output), 48 to 50 with the invoice refusals of U-23 (before, all three
-arrived as `invalidSlate`), 51 to 55 with the QR slate calls, 56 to 73 with the pairing calls. An exhaustive `switch` over
+arrived as `invalidSlate`), 51 to 55 with the QR slate calls, 56 to 73 with the pairing calls, 75 with the time to live of
+invoices (before, an invoice made at a height above the chain's arrived as `invalidSlate`). An
+exhaustive `switch` over
 `WalletErrorKind` must handle them.
 
 ## Direct transactions over HTTP
@@ -593,18 +596,24 @@ Anyone may be sent an invoice as a file or text, paired or not (LEPIC RFC 0002 1
   `issueInvoiceFile(amount, path, message)` writes it to `path` and returns an `IssuedInvoice`
   (`notDelivered` when the file cannot be written; the invoice is stored). The invoice is an
   `incoming` transaction with `flow` `invoice`, withdrawn with `cancelTransaction` and expired
-  unpaid by `sweepInvoices`.
+  unpaid by `sweepInvoices`. The I1 carries a time to live of 1,440 blocks, about a day, from
+  the node's tip: a payer refuses it from then on, and a refresh expires it unpaid.
 - Payer: route a file by `inspectSlate(json, chain).stage`. For `i1`, show the amount and,
   after the user approved it, `payInvoiceSlate(slateJson, amount, minimumConfirmations,
   message, options)` or `payInvoiceFile(path, ...)`, which also writes `<path>.response`. Both
   return a `PaidInvoiceSlate` with the I2 in `json`. Refusals: `amountMismatch`,
-  `invoiceAlreadyPaid`, `paymentExpired`, `invoiceLockedAboveTip`, `notEnoughFunds`,
-  `invalidSlate`. A LEPIC I1 may carry a reply key: `sealedAnswerToMarker(i1, i2)` seals the
+  `invoiceAlreadyPaid`, `paymentExpired` (the invoice's time to live passed),
+  `invoiceNotForThisChain` (its time to live ends more than 2,880 blocks above the tip, or it
+  was made at a height the chain cannot have reached: another network, or wrong heights),
+  `invoiceLockedAboveTip`, `notEnoughFunds`, `invalidSlate`. A payment the issuer never
+  finalizes, such as a second payment of one request, expires at the invoice's time to live
+  and a refresh then releases its inputs, unless the node holds the transaction. A LEPIC I1 may carry a reply key: `sealedAnswerToMarker(i1, i2)` seals the
   answer.
 - Issuer again: `finalizeAndPost(json)` and `finalizeFile(path)` take the I2 as they take an S2,
   by its stage. An I2 finalizes only an invoice this wallet issued and still waits for:
   `invalidSlate` for another slate id, `invoiceChanged` for a changed amount or outputs,
-  `invalidArgument` for a withdrawn or expired invoice.
+  `invalidArgument` for a withdrawn or expired invoice, `paymentExpired` once the chain reached
+  the time to live the invoice was issued with, whatever the I2 says.
 
 ## Invoices over Epicbox
 
