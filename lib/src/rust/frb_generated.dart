@@ -6775,8 +6775,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TransactionDetails dco_decode_transaction_details(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 23)
-      throw Exception('unexpected arr length: expect 23 but see ${arr.length}');
+    if (arr.length != 24)
+      throw Exception('unexpected arr length: expect 24 but see ${arr.length}');
     return TransactionDetails(
       txId: dco_decode_u_32(arr[0]),
       direction: dco_decode_tx_direction(arr[1]),
@@ -6801,6 +6801,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       imported: dco_decode_opt_box_autoadd_imported_tx(arr[20]),
       found: dco_decode_opt_box_autoadd_scan_found(arr[21]),
       outputCommits: dco_decode_list_String(arr[22]),
+      senderReportedPostedAtMs: dco_decode_opt_box_autoadd_i_64(arr[23]),
     );
   }
 
@@ -8575,6 +8576,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_imported = sse_decode_opt_box_autoadd_imported_tx(deserializer);
     var var_found = sse_decode_opt_box_autoadd_scan_found(deserializer);
     var var_outputCommits = sse_decode_list_String(deserializer);
+    var var_senderReportedPostedAtMs = sse_decode_opt_box_autoadd_i_64(
+      deserializer,
+    );
     return TransactionDetails(
       txId: var_txId,
       direction: var_direction,
@@ -8599,6 +8603,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       imported: var_imported,
       found: var_found,
       outputCommits: var_outputCommits,
+      senderReportedPostedAtMs: var_senderReportedPostedAtMs,
     );
   }
 
@@ -10356,6 +10361,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_imported_tx(self.imported, serializer);
     sse_encode_opt_box_autoadd_scan_found(self.found, serializer);
     sse_encode_list_String(self.outputCommits, serializer);
+    sse_encode_opt_box_autoadd_i_64(self.senderReportedPostedAtMs, serializer);
   }
 
   @protected
