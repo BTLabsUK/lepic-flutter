@@ -701,6 +701,13 @@ links are public. Nothing else that crosses is secret.
   the way the slate came. `sealedAnswerToMarker(incoming, reply)` seals the answer to a plain
   slate from LEPIC. `contactPlainFallback(txId)` gives the same slate plain;
   `contactOfTransaction(txId)` names its contact.
+- Paying a contact known only by its pairing ("Send through Anna's mailbox"):
+  `contactSend(id, amount, minimumConfirmations, message, options, purpose, mode)` checks the
+  contact before it locks anything (`contactNotFound`, `sealingOff` when its wallet cannot open
+  sealed slates), builds the send and queues its S1 for the mailbox; a send that could not be
+  queued is cancelled before the error returns. The mailbox ignores "Seal payments", which
+  governs files and pastes. Collecting finalizes and posts the answer and raises
+  `contactPaymentFinalized`. A contact that never answers: `cancelTransaction(txId)`.
 - Invoices: `contactIssueInvoice(id, amount, message, purpose, reference, expires, mode)`;
   the payer sees `contactInvoices()` and runs `contactPayInvoice(slateId, amount,
   minimumConfirmations, message, options, mode)` or `contactDeclineInvoice(slateId)`.
@@ -717,8 +724,9 @@ links are public. Nothing else that crosses is secret.
 Events on `events()`, all with `contactId` unless noted: `pairingReplied`, `pairingConfirmed`,
 `pairingFailed` (`pairingFailure`), `contactUpdated`, `homeRelayUnreachable` (`relay` only),
 `contactKeysRestored`, `contactKeysChanged`, `invoiceFromContact` (`slateId`, `amount`,
-`purpose`, `reference`, `expires`), `withdrawalFromContact` and `sealedReceived` (`txId`,
-`slateId`, `amount`), `sealedUnopenable`, `outboxDelivered` and `outboxStuck` (`slateId`). They
+`purpose`, `reference`, `expires`, `message`), `withdrawalFromContact`, `sealedReceived` and
+`contactPaymentFinalized` (`txId`, `slateId`, `amount`), `sealedUnopenable`, `outboxDelivered`
+and `outboxStuck` (`slateId`). They
 carry ids and labels, never keys; an exhaustive `switch` over `WalletEventKind` must handle them.
 
 ## Slates as QR codes

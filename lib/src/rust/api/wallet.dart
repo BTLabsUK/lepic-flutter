@@ -285,9 +285,16 @@ abstract class EpicWallet implements RustOpaqueInterface {
   Future<String> contactPlainFallback({required int txId});
 
   /// Sends the slate of `tx_id` sealed through the contact's mailbox: queued in the outbox
-  /// and posted once when the mode allows. The answer comes back by collecting.
+  /// and posted once when the mode allows. The answer comes back by collecting: for an S1,
+  /// the contact's S2 is finalized and posted with a `ContactPaymentFinalized` event. A
+  /// mailbox carries only sealed slates, so the contact's "Seal payments" switch does not
+  /// apply here; it governs files and pastes. For a new payment prefer
+  /// [`EpicWallet::contact_send`], which checks the contact before it locks anything.
   ///
-  /// Fails as [`EpicWallet::contact_seal_slate`] does.
+  /// Fails with `ContactNotFound` for a contact that is not paired or whose keys changed,
+  /// `SealingOff` only when its wallet cannot open sealed slates, and `NoSlateToSend` when
+  /// the transaction has no slate to send or belongs to another contact. A failure leaves
+  /// the transaction as it was: `cancel_transaction` unlocks a send's inputs.
   Future<void> contactPostSlate({
     required String contactId,
     required int txId,
@@ -310,6 +317,30 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required String contactId,
     required int txId,
     SlatePurpose? purpose,
+  });
+
+  /// "Send through Anna's mailbox": pays `amount` to a paired contact, which needs no
+  /// payments address. The contact is checked first; then the send is built and its inputs
+  /// locked as [`EpicWallet::create_send_slate`] does, and its S1 is sealed and queued for the
+  /// contact's mailbox as [`EpicWallet::contact_post_slate`] queues it, posted once when the
+  /// mode allows (offline it waits for [`EpicWallet::contacts_outbox_deliver`]). The contact's
+  /// answer comes back by collecting, which finalizes and posts the payment and raises
+  /// `ContactPaymentFinalized`. `purpose` defaults to a payment. A contact that never answers
+  /// leaves the payment `Sent`: `cancel_transaction` gives it up and unlocks the inputs; if
+  /// the contact's answer arrives after that, it is refused.
+  ///
+  /// Fails, with nothing locked, with `ContactNotFound` for a contact that is not paired or
+  /// whose keys changed, `SealingOff` when its wallet cannot open sealed slates, and as
+  /// `create_send_slate` does. A send that could not be queued is cancelled before the error
+  /// returns.
+  Future<SentTx> contactSend({
+    required String contactId,
+    required BigInt amount,
+    required BigInt minimumConfirmations,
+    String? message,
+    SendOptions? options,
+    SlatePurpose? purpose,
+    required ContactRelayMode relayMode,
   });
 
   /// "Allow invoices" on or off for a contact. Turning it off declines the contact's unpaid
