@@ -8,7 +8,7 @@ import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `engine_kind`, `from_inner`, `new`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// The error of every fallible call. `message` is English for logs and bug reports; it never
 /// holds a secret.
@@ -121,8 +121,8 @@ enum WalletErrorKind {
   /// The invoice asks for another amount than the one the user typed. Nothing was paid.
   amountMismatch,
 
-  /// The invoice or its payment is stored, but the relay did not take it. Deliver a payment
-  /// again with `resend_invoice_payment`, or cancel either with `cancel_transaction`.
+  /// The invoice or its payment is stored, but the relay did not take it. Cancel it with
+  /// `cancel_transaction`.
   notDelivered,
 
   /// The wallet database was damaged. LEPIC renamed it, with its log files, to
@@ -193,7 +193,73 @@ enum WalletErrorKind {
 
   /// The slate is too large to show as QR codes, or scanned parts exceed what one code
   /// holds. Use a file instead.
-  urCodeTooLarge;
+  urCodeTooLarge,
+
+  /// The user chose Offline, so the contact call reached no relay. Nothing was sent or
+  /// fetched; whatever was stored stays.
+  contactsOffline,
+
+  /// Epicbox is switched off, so the contact call reached no relay. Nothing was sent or
+  /// fetched; whatever was stored stays.
+  epicboxOff,
+
+  /// The link, card, reply or sealed text is damaged, is not one, or is for the other
+  /// network. Nothing was stored.
+  invalidPairingText,
+
+  /// The name cannot go in a contact card: empty, too long, or with characters a card
+  /// refuses. Nothing was stored.
+  invalidContactName,
+
+  /// The invite expired. Ask for a new one.
+  inviteExpired,
+
+  /// The invite, reply or card belongs to a contact this wallet is paired with already, or
+  /// to this wallet itself. Nothing was stored.
+  alreadyPaired,
+
+  /// No paired contact has that id, or it is not in the state the call needs, such as a
+  /// card this wallet does not show or a contact whose keys changed.
+  contactNotFound,
+
+  /// No pairing in progress has that id: it completed, failed or was cancelled.
+  pairingNotFound,
+
+  /// The contact's words were not checked, or its invoices are not allowed: invoices need
+  /// a verified contact. Nothing was paid or changed.
+  contactNotVerified,
+
+  /// Pairing words are offered only on LEPIC's built-in relays, and this wallet's relay is
+  /// not one. Share the link instead.
+  pairingWordsUnavailable,
+
+  /// Sealing is off for the contact, or its wallet cannot open sealed text. Send the slate
+  /// plain.
+  sealingOff,
+
+  /// The transaction has no slate this wallet can send, or the outbox holds no entry with
+  /// that id.
+  noSlateToSend,
+
+  /// The sealed text is for another wallet or another install of this one, or was signed
+  /// by someone who is not the contact. Nothing was stored.
+  sealedForAnotherWallet,
+
+  /// The sealed text does not open: it was changed on the way. Nothing was stored.
+  sealedUnopenable,
+
+  /// A key check is allowed once per pairing and within a day of the new pairing; this one
+  /// is not. Keep the new pairing as it is or remove it.
+  keyCheckRefused,
+
+  /// No invite was found for these words: they are wrong, expired, or were used.
+  pairingWordsNotFound,
+
+  /// A word is not in the pairing words table, or there are not five.
+  invalidPairingWords,
+
+  /// The contact's wallet says it does not pay invoices. Nothing was sent.
+  contactRefusesInvoices;
 
   /// The stable number of this kind.
   Future<int> code() =>

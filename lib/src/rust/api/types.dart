@@ -8,7 +8,7 @@ import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `network`, `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Which Epic chain the wallet talks to.
 enum Chain { mainnet, floonet }
@@ -28,6 +28,243 @@ enum ChainCheck {
   /// The old wallet held an output of it as unspent that a full scan did not find, for
   /// example because another copy of the wallet spent it. The balance does not count it.
   unspentNotOnChain,
+}
+
+/// What started a collecting cycle.
+enum CollectTrigger {
+  /// The app opened or resumed, or the wallet was unlocked: every mailbox.
+  open,
+
+  /// The foreground tick: the mailboxes of contacts with something pending.
+  foreground,
+
+  /// The user pulled to refresh: every mailbox.
+  pull,
+
+  /// A push wake-up: every mailbox.
+  push,
+}
+
+/// What one `EpicWallet::contacts_collect` did.
+class ContactCollectReport {
+  final int mailboxes;
+  final int messages;
+
+  /// Pairings that completed.
+  final int paired;
+
+  /// `domain:port` of the relays that did not answer; collecting from them backs off.
+  final List<String> unreachable;
+
+  const ContactCollectReport({
+    required this.mailboxes,
+    required this.messages,
+    required this.paired,
+    required this.unreachable,
+  });
+
+  @override
+  int get hashCode =>
+      mailboxes.hashCode ^
+      messages.hashCode ^
+      paired.hashCode ^
+      unreachable.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ContactCollectReport &&
+          runtimeType == other.runtimeType &&
+          mailboxes == other.mailboxes &&
+          messages == other.messages &&
+          paired == other.paired &&
+          unreachable == other.unreachable;
+}
+
+/// What `EpicWallet::contacts_import` restored.
+class ContactImportSummary {
+  final int imported;
+
+  /// Pairings this wallet holds already; they were kept as they are.
+  final int skippedExisting;
+
+  /// Pairings whose contact this wallet holds under another pairing; kept as they are.
+  final int skippedConflict;
+
+  const ContactImportSummary({
+    required this.imported,
+    required this.skippedExisting,
+    required this.skippedConflict,
+  });
+
+  @override
+  int get hashCode =>
+      imported.hashCode ^ skippedExisting.hashCode ^ skippedConflict.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ContactImportSummary &&
+          runtimeType == other.runtimeType &&
+          imported == other.imported &&
+          skippedExisting == other.skippedExisting &&
+          skippedConflict == other.skippedConflict;
+}
+
+/// An invoice a contact sent, waiting for the user to pay or decline it, from
+/// `EpicWallet::contact_invoices`.
+class ContactInvoiceView {
+  final String slateId;
+  final String contactId;
+
+  /// What the contact asks for; the fee comes on top.
+  final BigInt amount;
+  final SlatePurpose? purpose;
+  final String? reference;
+
+  /// Unix seconds; advisory.
+  final BigInt? expires;
+  final PlatformInt64 receivedAtMs;
+
+  /// Other waiting invoices for the same amount from the same contact within 10 minutes:
+  /// warn before paying twice.
+  final List<String> sameAmount;
+
+  const ContactInvoiceView({
+    required this.slateId,
+    required this.contactId,
+    required this.amount,
+    this.purpose,
+    this.reference,
+    this.expires,
+    required this.receivedAtMs,
+    required this.sameAmount,
+  });
+
+  @override
+  int get hashCode =>
+      slateId.hashCode ^
+      contactId.hashCode ^
+      amount.hashCode ^
+      purpose.hashCode ^
+      reference.hashCode ^
+      expires.hashCode ^
+      receivedAtMs.hashCode ^
+      sameAmount.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ContactInvoiceView &&
+          runtimeType == other.runtimeType &&
+          slateId == other.slateId &&
+          contactId == other.contactId &&
+          amount == other.amount &&
+          purpose == other.purpose &&
+          reference == other.reference &&
+          expires == other.expires &&
+          receivedAtMs == other.receivedAtMs &&
+          sameAmount == other.sameAmount;
+}
+
+/// What a contact says it is.
+enum ContactKind { person, shop, exchange }
+
+/// Whether contact calls may reach relays, as the user set the app: `Online`, `Offline`
+/// (nothing connects anywhere) or Epicbox switched off (no relay is reached, home relays of
+/// contacts included). Calls that need a relay fail with `ContactsOffline` or `EpicboxOff`
+/// before connecting.
+enum ContactRelayMode { online, offline, epicboxOff }
+
+/// A paired contact, from `EpicWallet::contacts` and `EpicWallet::contact`. Holds no key.
+/// Times are milliseconds since the Unix epoch.
+class ContactView {
+  /// 32 lowercase hex characters; the id every contact call takes.
+  final String contactId;
+
+  /// The user's own name for the contact.
+  final String label;
+
+  /// The name the contact gives itself, unverified: show it only as "calls themselves".
+  final String? claimedName;
+  final ContactKind? kind;
+  final PairingState state;
+
+  /// The four entries of the words check, to show it again; empty before the pairing
+  /// completed.
+  final List<SasEntry> sas;
+  final PlatformInt64? verifiedAtMs;
+  final bool allowInvoices;
+  final SealState seal;
+
+  /// The app's address-book entry this pairing is attached to.
+  final String? appContact;
+
+  /// `domain:port` of the relay the contact's messages to this wallet go through, for
+  /// "Delivered via ...".
+  final String? homeRelay;
+
+  /// The pairing came from a backup and may also live on another device.
+  final bool importedFromBackup;
+
+  /// Nothing sealed from the contact opened for 90 days: warn before a sealed send that the
+  /// contact needs LEPIC to open it.
+  final bool lapsed;
+  final PlatformInt64 createdAtMs;
+
+  const ContactView({
+    required this.contactId,
+    required this.label,
+    this.claimedName,
+    this.kind,
+    required this.state,
+    required this.sas,
+    this.verifiedAtMs,
+    required this.allowInvoices,
+    required this.seal,
+    this.appContact,
+    this.homeRelay,
+    required this.importedFromBackup,
+    required this.lapsed,
+    required this.createdAtMs,
+  });
+
+  @override
+  int get hashCode =>
+      contactId.hashCode ^
+      label.hashCode ^
+      claimedName.hashCode ^
+      kind.hashCode ^
+      state.hashCode ^
+      sas.hashCode ^
+      verifiedAtMs.hashCode ^
+      allowInvoices.hashCode ^
+      seal.hashCode ^
+      appContact.hashCode ^
+      homeRelay.hashCode ^
+      importedFromBackup.hashCode ^
+      lapsed.hashCode ^
+      createdAtMs.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ContactView &&
+          runtimeType == other.runtimeType &&
+          contactId == other.contactId &&
+          label == other.label &&
+          claimedName == other.claimedName &&
+          kind == other.kind &&
+          state == other.state &&
+          sas == other.sas &&
+          verifiedAtMs == other.verifiedAtMs &&
+          allowInvoices == other.allowInvoices &&
+          seal == other.seal &&
+          appContact == other.appContact &&
+          homeRelay == other.homeRelay &&
+          importedFromBackup == other.importedFromBackup &&
+          lapsed == other.lapsed &&
+          createdAtMs == other.createdAtMs;
 }
 
 /// What a send would take and pay, from `EpicWallet::estimate_fee` and
@@ -109,6 +346,26 @@ enum FoundDuring {
   /// Any other scan: a later rescan, or the first scan of a wallet created with a new seed.
   /// The output may still be older than the scan.
   rescan,
+}
+
+/// An invite found by its pairing words, from `EpicWallet::pairing_find_words`. Answer it
+/// with `link`; do not store it.
+class FoundInvite {
+  final String link;
+  final InvitePreview preview;
+
+  const FoundInvite({required this.link, required this.preview});
+
+  @override
+  int get hashCode => link.hashCode ^ preview.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FoundInvite &&
+          runtimeType == other.runtimeType &&
+          link == other.link &&
+          preview == other.preview;
 }
 
 /// What the old wallet recorded of an imported transaction beyond the common fields.
@@ -231,150 +488,48 @@ class InboxReport {
           dropped == other.dropped;
 }
 
-/// An invoice waiting on the invoice address for the user to pay or decline, from
-/// `EpicWallet::pending_invoices`. Times are milliseconds since the Unix epoch, by the device
-/// clock.
-class IncomingInvoice {
-  final String slateId;
+/// How long an invite may be used. An invite with pairing words lasts 10 minutes instead.
+enum InviteExpiry { oneHour, oneDay, sevenDays }
 
-  /// The allowed address of the sender, where the payment goes.
-  final String senderAddress;
-
-  /// What the sender asks for; the fee comes on top.
-  final BigInt amount;
-
-  /// The sender's message when its signature verifies, with control, bidirectional and
-  /// zero-width characters removed and cut to 256 bytes. Safe to display as it is.
-  final String? message;
-  final PlatformInt64 receivedAtMs;
-
-  /// When `EpicWallet::sweep_invoices` with the same expiry deletes it unpaid.
+/// What an invite claims, for the "Pair with Anna?" sheet, from `EpicWallet::pairing_preview`.
+class InvitePreview {
+  /// The inviter's own name for itself, not checked.
+  final String claimedName;
+  final ContactKind kind;
   final PlatformInt64 expiresAtMs;
 
-  const IncomingInvoice({
-    required this.slateId,
-    required this.senderAddress,
-    required this.amount,
-    this.message,
-    required this.receivedAtMs,
+  /// `domain:port` of the relay the pairing's messages go through.
+  final String homeRelay;
+
+  /// The invite comes from a service, such as an exchange.
+  final bool service;
+
+  const InvitePreview({
+    required this.claimedName,
+    required this.kind,
     required this.expiresAtMs,
+    required this.homeRelay,
+    required this.service,
   });
 
   @override
   int get hashCode =>
-      slateId.hashCode ^
-      senderAddress.hashCode ^
-      amount.hashCode ^
-      message.hashCode ^
-      receivedAtMs.hashCode ^
-      expiresAtMs.hashCode;
+      claimedName.hashCode ^
+      kind.hashCode ^
+      expiresAtMs.hashCode ^
+      homeRelay.hashCode ^
+      service.hashCode;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is IncomingInvoice &&
+      other is InvitePreview &&
           runtimeType == other.runtimeType &&
-          slateId == other.slateId &&
-          senderAddress == other.senderAddress &&
-          amount == other.amount &&
-          message == other.message &&
-          receivedAtMs == other.receivedAtMs &&
-          expiresAtMs == other.expiresAtMs;
-}
-
-/// What one drain of the invoice address did, from `EpicWallet::drain_invoices`.
-class InvoiceReport {
-  /// Invoices from allowed senders stored for the user to pay or decline.
-  final int parked;
-
-  /// Payments of invoices this wallet issued that were finalized.
-  final int finalized;
-
-  /// Messages handled before and acknowledged again, such as an invoice parked before.
-  final int repeated;
-
-  /// Messages refused for good.
-  final int rejected;
-
-  /// Messages left on the relay for a later drain.
-  final int held;
-
-  /// Messages acknowledged and forgotten unopened: from senders that are not allowed, or
-  /// invoices over the limit of waiting invoices. Also notices not from the other party of
-  /// their invoice, or of a kind this version does not know.
-  final int dropped;
-
-  /// Notices about invoices accepted from the other party, each also reported as its event.
-  final int notices;
-
-  /// Invoices this wallet issued that came back unpaid from the address they went to: that
-  /// payer does not pay invoices. Nothing changed; cancel the invoice with
-  /// `cancel_transaction`.
-  final int bounced;
-
-  const InvoiceReport({
-    required this.parked,
-    required this.finalized,
-    required this.repeated,
-    required this.rejected,
-    required this.held,
-    required this.dropped,
-    required this.notices,
-    required this.bounced,
-  });
-
-  @override
-  int get hashCode =>
-      parked.hashCode ^
-      finalized.hashCode ^
-      repeated.hashCode ^
-      rejected.hashCode ^
-      held.hashCode ^
-      dropped.hashCode ^
-      notices.hashCode ^
-      bounced.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is InvoiceReport &&
-          runtimeType == other.runtimeType &&
-          parked == other.parked &&
-          finalized == other.finalized &&
-          repeated == other.repeated &&
-          rejected == other.rejected &&
-          held == other.held &&
-          dropped == other.dropped &&
-          notices == other.notices &&
-          bounced == other.bounced;
-}
-
-/// A sender whose invoices the invoice address accepts, from `EpicWallet::invoice_senders`.
-class InvoiceSender {
-  /// The full address the user added, where payments of its invoices go.
-  final String address;
-  final String label;
-
-  /// Milliseconds since the Unix epoch, by the device clock.
-  final PlatformInt64 addedAtMs;
-
-  const InvoiceSender({
-    required this.address,
-    required this.label,
-    required this.addedAtMs,
-  });
-
-  @override
-  int get hashCode => address.hashCode ^ label.hashCode ^ addedAtMs.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is InvoiceSender &&
-          runtimeType == other.runtimeType &&
-          address == other.address &&
-          label == other.label &&
-          addedAtMs == other.addedAtMs;
+          claimedName == other.claimedName &&
+          kind == other.kind &&
+          expiresAtMs == other.expiresAtMs &&
+          homeRelay == other.homeRelay &&
+          service == other.service;
 }
 
 /// What one `EpicWallet::sweep_invoices` did.
@@ -409,8 +564,7 @@ class InvoiceSweep {
           cancellable == other.cancellable;
 }
 
-/// An invoice this wallet issued and handed to the relay, from
-/// `EpicWallet::issue_invoice_epicbox`.
+/// An invoice this wallet issued to a contact, from `EpicWallet::contact_issue_invoice`.
 class IssuedInvoice {
   final int txId;
   final String slateId;
@@ -433,6 +587,15 @@ class IssuedInvoice {
           txId == other.txId &&
           slateId == other.slateId &&
           amount == other.amount;
+}
+
+/// Whether the user keeps the old keys or uses the new ones after keys changed.
+enum KeysDecision {
+  /// The new pairing is removed; the old one stays as it was.
+  keepOld,
+
+  /// The old pairing is removed; the new one goes on as paired.
+  useNew,
 }
 
 /// What `EpicWallet::import_legacy_history` did. Counts are of records, not of money.
@@ -641,6 +804,98 @@ class NodeTip {
           tipTimeMs == other.tipTimeMs;
 }
 
+/// A message for a contact's mailbox, from `EpicWallet::contact_outbox`.
+class OutboxEntryView {
+  /// The id `EpicWallet::contact_outbox_resend` takes.
+  final BigInt id;
+  final String contactId;
+  final String slateId;
+  final SlateStage stage;
+  final OutboxState state;
+  final int attempts;
+  final PlatformInt64 createdAtMs;
+  final PlatformInt64? deliveredAtMs;
+
+  /// A payment delivered two hours ago or more that the contact has not posted: offer
+  /// "Send again".
+  final bool notPostedYet;
+
+  const OutboxEntryView({
+    required this.id,
+    required this.contactId,
+    required this.slateId,
+    required this.stage,
+    required this.state,
+    required this.attempts,
+    required this.createdAtMs,
+    this.deliveredAtMs,
+    required this.notPostedYet,
+  });
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      contactId.hashCode ^
+      slateId.hashCode ^
+      stage.hashCode ^
+      state.hashCode ^
+      attempts.hashCode ^
+      createdAtMs.hashCode ^
+      deliveredAtMs.hashCode ^
+      notPostedYet.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OutboxEntryView &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          contactId == other.contactId &&
+          slateId == other.slateId &&
+          stage == other.stage &&
+          state == other.state &&
+          attempts == other.attempts &&
+          createdAtMs == other.createdAtMs &&
+          deliveredAtMs == other.deliveredAtMs &&
+          notPostedYet == other.notPostedYet;
+}
+
+/// What one `EpicWallet::contacts_outbox_deliver` did.
+class OutboxReport {
+  final int delivered;
+  final int failed;
+
+  /// Entries that became stuck in this run.
+  final int stuck;
+
+  const OutboxReport({
+    required this.delivered,
+    required this.failed,
+    required this.stuck,
+  });
+
+  @override
+  int get hashCode => delivered.hashCode ^ failed.hashCode ^ stuck.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OutboxReport &&
+          runtimeType == other.runtimeType &&
+          delivered == other.delivered &&
+          failed == other.failed &&
+          stuck == other.stuck;
+}
+
+/// Where a message for a contact stands.
+enum OutboxState {
+  queued,
+  delivered,
+
+  /// Undelivered for a day; retrying stopped. Offer "Send again".
+  stuck,
+}
+
 /// Where an output counts in `WalletSummary`. Values are only added, at the end.
 enum OutputCategory {
   spendable,
@@ -666,7 +921,7 @@ enum OutputStatus {
   spent,
 }
 
-/// A paid invoice, from `EpicWallet::pay_invoice`.
+/// A paid invoice, from `EpicWallet::contact_pay_invoice`.
 class PaidInvoice {
   final int txId;
   final String slateId;
@@ -695,18 +950,205 @@ class PaidInvoice {
           fee == other.fee;
 }
 
-/// What the wallet learned from a peer's own messages, from `EpicWallet::peer_capability`.
-/// Values are only added, at the end.
-enum PeerCapability {
-  /// Nothing yet: no marked slate or notice from it, and no invoice sent back.
-  unknown,
+/// An answered invite, from `EpicWallet::pairing_accept`.
+class PairingAnswer {
+  final String contactId;
 
-  /// It proved it runs LEPIC: it pays invoices and is sent notices.
-  lepic,
+  /// `epiccash://pair-reply/1/...`, for "Send by hand" and for a post that failed.
+  final String replyLink;
 
-  /// It sent an invoice back unpaid, as a stock `epic-wallet` does: it does not pay
-  /// invoices. Send it a slate file, or ask it to send instead.
-  noInvoices,
+  /// The reply reached the relay; the confirmation is collected later.
+  final bool posted;
+
+  const PairingAnswer({
+    required this.contactId,
+    required this.replyLink,
+    required this.posted,
+  });
+
+  @override
+  int get hashCode => contactId.hashCode ^ replyLink.hashCode ^ posted.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PairingAnswer &&
+          runtimeType == other.runtimeType &&
+          contactId == other.contactId &&
+          replyLink == other.replyLink &&
+          posted == other.posted;
+}
+
+/// A card shown to pair in person, from `EpicWallet::pairing_show_card`.
+class PairingCard {
+  final String contactId;
+
+  /// `epiccash://contact/1/...`, shown as a QR code for the other phone.
+  final String link;
+
+  const PairingCard({required this.contactId, required this.link});
+
+  @override
+  int get hashCode => contactId.hashCode ^ link.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PairingCard &&
+          runtimeType == other.runtimeType &&
+          contactId == other.contactId &&
+          link == other.link;
+}
+
+/// Why a pairing in progress ended, for `PairingFailed`.
+enum PairingFailureReason {
+  /// Something changed the invite on the way. Nothing was stored; pair again.
+  changedOnTheWay,
+
+  /// The invite expired before a reply came, or no confirmation came in time.
+  expired,
+
+  /// The inviter refused the reply: the invite was used, expired or cancelled.
+  refused,
+}
+
+/// A new invite, from `EpicWallet::pairing_invite`. `link` lets anyone who sees it pair as
+/// this contact until it is used or expires: share it, show it as a QR code, never store it.
+class PairingInvite {
+  final String contactId;
+
+  /// `epiccash://pair/1/...`.
+  final String link;
+  final PlatformInt64 expiresAtMs;
+
+  /// The five pairing words when they were asked for; empty otherwise.
+  final List<SasEntry> words;
+
+  const PairingInvite({
+    required this.contactId,
+    required this.link,
+    required this.expiresAtMs,
+    required this.words,
+  });
+
+  @override
+  int get hashCode =>
+      contactId.hashCode ^
+      link.hashCode ^
+      expiresAtMs.hashCode ^
+      words.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PairingInvite &&
+          runtimeType == other.runtimeType &&
+          contactId == other.contactId &&
+          link == other.link &&
+          expiresAtMs == other.expiresAtMs &&
+          words == other.words;
+}
+
+/// What a pasted reply or confirm link did.
+enum PairingLinkOutcome {
+  /// A reply to one of this wallet's invites paired the contact: send `link`, the
+  /// confirmation, back by hand.
+  confirm,
+
+  /// A confirmation finished a pairing this wallet answered.
+  paired,
+
+  /// The link answers nothing this wallet waits for.
+  ignored,
+}
+
+/// The result of `EpicWallet::pairing_enter_link`.
+class PairingLinkResult {
+  final PairingLinkOutcome outcome;
+
+  /// Set for `Confirm` and `Paired`.
+  final String? contactId;
+
+  /// The confirmation link, for `Confirm`.
+  final String? link;
+
+  const PairingLinkResult({required this.outcome, this.contactId, this.link});
+
+  @override
+  int get hashCode => outcome.hashCode ^ contactId.hashCode ^ link.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PairingLinkResult &&
+          runtimeType == other.runtimeType &&
+          outcome == other.outcome &&
+          contactId == other.contactId &&
+          link == other.link;
+}
+
+/// Where a contact stands in pairing (RFC 0002 10.2). Values are only added, at the end.
+enum PairingState {
+  /// An invite of ours waits for a reply.
+  pendingInvite,
+
+  /// Our reply waits for the inviter's confirmation.
+  pendingReply,
+
+  /// Paired, the words not checked: show the outline shield.
+  paired,
+
+  /// The user confirmed the words: show the shield with a check.
+  verified,
+
+  /// A key check found other keys for a contact the user already has: this pairing seals
+  /// nothing and takes no invoices until the user keeps the old keys or uses the new ones.
+  keysChanged,
+}
+
+/// A pairing in progress, from `EpicWallet::pairings_pending`.
+class PendingPairingView {
+  final String contactId;
+
+  /// `true`: an invite of ours waits for a reply. `false`: our reply waits for the
+  /// confirmation.
+  final bool inviter;
+
+  /// The name in the invite: ours as inviter, the inviter's own, unverified, as invitee.
+  final String inviteName;
+  final String label;
+  final PlatformInt64 expiresAtMs;
+  final PlatformInt64 createdAtMs;
+
+  const PendingPairingView({
+    required this.contactId,
+    required this.inviter,
+    required this.inviteName,
+    required this.label,
+    required this.expiresAtMs,
+    required this.createdAtMs,
+  });
+
+  @override
+  int get hashCode =>
+      contactId.hashCode ^
+      inviter.hashCode ^
+      inviteName.hashCode ^
+      label.hashCode ^
+      expiresAtMs.hashCode ^
+      createdAtMs.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PendingPairingView &&
+          runtimeType == other.runtimeType &&
+          contactId == other.contactId &&
+          inviter == other.inviter &&
+          inviteName == other.inviteName &&
+          label == other.label &&
+          expiresAtMs == other.expiresAtMs &&
+          createdAtMs == other.createdAtMs;
 }
 
 /// A push registration signed with the wallet's Epicbox address key.
@@ -791,6 +1233,37 @@ class RefreshProgress {
           percent == other.percent &&
           message == other.message &&
           summary == other.summary;
+}
+
+/// The user's answer to the words check.
+enum SasDecision {
+  /// "They match": the contact becomes verified.
+  match,
+
+  /// "They don't match": the pairing is removed on this side.
+  mismatch,
+
+  /// "Skip for now": paired, not verified.
+  skip,
+}
+
+/// One entry of the words check or of pairing words: an emoji and its English name. Show both.
+class SasEntry {
+  final String emoji;
+  final String name;
+
+  const SasEntry({required this.emoji, required this.name});
+
+  @override
+  int get hashCode => emoji.hashCode ^ name.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SasEntry &&
+          runtimeType == other.runtimeType &&
+          emoji == other.emoji &&
+          name == other.name;
 }
 
 class ScanFound {
@@ -924,6 +1397,111 @@ class ScanResult {
           revived == other.revived &&
           unlocked == other.unlocked &&
           deleted == other.deleted;
+}
+
+/// Whether sends to a contact are sealed.
+enum SealState {
+  on_,
+  off,
+
+  /// The last send went plain because the contact could not open sealed text; the next one
+  /// is sealed again.
+  degraded,
+}
+
+/// A sealed S1 received or a sealed I1 paid, with the answer to send back.
+class SealedAnswer {
+  final int txId;
+  final String slateId;
+  final BigInt amount;
+  final BigInt fee;
+
+  /// Armored sealed text when `sealed`, else plain slate JSON.
+  final String answer;
+  final bool sealed;
+
+  const SealedAnswer({
+    required this.txId,
+    required this.slateId,
+    required this.amount,
+    required this.fee,
+    required this.answer,
+    required this.sealed,
+  });
+
+  @override
+  int get hashCode =>
+      txId.hashCode ^
+      slateId.hashCode ^
+      amount.hashCode ^
+      fee.hashCode ^
+      answer.hashCode ^
+      sealed.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SealedAnswer &&
+          runtimeType == other.runtimeType &&
+          txId == other.txId &&
+          slateId == other.slateId &&
+          amount == other.amount &&
+          fee == other.fee &&
+          answer == other.answer &&
+          sealed == other.sealed;
+}
+
+/// Sealed text opened by `EpicWallet::sealed_open`: who it is from and what it holds.
+class SealedSlateView {
+  /// The contact that signed it; `None` for an answer sealed to a slate this wallet started.
+  final String? contactId;
+  final SlateStage stage;
+  final String slateId;
+  final BigInt amount;
+  final BigInt fee;
+  final SlatePurpose? purpose;
+
+  /// The sender's reference, such as an order number; shown as it is, never trusted.
+  final String? reference;
+
+  /// Unix seconds; advisory.
+  final BigInt? expires;
+
+  const SealedSlateView({
+    this.contactId,
+    required this.stage,
+    required this.slateId,
+    required this.amount,
+    required this.fee,
+    this.purpose,
+    this.reference,
+    this.expires,
+  });
+
+  @override
+  int get hashCode =>
+      contactId.hashCode ^
+      stage.hashCode ^
+      slateId.hashCode ^
+      amount.hashCode ^
+      fee.hashCode ^
+      purpose.hashCode ^
+      reference.hashCode ^
+      expires.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SealedSlateView &&
+          runtimeType == other.runtimeType &&
+          contactId == other.contactId &&
+          stage == other.stage &&
+          slateId == other.slateId &&
+          amount == other.amount &&
+          fee == other.fee &&
+          purpose == other.purpose &&
+          reference == other.reference &&
+          expires == other.expires;
 }
 
 /// How a send chooses the outputs it spends, as `epic-wallet send --selection_strategy`.
@@ -1131,6 +1709,19 @@ class SlateMessage {
           text == other.text;
 }
 
+/// What a sealed slate or a contact invoice is for, as its sender says.
+enum SlatePurpose {
+  payment,
+
+  /// An invoice from a service, such as an exchange deposit.
+  depositRequest,
+  withdrawal,
+  refund,
+
+  /// A request between people.
+  request,
+}
+
 enum SlateRole { sender, receiver }
 
 /// How far a slate has progressed: `S` stages are a send, `I` stages an invoice.
@@ -1332,7 +1923,7 @@ enum TransportConnection {
   /// A one-time drain of the payments address.
   paymentsDrain,
 
-  /// A one-time drain of the invoice address.
+  /// Retired with the invoice address; never reported.
   invoicesDrain,
 }
 
@@ -1504,6 +2095,22 @@ class WalletEvent {
   /// The slate's stage, `S2` or `I2`, for `UnknownSlate`.
   final String? slateStage;
 
+  /// The contact or pairing a contact event is about.
+  final String? contactId;
+
+  /// Why a pairing ended, for `PairingFailed`.
+  final PairingFailureReason? pairingFailure;
+
+  /// `domain:port`, for `HomeRelayUnreachable`.
+  final String? relay;
+
+  /// For `InvoiceFromContact`, as the contact gave them.
+  final SlatePurpose? purpose;
+  final String? reference;
+
+  /// Unix seconds; advisory.
+  final BigInt? expires;
+
   const WalletEvent({
     required this.kind,
     this.session,
@@ -1523,6 +2130,12 @@ class WalletEvent {
     this.kernelExcess,
     this.sender,
     this.slateStage,
+    this.contactId,
+    this.pairingFailure,
+    this.relay,
+    this.purpose,
+    this.reference,
+    this.expires,
   });
 
   @override
@@ -1544,7 +2157,13 @@ class WalletEvent {
       amount.hashCode ^
       kernelExcess.hashCode ^
       sender.hashCode ^
-      slateStage.hashCode;
+      slateStage.hashCode ^
+      contactId.hashCode ^
+      pairingFailure.hashCode ^
+      relay.hashCode ^
+      purpose.hashCode ^
+      reference.hashCode ^
+      expires.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1568,7 +2187,13 @@ class WalletEvent {
           amount == other.amount &&
           kernelExcess == other.kernelExcess &&
           sender == other.sender &&
-          slateStage == other.slateStage;
+          slateStage == other.slateStage &&
+          contactId == other.contactId &&
+          pairingFailure == other.pairingFailure &&
+          relay == other.relay &&
+          purpose == other.purpose &&
+          reference == other.reference &&
+          expires == other.expires;
 }
 
 enum WalletEventKind {
@@ -1656,6 +2281,60 @@ enum WalletEventKind {
   /// wallet's answer implies. Advisory: nothing changed. Refresh now; the payment confirms
   /// when a refresh finds the kernel. Until then its `sender_reported_posted_at_ms` is set.
   paymentPosted,
+
+  /// A reply to one of this wallet's invites paired a contact: `contact_id` is set. Show the
+  /// words check.
+  pairingReplied,
+
+  /// A pairing this wallet answered, or one in person, completed: `contact_id` is set. Show
+  /// the words check.
+  pairingConfirmed,
+
+  /// A pairing in progress ended without a contact: `contact_id` names the pairing, which is
+  /// gone, and `pairing_failure` says why.
+  pairingFailed,
+
+  /// A contact sent newer details, such as its relay; its keys did not change:
+  /// `contact_id` is set.
+  contactUpdated,
+
+  /// A contact's relay did not answer; collecting from it backs off: `relay` is set,
+  /// `domain:port`. Turn "Delivered via" into a notice.
+  homeRelayUnreachable,
+
+  /// A key check proved the contact still holds its old keys: the old pairing, `contact_id`,
+  /// keeps its keys and trust, and the new pairing was folded into it ("Anna's keys are
+  /// back").
+  contactKeysRestored,
+
+  /// A key check found no old keys, or went unanswered for a day: the new pairing,
+  /// `contact_id`, is in `KeysChanged` until the user decides with `contact_keys_resolve`.
+  contactKeysChanged,
+
+  /// A verified contact that may send invoices sent one; it waits in `contact_invoices`:
+  /// `contact_id`, `slate_id`, `amount` and, when the contact gave them, `purpose`,
+  /// `reference` and `expires` are set. Nothing was paid.
+  invoiceFromContact,
+
+  /// A contact's withdrawal arrived and was received; the answer is queued for the contact:
+  /// `contact_id`, `tx_id`, `slate_id` and `amount` are set.
+  withdrawalFromContact,
+
+  /// A contact's sealed payment arrived in its mailbox and was received; the answer is
+  /// queued for the contact: `contact_id`, `tx_id`, `slate_id` and `amount` are set.
+  sealedReceived,
+
+  /// Something in a contact's mailbox did not open with this wallet's keys and was dropped:
+  /// `contact_id` is set. Anyone who knows the mailbox can cause this: only inform the user,
+  /// for example that pairing again checks the keys.
+  sealedUnopenable,
+
+  /// A message reached the contact's relay: `contact_id` and `slate_id` are set.
+  outboxDelivered,
+
+  /// A message could not be delivered for a day and stopped retrying: `contact_id` and
+  /// `slate_id` are set. Offer "Send again".
+  outboxStuck,
 }
 
 /// An output of the wallet, from `EpicWallet::outputs`.

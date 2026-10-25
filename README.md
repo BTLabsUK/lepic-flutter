@@ -355,13 +355,31 @@ meaning. `message` is English for logs and bug reports and holds no secret; do n
 | 53 | `mixedUrCodes` | The scanned parts belong to two different slate codes. Start over with the newest scan. |
 | 54 | `invalidUrCode` | A slate code is damaged, or of a newer version than this LEPIC reads. |
 | 55 | `urCodeTooLarge` | The slate is too large for QR codes (over 64 KiB or 256 fragments), or the scans exceed what one code holds. Use a file. |
+| 56 | `contactsOffline` | The user chose Offline, so a contact call that must reach a relay did not. Nothing was sent or fetched. |
+| 57 | `epicboxOff` | Epicbox is switched off, so a contact call that must reach a relay did not. Nothing was sent or fetched. |
+| 58 | `invalidPairingText` | The link, card, reply or sealed text is damaged, is not one, or is for the other network. Nothing was stored. |
+| 59 | `invalidContactName` | The name cannot go in a contact card: empty, too long, or with characters a card refuses. |
+| 60 | `inviteExpired` | The invite expired. Ask for a new one. |
+| 61 | `alreadyPaired` | The invite, reply or card belongs to a contact this wallet is paired with already, or to this wallet. |
+| 62 | `contactNotFound` | No paired contact has that id, or it is not in the state the call needs (a card this wallet does not show, keys changed). |
+| 63 | `pairingNotFound` | No pairing in progress has that id: it completed, failed or was cancelled. |
+| 64 | `contactNotVerified` | The words were not checked, or invoices from the contact are not allowed. Nothing was paid or changed. |
+| 65 | `pairingWordsUnavailable` | Pairing words are offered only on LEPIC's built-in relays. Share the link instead. |
+| 66 | `sealingOff` | Sealing is off for the contact, or its wallet cannot open sealed text. Send the slate plain. |
+| 67 | `noSlateToSend` | The transaction has no slate to send, or the outbox holds no entry with that id. |
+| 68 | `sealedForAnotherWallet` | The sealed text is for another wallet or install, or not signed by the contact. Nothing was stored. |
+| 69 | `sealedUnopenable` | The sealed text does not open: it was changed on the way. |
+| 70 | `keyCheckRefused` | A key check is allowed once per pairing and within a day of the new pairing. |
+| 71 | `pairingWordsNotFound` | No invite was found for these words: wrong, expired, or used. |
+| 72 | `invalidPairingWords` | A word is not in the pairing words table, or there are not five. |
+| 73 | `contactRefusesInvoices` | The contact's wallet says it does not pay invoices. Nothing was sent. |
 
 Kinds 22 to 24 used to arrive as `other`. Kinds 25 and 26 are new with `sealAppData` and
 `openAppData`, 27 and 28 with `releaseTransaction`, 29 to 31 with the invoice calls, 40 and
 41 with the HTTP calls, 42 to 44 with the Tor calls, 45 and 46 with `SendOptions` (before, both
 arrived as `invalidArgument`), 47 with `consolidateOutputs` (before, `notEnoughFunds` or a
 consolidation of one output), 48 to 50 with the invoice refusals of U-23 (before, all three
-arrived as `invalidSlate`), 51 to 55 with the QR slate calls. An exhaustive `switch` over
+arrived as `invalidSlate`), 51 to 55 with the QR slate calls, 56 to 73 with the pairing calls. An exhaustive `switch` over
 `WalletErrorKind` must handle them.
 
 ## Direct transactions over HTTP
@@ -573,19 +591,14 @@ wallets; a stock `epic-wallet` sends an invoice back unpaid.
 
 Payer, the app:
 
-- `invoiceAddress()` is the address to give to services, at address index 1 or higher beside the
-  payments address of `epicboxAddress()`. `rotateInvoiceAddress()` moves to the next index and
-  abandons the old address. A restore from the phrase starts at index 1 again; keep
-  `invoiceAddressIndex()` and give it back with `setInvoiceAddressIndex(index)`.
-- The invoice address hears only from allowed senders: `allowInvoiceSender(address, label)` with
-  the full `<key>@<relay>[:port]` the service shows, `invoiceSenders()`, `removeInvoiceSender`.
-  Only the key is matched, and payments go to the address as added.
-- `drainInvoices()` reads the invoice address once, as `drainEpicbox()` reads the payments
-  address; no listener runs on it. Messages from other senders are dropped unopened and counted
-  in `InvoiceReport.dropped`. Each new invoice raises an `invoiceReceived` event.
-- `pendingInvoices(expirySecs)` lists what waits: slate id, sender address, amount, the sender's
-  message cleaned for display, and when it was received and expires. Nothing in the inbox ever
-  pays.
+- Invoices come only from paired contacts (see Pairing with contacts below). The invoice address,
+  its allowlist and `drainInvoices` are gone: `invoiceAddress`, `invoiceAddressIndex`,
+  `setInvoiceAddressIndex`, `rotateInvoiceAddress`, `invoiceSenders`, `allowInvoiceSender`,
+  `removeInvoiceSender` and `drainInvoices` were removed with their types `InvoiceSender` and
+  `InvoiceReport`.
+- `pendingInvoices(expirySecs)` lists what waits over the payments address: slate id, sender
+  address, amount, the sender's message cleaned for display, and when it was received and
+  expires. Nothing in the inbox ever pays.
 - `payInvoice(slateId, amount, minimumConfirmations, message)` pays only when `amount` is the
   invoiced amount (`amountMismatch` otherwise) and delivers the payment to the sender. On
   `notDelivered` the payment is stored with its inputs locked: `resendInvoicePayment(txId)` with
@@ -616,8 +629,7 @@ Issuer, a service wallet:
 
 Notices tell each side what the other did: the issuer sends `posted`, with the kernel excess,
 after it posts a payment and `withdrawn` when it cancels an invoice; the payer sends `declined`.
-They arrive with `drainInvoices()` (`posted`, `withdrawn`) and `drainEpicbox()` or the listener
-(`declined`), are counted in `notices`, and raise the events `invoicePosted` (`txId` of the
+They arrive with `drainEpicbox()` or the listener, are counted in `notices`, and raise the events `invoicePosted` (`txId` of the
 payment, `slateId`, `kernelExcess`), `invoiceWithdrawn` and `invoiceDeclined`. They are advisory
 and never move funds: `withdrawn` deletes a waiting invoice, and for one already paid names the
 payment in `txId` so the app can offer `cancelTransaction`. A notice goes only to a wallet that
@@ -630,6 +642,55 @@ issued ones cancelled, each with an `invoiceExpired` event. A payment whose time
 with the transaction neither on chain nor in the node's pool is listed in
 `InvoiceSweep.cancellable`; offer the user `cancelTransaction`. Pass the same `expirySecs` to
 `pendingInvoices` and `sweepInvoices`.
+
+## Pairing with contacts
+
+Two wallets pair once and then exchange slates sealed so only the other wallet opens them, and
+a verified contact may be allowed to send invoices (LEPIC's RFC 0002). Calls live on
+`EpicWallet` (LEPIC's `crates/lepic-ffi/src/api/contact.rs` has the details of each). Contact
+ids are 32 hex characters. Calls that may reach a relay take the app's `ContactRelayMode`
+(`online`, `offline`, `epicboxOff`); the ones that must connect fail with `contactsOffline` or
+`epicboxOff` before connecting. An invite link lets anyone who sees it pair as the user until
+it is used or expires: share it, never store it. Nothing else that crosses is secret.
+
+- Pair online: `pairingInvite(name, kind, expiry, offerWords, mode)` returns the link and, with
+  `offerWords`, five `SasEntry` words (10 minutes, built-in relays only). The other side runs
+  `pairingPreview(link)` for the "Pair with Anna?" sheet, or `pairingFindWords(words, mode)`,
+  then `pairingAccept(link, name, byHand, mode)`. Replies and confirmations arrive with
+  `contactsCollect`; by hand they are pasted into `pairingEnterLink(text, mode)`.
+- Pair in person: `pairingShowCard(name, kind, mode)` for "Show my code", then
+  `pairingScanCard(contactId, link, mode)` with the other phone's card. Works offline.
+- The words check: `ContactView.sas` holds four `SasEntry`; `pairingSas(contactId, decision,
+  mode)` with `match`, `mismatch` (removes the pairing) or `skip`.
+- Lists: `contacts()`, `contact(id)`, `pairingsForAppContact(appContact)`, `pairingsPending()`;
+  `pairingCancel(id)` for a pairing in progress, `contactRemove(id)` for "Remove pairing".
+- Settings: `contactSetLabel`, `contactSetSeal`, `contactSetAllowInvoices` (verified contacts
+  only, `contactNotVerified` otherwise), `contactAttach(id, appContact)` to the address book.
+- Keys changed: when a new pairing is attached to an entry that has one, `contactKeyCheck(new,
+  old, mode)`; its answer arrives as `contactKeysRestored` or `contactKeysChanged`, and
+  `contactKeysResolve(new, keepOld | useNew)` decides the latter.
+- Sealed slates: `contactSealSlate(id, txId, purpose)` returns armored text for a `.epicsealed`
+  file or a paste, which the app writes; `contactPostSlate(id, txId, purpose, mode)` sends it
+  through the contact's mailbox instead. `sealedOpen(text)` shows what sealed text holds, then
+  `sealedReceive`, `sealedPay` or `sealedFinalize` by its `stage`; the `SealedAnswer` goes back
+  the way the slate came. `sealedAnswerToMarker(incoming, reply)` seals the answer to a plain
+  slate from LEPIC. `contactPlainFallback(txId)` gives the same slate plain;
+  `contactOfTransaction(txId)` names its contact.
+- Invoices: `contactIssueInvoice(id, amount, message, purpose, reference, expires, mode)`;
+  the payer sees `contactInvoices()` and runs `contactPayInvoice(slateId, amount,
+  minimumConfirmations, message, options, mode)` or `contactDeclineInvoice(slateId)`.
+- Delivery: `contactsCollect(trigger, mode)` and `contactsOutboxDeliver(mode)` on open, on a
+  foreground tick and on a push wake-up; `contactOutbox(id)` for the timeline and
+  `contactOutboxResend(entryId, mode)` for "Send again".
+- Backup: `contactsExport()` returns the JSON document for the `.wfeh` payload;
+  `contactsImport(document)` restores it.
+
+Events on `events()`, all with `contactId` unless noted: `pairingReplied`, `pairingConfirmed`,
+`pairingFailed` (`pairingFailure`), `contactUpdated`, `homeRelayUnreachable` (`relay` only),
+`contactKeysRestored`, `contactKeysChanged`, `invoiceFromContact` (`slateId`, `amount`,
+`purpose`, `reference`, `expires`), `withdrawalFromContact` and `sealedReceived` (`txId`,
+`slateId`, `amount`), `sealedUnopenable`, `outboxDelivered` and `outboxStuck` (`slateId`). They
+carry ids and labels, never keys; an exhaustive `switch` over `WalletEventKind` must handle them.
 
 ## Slates as QR codes
 

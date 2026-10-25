@@ -102,19 +102,6 @@ Future<NodeTip> nodeTip({
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<EpicWallet>>
 abstract class EpicWallet implements RustOpaqueInterface {
-  /// Accepts invoices from the service at `address`, the full address it shows,
-  /// `<key>@<relay>[:port]` as `validate_epicbox_address` accepts it.
-  /// Only the key is matched, because the relay vouches for the key of a message and never
-  /// for its relay part; payments of its invoices go to `address` as added. Adding a key
-  /// again replaces its address and label.
-  ///
-  /// Fails with `InvalidArgument` for any other address, and for a `label` longer than 64
-  /// bytes or holding control characters.
-  Future<InvoiceSender> allowInvoiceSender({
-    required String address,
-    required String label,
-  });
-
   /// Stops a running scan: a node request in flight is abandoned at once and a page being
   /// stored is finished first, so the scan's stream ends with `Cancelled` within about the
   /// time one page takes to identify. Does nothing when no scan runs; a scan started later
@@ -122,8 +109,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   void cancelScan();
 
   /// Cancels a transaction that was not posted and unlocks its outputs. Cancelling an
-  /// invoice issued with `issue_invoice_epicbox` withdraws it and sends the payer a
-  /// `withdrawn` notice when the payer proved it runs LEPIC.
+  /// invoice this wallet issued withdraws it.
   ///
   /// Fails with `OnChain` or `InPool` when the node's chain or pool holds the kernel of a
   /// finalized transaction, and with `NodeUnreachable` when the node cannot be asked.
@@ -197,6 +183,190 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// call does, and with `NothingToConsolidate` when fewer than two outputs are spendable.
   Future<SelfSentTx> consolidateOutputs({required BigInt minimumConfirmations});
 
+  /// One paired contact. Fails with `ContactNotFound`.
+  Future<ContactView> contact({required String contactId});
+
+  /// Attaches a pairing to the app's address-book entry `app_contact`, an id the app
+  /// chooses, or detaches it with `None`. Attaching a new pairing to an entry that has one
+  /// already is when to offer [`EpicWallet::contact_key_check`]. Fails with
+  /// `ContactNotFound`.
+  Future<void> contactAttach({required String contactId, String? appContact});
+
+  /// Declines the waiting contact invoice `slate_id`: it is never paid, and a `declined` is
+  /// queued for the contact. Fails with `InvoiceNotFound` when no contact invoice with that
+  /// id waits.
+  Future<void> contactDeclineInvoice({required String slateId});
+
+  /// The invoices from contacts waiting for the user, oldest first.
+  Future<List<ContactInvoiceView>> contactInvoices();
+
+  /// Issues an invoice for `amount` to a paired contact, sealed with `purpose`, `reference`
+  /// and the advisory `expires` (Unix seconds), and queues it for the contact's mailbox; the
+  /// outbox runs once when the mode allows. The contact pays it only when it allows this
+  /// wallet's invoices; the payment comes back by collecting, finalized and posted with
+  /// `InvoiceFinalized`.
+  ///
+  /// Fails with `ContactNotFound` for a contact that is not paired or whose keys changed,
+  /// and `ContactRefusesInvoices`. Offline the invoice is stored and queued, and goes out with
+  /// the next [`EpicWallet::contacts_outbox_deliver`].
+  Future<IssuedInvoice> contactIssueInvoice({
+    required String contactId,
+    required BigInt amount,
+    String? message,
+    required SlatePurpose purpose,
+    String? reference,
+    BigInt? expires,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Starts the key check between the new pairing `new` and the old pairing `old` of the
+  /// same address-book entry, for a contact that may have restored its wallet. The answer is
+  /// collected: `ContactKeysRestored` when the old keys are back (the new pairing was folded
+  /// into the old one), `ContactKeysChanged` when they are not or nothing answers within a
+  /// day (the new pairing waits for [`EpicWallet::contact_keys_resolve`]).
+  ///
+  /// Fails with `ContactNotFound` unless both are paired, `KeyCheckRefused` when the new
+  /// pairing is older than a day or either had a check in the last day, and
+  /// `ContactsOffline` or `EpicboxOff`.
+  Future<void> contactKeyCheck({
+    required String new_,
+    required String old,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Decides for a new pairing in `KeysChanged`: `KeepOld` removes it, `UseNew` removes the
+  /// old pairing and keeps this one. Fails with `ContactNotFound` when `new` is not in
+  /// `KeysChanged`.
+  Future<void> contactKeysResolve({
+    required String new_,
+    required KeysDecision decision,
+  });
+
+  /// The contact a transaction was sealed to or from, if any.
+  Future<String?> contactOfTransaction({required int txId});
+
+  /// The messages for a contact in the outbox, by id, for the payment timeline.
+  Future<List<OutboxEntryView>> contactOutbox({required String contactId});
+
+  /// "Send again": posts the outbox entry `id` once more, whatever its state. The contact
+  /// treats a repeat as the same message.
+  ///
+  /// Fails with `NoSlateToSend` for an id the outbox does not hold, `ContactsOffline` or
+  /// `EpicboxOff`, and `TransportFailed` when the relay fails.
+  Future<void> contactOutboxResend({
+    required BigInt id,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Pays the waiting contact invoice `slate_id` after the user approved `amount`, the
+  /// invoiced amount; the payment is sealed to the contact and queued for its mailbox, and
+  /// the outbox runs once when the mode allows. `minimum_confirmations`, `message` and
+  /// `options` are as in `create_send_slate`.
+  ///
+  /// Fails with `InvoiceNotFound` when no contact invoice with that id waits,
+  /// `ContactNotVerified` when its contact is no longer verified with invoices allowed, and
+  /// as [`EpicWallet::sealed_pay`] does.
+  Future<PaidInvoice> contactPayInvoice({
+    required String slateId,
+    required BigInt amount,
+    required BigInt minimumConfirmations,
+    String? message,
+    SendOptions? options,
+    required ContactRelayMode relayMode,
+  });
+
+  /// The slate this wallet last wrote for `tx_id` as plain JSON, for a contact that cannot
+  /// open sealed text: the same transaction, never a second one. The contact's seal becomes
+  /// `Degraded`. Fails with `NoSlateToSend`.
+  Future<String> contactPlainFallback({required int txId});
+
+  /// Sends the slate of `tx_id` sealed through the contact's mailbox: queued in the outbox
+  /// and posted once when the mode allows. The answer comes back by collecting.
+  ///
+  /// Fails as [`EpicWallet::contact_seal_slate`] does.
+  Future<void> contactPostSlate({
+    required String contactId,
+    required int txId,
+    SlatePurpose? purpose,
+    required ContactRelayMode relayMode,
+  });
+
+  /// "Remove pairing": the contact, its mailboxes and anything pending for it go, and the
+  /// contact is not told. Returns whether anything was removed.
+  Future<bool> contactRemove({required String contactId});
+
+  /// The slate this wallet last wrote for `tx_id` (its S1, I1, S2 or I2) sealed to the
+  /// contact, as armored text for a `.epicsealed` file or a paste; the app writes the file.
+  /// `purpose` defaults to a payment for an S1 and a request for an I1. Nothing is sent.
+  ///
+  /// Fails with `ContactNotFound` for a contact that is not paired or whose keys changed,
+  /// `SealingOff` when sealing is off for it or it cannot open sealed text, and
+  /// `NoSlateToSend` when the transaction has no slate to send.
+  Future<String> contactSealSlate({
+    required String contactId,
+    required int txId,
+    SlatePurpose? purpose,
+  });
+
+  /// "Allow invoices" on or off for a contact. Turning it off declines the contact's unpaid
+  /// invoices, queuing a `declined` for each in the outbox; a paid one finishes.
+  ///
+  /// Fails with `ContactNotVerified` when turning it on for a contact whose words were not
+  /// checked, and `ContactNotFound`.
+  Future<void> contactSetAllowInvoices({
+    required String contactId,
+    required bool allow,
+  });
+
+  /// Sets the user's own name for a contact. Fails with `ContactNotFound`.
+  Future<void> contactSetLabel({
+    required String contactId,
+    required String label,
+  });
+
+  /// "Seal payments" on or off for a contact. Fails with `ContactNotFound`.
+  Future<void> contactSetSeal({required String contactId, required bool seal});
+
+  /// The paired contacts, oldest first. Pairings in progress are in
+  /// [`EpicWallet::pairings_pending`].
+  Future<List<ContactView>> contacts();
+
+  /// Collects the pairing and contact mailboxes once and raises an event for what arrived:
+  /// replies and confirmations pair, contacts' payments and withdrawals are received and
+  /// answered through the outbox, their invoices wait in [`EpicWallet::contact_invoices`].
+  /// Pairings past their time end with `PairingFailed`. A relay that does not answer is listed
+  /// in `unreachable`, raises `HomeRelayUnreachable` and is tried again later, not returned as
+  /// an error. Messages are taken off a relay only once their effect is stored, so a call
+  /// cut short loses nothing.
+  ///
+  /// Fails with `ContactsOffline` or `EpicboxOff` before connecting.
+  Future<ContactCollectReport> contactsCollect({
+    required CollectTrigger trigger,
+    required ContactRelayMode relayMode,
+  });
+
+  /// The pairings as a versioned JSON document for the app's `.wfeh` history backup. It
+  /// holds no secret: the keys come from the recovery phrase. Pairings in progress are left
+  /// out.
+  Future<String> contactsExport();
+
+  /// Restores the pairings of a document [`EpicWallet::contacts_export`] wrote, with the
+  /// same keys, mailboxes and trust, marked as possibly living on another device too.
+  /// Pairings this wallet holds already are kept as they are.
+  ///
+  /// Fails with `InvalidArgument` or `Io` for a document this build cannot read or that is
+  /// for the other network; nothing is imported then.
+  Future<ContactImportSummary> contactsImport({required String document});
+
+  /// Posts every outbox entry that is due, raising `OutboxDelivered` for each that reached
+  /// its relay and `OutboxStuck` for one undelivered for a day, which stops retrying. A relay
+  /// that fails is counted, not returned.
+  ///
+  /// Fails with `ContactsOffline` or `EpicboxOff` before connecting.
+  Future<OutboxReport> contactsOutboxDeliver({
+    required ContactRelayMode relayMode,
+  });
+
   /// Creates a wallet in `config.data_dir` with its vault in `store`. With `mnemonic` it
   /// restores that seed (call [`EpicWallet::scan`] next); without it a fresh seed is
   /// generated, whose phrase [`EpicWallet::mnemonic`] returns for the backup screen. Returns
@@ -259,23 +429,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
     pin: pin,
   );
 
-  /// Declines the waiting invoice `slate_id`: it is never paid and leaves
-  /// [`EpicWallet::pending_invoices`]. The sender gets a `declined` notice when it proved
-  /// that it runs LEPIC; a failure to send it is not reported. Fails with `InvoiceNotFound`
-  /// when no invoice with that id waits.
-  Future<void> declineInvoice({required String slateId});
-
   /// Connects to the relay once, handles every pending message and disconnects: the call for
   /// background work. While the listener runs it does nothing and reports nothing handled,
   /// as the listener receives the same messages.
   Future<InboxReport> drainEpicbox();
-
-  /// Connects to the relay as the invoice address once, handles every pending message and
-  /// disconnects. An invoice from an allowed sender is stored, with an `InvoiceReceived`
-  /// event, before the relay is told it arrived; anything from another sender is dropped
-  /// unopened. Notices from the senders of invoices this wallet holds raise their events. Fails
-  /// as [`EpicWallet::drain_epicbox`] does.
-  Future<InvoiceReport> drainInvoices();
 
   /// The wallet's Epicbox address, `<key>@<domain>[:port]`. Fails with `Unsupported` when
   /// the configuration names no relay.
@@ -408,33 +565,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     pin: pin,
   );
 
-  /// The invoice address, `<key>@<domain>[:port]`, to give to services that invoice this
-  /// wallet. Its index starts at 1, also after a restore; see
-  /// [`EpicWallet::set_invoice_address_index`].
-  Future<String> invoiceAddress();
-
-  /// The address index of the invoice address, 1 or higher.
-  Future<int> invoiceAddressIndex();
-
-  /// The senders the invoice address accepts, in the order they were added.
-  Future<List<InvoiceSender>> invoiceSenders();
-
-  /// Issues an invoice for `amount` to the payer's invoice address `address` over Epicbox.
-  /// The payer pays `amount` plus the fee. Its payment arrives on this wallet's payments
-  /// address, where [`EpicWallet::drain_epicbox`] or the listener finalizes and posts it, with
-  /// an `InvoiceFinalized` event, and the payer gets a `posted` notice. `message` is signed
-  /// into the invoice as [`EpicWallet::create_send_slate`] signs it. Withdraw an unpaid
-  /// invoice with `cancel_transaction`, which sends the payer a `withdrawn` notice.
-  ///
-  /// Fails with `InvalidArgument`, storing nothing, for an address
-  /// `validate_epicbox_address` refuses, and with `NotDelivered` when the
-  /// invoice was stored but the relay did not take it.
-  Future<IssuedInvoice> issueInvoiceEpicbox({
-    required BigInt amount,
-    required String address,
-    String? message,
-  });
-
   bool listenerRunning();
 
   /// Locks the wallet now, for example when the app goes to the background: stops the
@@ -542,38 +672,119 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `summary(refresh: false)`; refresh first for the node's view.
   Future<List<WalletOutput>> outputs();
 
-  /// Pays the waiting invoice `slate_id` and delivers the payment over Epicbox to the
-  /// sender's allowed address, and to the relay the invoice came from when that differs.
-  /// `amount` is what the user typed: an invoice for any other amount is refused, as
-  /// `epic-wallet pay` refuses it. Inputs need `minimum_confirmations`; `message` goes to the
-  /// sender signed and `options` choose the inputs and change, as in
-  /// [`EpicWallet::create_send_slate`].
+  /// Answers an invite as `name`. The pending pairing is stored first, then the reply is
+  /// posted unless `by_hand` is set or the mode is not `Online`; `reply_link` is returned
+  /// either way, for "Send by hand" and for a post that failed (`posted` false).
+  /// [`EpicWallet::contacts_collect`] takes the confirmation and raises `PairingConfirmed`.
   ///
-  /// Fails with `InvoiceNotFound` when no invoice with that id waits, `AmountMismatch`,
-  /// `PaymentExpired`, `NotEnoughFunds`, `InvalidSlate`, `InvoiceAlreadyPaid` when this
-  /// invoice was paid before, `InvoiceLockedAboveTip` when it is locked above the chain tip,
-  /// `NodeUnreachable`, and with
-  /// `NotDelivered` when the payment was stored but the relay did not take it: deliver it
-  /// with [`EpicWallet::resend_invoice_payment`] or give up with `cancel_transaction`.
-  Future<PaidInvoice> payInvoice({
-    required String slateId,
-    required BigInt amount,
-    required BigInt minimumConfirmations,
-    String? message,
-    SendOptions? options,
+  /// Fails as [`EpicWallet::pairing_preview`] does, with `AlreadyPaired` for an invite this
+  /// wallet made or answered already, and `InvalidContactName`.
+  Future<PairingAnswer> pairingAccept({
+    required String link,
+    required String name,
+    required bool byHand,
+    required ContactRelayMode relayMode,
   });
 
-  /// What this wallet learned about the peer at `address`, `<key>@<relay>[:port]`, from
-  /// its own messages: `Lepic` once it proved it runs LEPIC, `NoInvoices` once it sent an
-  /// invoice back unpaid, `Unknown` before either. Only the key is matched. Warn before
-  /// invoicing a `NoInvoices` peer. Reads only the wallet database.
-  ///
-  /// Fails with `InvalidArgument` for any other address.
-  Future<PeerCapability> peerCapability({required String address});
+  /// Cancels a pairing in progress: an invite stops working, a reply is forgotten. The other
+  /// side is not told. Fails with `PairingNotFound` unless `contact_id` is in
+  /// [`EpicWallet::pairings_pending`]; a paired contact is removed with
+  /// [`EpicWallet::contact_remove`].
+  Future<void> pairingCancel({required String contactId});
 
-  /// The invoices waiting to be paid or declined, oldest first, with when a sweep with
-  /// `expiry_secs` deletes them. `expiry_secs` is as in [`EpicWallet::sweep_invoices`].
-  Future<List<IncomingInvoice>> pendingInvoices({BigInt? expirySecs});
+  /// Takes a reply or confirmation the user pasted, `epiccash://pair-reply/1/...` or
+  /// `epiccash://pair-confirm/1/...`. A reply to one of this wallet's invites pairs the
+  /// contact and returns the confirmation to send back by hand (`Confirm`); a confirmation
+  /// finishes a pairing this wallet answered (`Paired`). Either way the words check follows.
+  /// Reaches no relay unless the pairing has to tell the other side something.
+  ///
+  /// Fails with `InvalidPairingText` for any other text.
+  Future<PairingLinkResult> pairingEnterLink({
+    required String text,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Finds the invite that five pairing words name, typed as names or emoji, on the
+  /// built-in relays, and returns its link with its preview, for
+  /// [`EpicWallet::pairing_accept`]. The invite is taken off the relay, so nobody else finds
+  /// it.
+  ///
+  /// Fails with `InvalidPairingWords` for words not in the table, `PairingWordsNotFound`
+  /// when no relay holds the invite, and `ContactsOffline` or `EpicboxOff`.
+  Future<FoundInvite> pairingFindWords({
+    required List<String> words,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Makes an invite to pair, valid for `expiry`, whose messages go through this wallet's
+  /// relay. The pending pairing is stored and listed by [`EpicWallet::pairings_pending`];
+  /// [`EpicWallet::contacts_collect`] takes the reply and raises `PairingReplied`. Without
+  /// words nothing is sent, so this works offline.
+  ///
+  /// With `offer_words` the invite lasts 10 minutes and is also posted under five pairing
+  /// words, returned in `words`, for the other side to type; that needs `Online` and fails
+  /// with `PairingWordsUnavailable` unless the wallet's relay is a built-in one, and with
+  /// `TransportFailed` when the post fails, the invite staying pending until it expires.
+  ///
+  /// Fails with `InvalidContactName` for a `name` a card cannot carry, and with `Io` when 64
+  /// pairings are pending.
+  Future<PairingInvite> pairingInvite({
+    required String name,
+    required ContactKind kind,
+    required InviteExpiry expiry,
+    required bool offerWords,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Reads an invite link for the "Pair with Anna?" sheet. Nothing is stored or sent.
+  ///
+  /// Fails with `InvalidPairingText` for text that is not an invite on the wallet's network,
+  /// and `InviteExpired` for one past its expiry.
+  Future<InvitePreview> pairingPreview({required String link});
+
+  /// Records the words check: `Match` makes the contact verified, `Mismatch` removes the
+  /// pairing on this side and, when this wallet made the invite, tells the other side when
+  /// the mode allows, `Skip` leaves it paired.
+  ///
+  /// Fails with `ContactNotFound` when no paired contact has that id.
+  Future<void> pairingSas({
+    required String contactId,
+    required SasDecision decision,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Finishes an in-person pairing with the card `link` scanned from the other phone:
+  /// "Scan theirs". The contact is paired, not verified; show the words check from the
+  /// returned view. Works offline.
+  ///
+  /// Fails with `ContactNotFound` when `contact_id` is not a card this wallet shows,
+  /// `InvalidPairingText` for a link that is not a card on the wallet's network, and
+  /// `AlreadyPaired` for a contact this wallet holds or its own card.
+  Future<ContactView> pairingScanCard({
+    required String contactId,
+    required String link,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Shows a card to pair in person: "Show my code". Its `link` goes in a QR code for the
+  /// other phone; [`EpicWallet::pairing_scan_card`] with the same `contact_id` finishes the
+  /// pairing with theirs. Nothing is sent, so this works offline.
+  ///
+  /// Fails as [`EpicWallet::pairing_invite`] does.
+  Future<PairingCard> pairingShowCard({
+    required String name,
+    required ContactKind kind,
+    required ContactRelayMode relayMode,
+  });
+
+  /// The paired contacts attached to the address-book entry `app_contact` with
+  /// [`EpicWallet::contact_attach`], oldest first: usually one, two while a key check
+  /// between an old and a new pairing runs.
+  Future<List<ContactView>> pairingsForAppContact({required String appContact});
+
+  /// The pairings in progress, oldest first: invites waiting for a reply and replies waiting
+  /// for the confirmation, for Contacts › Pending.
+  Future<List<PendingPairingView>> pairingsPending();
 
   /// Signs a push registration for this wallet's Epicbox address, so a push service can tie
   /// the FCM `token` to it. LEPIC builds the text itself, `epic-push-v1`, `action`, the
@@ -633,11 +844,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// holds the transaction, and with `NodeUnreachable` when the node cannot be asked.
   Future<void> releaseTransaction({required int txId});
 
-  /// Stops accepting invoices from the key of `address`, and returns whether it was
-  /// accepted. Invoices it sent that wait already stay. Fails with `InvalidArgument` for an
-  /// address that does not parse on this wallet's chain.
-  Future<bool> removeInvoiceSender({required String address});
-
   /// Posts the stored final transaction of `tx_id` to the node again.
   Future<void> repostTransaction({required int txId});
 
@@ -664,13 +870,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required bool allowPlainHttp,
   });
 
-  /// Delivers the stored payment `tx_id` of an invoice again, to the sender's allowed
-  /// address and, when it differs, the relay the invoice came from, after
-  /// [`EpicWallet::pay_invoice`] failed with `NotDelivered` or nothing came of it. Fails with
-  /// `InvalidArgument` for a transaction that is not an undelivered payment of an invoice,
-  /// and with `TransportFailed` when the relay fails again.
-  Future<void> resendInvoicePayment({required int txId});
-
   /// Delivers the slate of send `tx_id` again, to the wallet at `onion`, which may be
   /// another address or method than the first attempt, then finalizes and posts as
   /// [`EpicWallet::send_tor`] does.
@@ -679,10 +878,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `InvalidArgument` when `tx_id` is not a send waiting for its answer, and otherwise as
   /// [`EpicWallet::send_tor`].
   Future<HttpResentTx> resendTor({required int txId, required String onion});
-
-  /// Moves the invoice address to the next index and returns it. The old address is
-  /// abandoned: messages to it are no longer read, so give the new one to every service.
-  Future<String> rotateInvoiceAddress();
 
   /// Scans the chain for this wallet's outputs from `start_height`, or, by default, from
   /// shortly before the last completed scan (the whole chain after a restore), streaming
@@ -719,6 +914,52 @@ abstract class EpicWallet implements RustOpaqueInterface {
   ///
   /// Fails with `Locked`, and with `InvalidArgument` for a payload above 32 MiB.
   Future<Uint8List> sealAppData({required List<int> payload});
+
+  /// The answer `reply` (the S2 or I2 JSON this wallet answered the plain slate `incoming`
+  /// with) sealed to the reply key `incoming` carries when it came from LEPIC, or `None`
+  /// when it carries none and the answer goes plain.
+  Future<String?> sealedAnswerToMarker({
+    required String incoming,
+    required String reply,
+  });
+
+  /// Finalizes and posts the S2 or I2 in sealed text, as `finalize_slate` does.
+  ///
+  /// Fails as [`EpicWallet::sealed_open`] does, with `InvalidSlate` for another stage, and as
+  /// `finalize_slate` does.
+  Future<FinalizedTx> sealedFinalize({required String text});
+
+  /// Opens sealed text from a file or a paste, to show what it holds before the user acts on
+  /// it with [`EpicWallet::sealed_receive`], [`EpicWallet::sealed_pay`] or
+  /// [`EpicWallet::sealed_finalize`] by its `stage`. Nothing is stored, except that a newer
+  /// card of the contact in it refreshes the contact.
+  ///
+  /// Fails with `InvalidPairingText` for text that is not sealed or is for the other network,
+  /// `SealedForAnotherWallet`, `SealedUnopenable`, and `InvalidSlate` when it holds no slate.
+  Future<SealedSlateView> sealedOpen({required String text});
+
+  /// Pays the I1 in sealed text; call it only after the user approved `amount`, which must
+  /// be the invoiced amount. `minimum_confirmations`, `message` and `options` are as in
+  /// `create_send_slate`. Returns the answer as [`EpicWallet::sealed_receive`] does.
+  ///
+  /// Fails as [`EpicWallet::sealed_open`] does, with `InvalidSlate` for another stage,
+  /// `AmountMismatch`, `PaymentExpired`, `NotEnoughFunds`, `InvoiceAlreadyPaid`,
+  /// `InvoiceLockedAboveTip` and `NodeUnreachable`.
+  Future<SealedAnswer> sealedPay({
+    required String text,
+    required BigInt amount,
+    required BigInt minimumConfirmations,
+    String? message,
+    SendOptions? options,
+  });
+
+  /// Receives the S1 in sealed text, as `receive_slate` does, and returns the answer sealed
+  /// to the sender when it can be, else plain; the app sends it back the way the slate came.
+  /// `message` is signed into the answer.
+  ///
+  /// Fails as [`EpicWallet::sealed_open`] does, with `InvalidSlate` for another stage, and as
+  /// `receive_slate` does.
+  Future<SealedAnswer> sealedReceive({required String text, String? message});
 
   /// Sends to `<address>@<relay>[:port]` over Epicbox. The listener or a drain finalizes and
   /// posts it when the answer arrives. Fails with `InvalidArgument`, storing nothing, for an
@@ -801,12 +1042,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// on it are acknowledged, within 30 seconds; messages not acknowledged by then stay with
   /// the relay and come again. A send in progress finishes on its own connection.
   void setEpicboxOverTor({required bool enabled});
-
-  /// Sets the address index of the invoice address, for example to the one the app kept
-  /// before the wallet was restored from its phrase, which does not record it. Messages to
-  /// the previous invoice address are no longer read. Fails with `InvalidArgument` for 0,
-  /// the payments address.
-  Future<void> setInvoiceAddressIndex({required int index});
 
   /// Says that [`EpicWallet::start_tor`] follows, so that a relay connection made before it,
   /// such as the listener's when the wallet opens, waits for tor instead of going directly.
@@ -941,12 +1176,12 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `validated_with_node` false.
   Future<WalletSummary> summary({required bool refresh});
 
-  /// Expires what invoices left unpaid; run it from time to time, for example after a drain.
-  /// Waiting and declined invoices received more than `expiry_secs` ago are deleted, and
-  /// invoices this wallet issued over Epicbox that long ago and not paid are cancelled, each
-  /// with an `InvoiceExpired` event. Payments of invoices whose time to live passed with the
-  /// transaction neither on chain nor in the node's pool are listed in `cancellable`,
-  /// unchanged.
+  /// Expires what invoices left unpaid; run it from time to time, for example after
+  /// collecting. Invoices from contacts received more than `expiry_secs` ago and still
+  /// waiting are deleted, and invoices this wallet issued that long ago and not paid are
+  /// cancelled, each with an `InvoiceExpired` event. Payments of invoices whose time to live
+  /// passed with the transaction neither on chain nor in the node's pool are listed in
+  /// `cancellable`, unchanged.
   ///
   /// `expiry_secs` defaults to a day and may be at most two days. Fails with
   /// `InvalidArgument` for 0 or more than two days, `NodeUnreachable` when a payment past its

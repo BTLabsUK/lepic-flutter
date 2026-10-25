@@ -221,6 +221,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool dco_decode_box_autoadd_bool(dynamic raw);
 
   @protected
+  ContactKind dco_decode_box_autoadd_contact_kind(dynamic raw);
+
+  @protected
   HttpExposure dco_decode_box_autoadd_http_exposure(dynamic raw);
 
   @protected
@@ -239,6 +242,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   OutputCategory dco_decode_box_autoadd_output_category(dynamic raw);
 
   @protected
+  PairingFailureReason dco_decode_box_autoadd_pairing_failure_reason(
+    dynamic raw,
+  );
+
+  @protected
   ScanFound dco_decode_box_autoadd_scan_found(dynamic raw);
 
   @protected
@@ -249,6 +257,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SessionState dco_decode_box_autoadd_session_state(dynamic raw);
+
+  @protected
+  SlatePurpose dco_decode_box_autoadd_slate_purpose(dynamic raw);
 
   @protected
   TorFailureKind dco_decode_box_autoadd_tor_failure_kind(dynamic raw);
@@ -287,6 +298,27 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ChainCheck dco_decode_chain_check(dynamic raw);
 
   @protected
+  CollectTrigger dco_decode_collect_trigger(dynamic raw);
+
+  @protected
+  ContactCollectReport dco_decode_contact_collect_report(dynamic raw);
+
+  @protected
+  ContactImportSummary dco_decode_contact_import_summary(dynamic raw);
+
+  @protected
+  ContactInvoiceView dco_decode_contact_invoice_view(dynamic raw);
+
+  @protected
+  ContactKind dco_decode_contact_kind(dynamic raw);
+
+  @protected
+  ContactRelayMode dco_decode_contact_relay_mode(dynamic raw);
+
+  @protected
+  ContactView dco_decode_contact_view(dynamic raw);
+
+  @protected
   FeeEstimate dco_decode_fee_estimate(dynamic raw);
 
   @protected
@@ -294,6 +326,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   FoundDuring dco_decode_found_during(dynamic raw);
+
+  @protected
+  FoundInvite dco_decode_found_invite(dynamic raw);
 
   @protected
   HttpExposure dco_decode_http_exposure(dynamic raw);
@@ -332,13 +367,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   InboxReport dco_decode_inbox_report(dynamic raw);
 
   @protected
-  IncomingInvoice dco_decode_incoming_invoice(dynamic raw);
+  InviteExpiry dco_decode_invite_expiry(dynamic raw);
 
   @protected
-  InvoiceReport dco_decode_invoice_report(dynamic raw);
-
-  @protected
-  InvoiceSender dco_decode_invoice_sender(dynamic raw);
+  InvitePreview dco_decode_invite_preview(dynamic raw);
 
   @protected
   InvoiceSweep dco_decode_invoice_sweep(dynamic raw);
@@ -350,6 +382,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   IssuedInvoice dco_decode_issued_invoice(dynamic raw);
 
   @protected
+  KeysDecision dco_decode_keys_decision(dynamic raw);
+
+  @protected
   LegacyImport dco_decode_legacy_import(dynamic raw);
 
   @protected
@@ -359,16 +394,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<String> dco_decode_list_String(dynamic raw);
 
   @protected
-  List<IncomingInvoice> dco_decode_list_incoming_invoice(dynamic raw);
+  List<ContactInvoiceView> dco_decode_list_contact_invoice_view(dynamic raw);
 
   @protected
-  List<InvoiceSender> dco_decode_list_invoice_sender(dynamic raw);
+  List<ContactView> dco_decode_list_contact_view(dynamic raw);
 
   @protected
   List<LogField> dco_decode_list_log_field(dynamic raw);
 
   @protected
   List<OnionRoute> dco_decode_list_onion_route(dynamic raw);
+
+  @protected
+  List<OutboxEntryView> dco_decode_list_outbox_entry_view(dynamic raw);
+
+  @protected
+  List<PendingPairingView> dco_decode_list_pending_pairing_view(dynamic raw);
 
   @protected
   Uint32List dco_decode_list_prim_u_32_strict(dynamic raw);
@@ -378,6 +419,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
+
+  @protected
+  List<SasEntry> dco_decode_list_sas_entry(dynamic raw);
 
   @protected
   List<SlateMessage> dco_decode_list_slate_message(dynamic raw);
@@ -416,6 +460,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool? dco_decode_opt_box_autoadd_bool(dynamic raw);
 
   @protected
+  ContactKind? dco_decode_opt_box_autoadd_contact_kind(dynamic raw);
+
+  @protected
   HttpExposure? dco_decode_opt_box_autoadd_http_exposure(dynamic raw);
 
   @protected
@@ -434,6 +481,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   OutputCategory? dco_decode_opt_box_autoadd_output_category(dynamic raw);
 
   @protected
+  PairingFailureReason? dco_decode_opt_box_autoadd_pairing_failure_reason(
+    dynamic raw,
+  );
+
+  @protected
   ScanFound? dco_decode_opt_box_autoadd_scan_found(dynamic raw);
 
   @protected
@@ -444,6 +496,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SessionState? dco_decode_opt_box_autoadd_session_state(dynamic raw);
+
+  @protected
+  SlatePurpose? dco_decode_opt_box_autoadd_slate_purpose(dynamic raw);
 
   @protected
   TorFailureKind? dco_decode_opt_box_autoadd_tor_failure_kind(dynamic raw);
@@ -475,6 +530,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   WalletSummary? dco_decode_opt_box_autoadd_wallet_summary(dynamic raw);
 
   @protected
+  OutboxEntryView dco_decode_outbox_entry_view(dynamic raw);
+
+  @protected
+  OutboxReport dco_decode_outbox_report(dynamic raw);
+
+  @protected
+  OutboxState dco_decode_outbox_state(dynamic raw);
+
+  @protected
   OutputCategory dco_decode_output_category(dynamic raw);
 
   @protected
@@ -484,7 +548,28 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PaidInvoice dco_decode_paid_invoice(dynamic raw);
 
   @protected
-  PeerCapability dco_decode_peer_capability(dynamic raw);
+  PairingAnswer dco_decode_pairing_answer(dynamic raw);
+
+  @protected
+  PairingCard dco_decode_pairing_card(dynamic raw);
+
+  @protected
+  PairingFailureReason dco_decode_pairing_failure_reason(dynamic raw);
+
+  @protected
+  PairingInvite dco_decode_pairing_invite(dynamic raw);
+
+  @protected
+  PairingLinkOutcome dco_decode_pairing_link_outcome(dynamic raw);
+
+  @protected
+  PairingLinkResult dco_decode_pairing_link_result(dynamic raw);
+
+  @protected
+  PairingState dco_decode_pairing_state(dynamic raw);
+
+  @protected
+  PendingPairingView dco_decode_pending_pairing_view(dynamic raw);
 
   @protected
   PinWallet dco_decode_pin_wallet(dynamic raw);
@@ -499,6 +584,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RefreshProgress dco_decode_refresh_progress(dynamic raw);
 
   @protected
+  SasDecision dco_decode_sas_decision(dynamic raw);
+
+  @protected
+  SasEntry dco_decode_sas_entry(dynamic raw);
+
+  @protected
   ScanFound dco_decode_scan_found(dynamic raw);
 
   @protected
@@ -506,6 +597,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ScanResult dco_decode_scan_result(dynamic raw);
+
+  @protected
+  SealState dco_decode_seal_state(dynamic raw);
+
+  @protected
+  SealedAnswer dco_decode_sealed_answer(dynamic raw);
+
+  @protected
+  SealedSlateView dco_decode_sealed_slate_view(dynamic raw);
 
   @protected
   SecretReply dco_decode_secret_reply(dynamic raw);
@@ -533,6 +633,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SlateMessage dco_decode_slate_message(dynamic raw);
+
+  @protected
+  SlatePurpose dco_decode_slate_purpose(dynamic raw);
 
   @protected
   SlateRole dco_decode_slate_role(dynamic raw);
@@ -776,6 +879,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool sse_decode_box_autoadd_bool(SseDeserializer deserializer);
 
   @protected
+  ContactKind sse_decode_box_autoadd_contact_kind(SseDeserializer deserializer);
+
+  @protected
   HttpExposure sse_decode_box_autoadd_http_exposure(
     SseDeserializer deserializer,
   );
@@ -800,6 +906,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  PairingFailureReason sse_decode_box_autoadd_pairing_failure_reason(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ScanFound sse_decode_box_autoadd_scan_found(SseDeserializer deserializer);
 
   @protected
@@ -810,6 +921,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SessionState sse_decode_box_autoadd_session_state(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  SlatePurpose sse_decode_box_autoadd_slate_purpose(
     SseDeserializer deserializer,
   );
 
@@ -860,6 +976,33 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ChainCheck sse_decode_chain_check(SseDeserializer deserializer);
 
   @protected
+  CollectTrigger sse_decode_collect_trigger(SseDeserializer deserializer);
+
+  @protected
+  ContactCollectReport sse_decode_contact_collect_report(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ContactImportSummary sse_decode_contact_import_summary(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ContactInvoiceView sse_decode_contact_invoice_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ContactKind sse_decode_contact_kind(SseDeserializer deserializer);
+
+  @protected
+  ContactRelayMode sse_decode_contact_relay_mode(SseDeserializer deserializer);
+
+  @protected
+  ContactView sse_decode_contact_view(SseDeserializer deserializer);
+
+  @protected
   FeeEstimate sse_decode_fee_estimate(SseDeserializer deserializer);
 
   @protected
@@ -867,6 +1010,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   FoundDuring sse_decode_found_during(SseDeserializer deserializer);
+
+  @protected
+  FoundInvite sse_decode_found_invite(SseDeserializer deserializer);
 
   @protected
   HttpExposure sse_decode_http_exposure(SseDeserializer deserializer);
@@ -909,13 +1055,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   InboxReport sse_decode_inbox_report(SseDeserializer deserializer);
 
   @protected
-  IncomingInvoice sse_decode_incoming_invoice(SseDeserializer deserializer);
+  InviteExpiry sse_decode_invite_expiry(SseDeserializer deserializer);
 
   @protected
-  InvoiceReport sse_decode_invoice_report(SseDeserializer deserializer);
-
-  @protected
-  InvoiceSender sse_decode_invoice_sender(SseDeserializer deserializer);
+  InvitePreview sse_decode_invite_preview(SseDeserializer deserializer);
 
   @protected
   InvoiceSweep sse_decode_invoice_sweep(SseDeserializer deserializer);
@@ -925,6 +1068,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   IssuedInvoice sse_decode_issued_invoice(SseDeserializer deserializer);
+
+  @protected
+  KeysDecision sse_decode_keys_decision(SseDeserializer deserializer);
 
   @protected
   LegacyImport sse_decode_legacy_import(SseDeserializer deserializer);
@@ -938,20 +1084,28 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<String> sse_decode_list_String(SseDeserializer deserializer);
 
   @protected
-  List<IncomingInvoice> sse_decode_list_incoming_invoice(
+  List<ContactInvoiceView> sse_decode_list_contact_invoice_view(
     SseDeserializer deserializer,
   );
 
   @protected
-  List<InvoiceSender> sse_decode_list_invoice_sender(
-    SseDeserializer deserializer,
-  );
+  List<ContactView> sse_decode_list_contact_view(SseDeserializer deserializer);
 
   @protected
   List<LogField> sse_decode_list_log_field(SseDeserializer deserializer);
 
   @protected
   List<OnionRoute> sse_decode_list_onion_route(SseDeserializer deserializer);
+
+  @protected
+  List<OutboxEntryView> sse_decode_list_outbox_entry_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<PendingPairingView> sse_decode_list_pending_pairing_view(
+    SseDeserializer deserializer,
+  );
 
   @protected
   Uint32List sse_decode_list_prim_u_32_strict(SseDeserializer deserializer);
@@ -961,6 +1115,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
+
+  @protected
+  List<SasEntry> sse_decode_list_sas_entry(SseDeserializer deserializer);
 
   @protected
   List<SlateMessage> sse_decode_list_slate_message(
@@ -1007,6 +1164,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool? sse_decode_opt_box_autoadd_bool(SseDeserializer deserializer);
 
   @protected
+  ContactKind? sse_decode_opt_box_autoadd_contact_kind(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   HttpExposure? sse_decode_opt_box_autoadd_http_exposure(
     SseDeserializer deserializer,
   );
@@ -1035,6 +1197,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  PairingFailureReason? sse_decode_opt_box_autoadd_pairing_failure_reason(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ScanFound? sse_decode_opt_box_autoadd_scan_found(
     SseDeserializer deserializer,
   );
@@ -1051,6 +1218,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SessionState? sse_decode_opt_box_autoadd_session_state(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  SlatePurpose? sse_decode_opt_box_autoadd_slate_purpose(
     SseDeserializer deserializer,
   );
 
@@ -1090,6 +1262,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  OutboxEntryView sse_decode_outbox_entry_view(SseDeserializer deserializer);
+
+  @protected
+  OutboxReport sse_decode_outbox_report(SseDeserializer deserializer);
+
+  @protected
+  OutboxState sse_decode_outbox_state(SseDeserializer deserializer);
+
+  @protected
   OutputCategory sse_decode_output_category(SseDeserializer deserializer);
 
   @protected
@@ -1099,7 +1280,36 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PaidInvoice sse_decode_paid_invoice(SseDeserializer deserializer);
 
   @protected
-  PeerCapability sse_decode_peer_capability(SseDeserializer deserializer);
+  PairingAnswer sse_decode_pairing_answer(SseDeserializer deserializer);
+
+  @protected
+  PairingCard sse_decode_pairing_card(SseDeserializer deserializer);
+
+  @protected
+  PairingFailureReason sse_decode_pairing_failure_reason(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  PairingInvite sse_decode_pairing_invite(SseDeserializer deserializer);
+
+  @protected
+  PairingLinkOutcome sse_decode_pairing_link_outcome(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  PairingLinkResult sse_decode_pairing_link_result(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  PairingState sse_decode_pairing_state(SseDeserializer deserializer);
+
+  @protected
+  PendingPairingView sse_decode_pending_pairing_view(
+    SseDeserializer deserializer,
+  );
 
   @protected
   PinWallet sse_decode_pin_wallet(SseDeserializer deserializer);
@@ -1114,6 +1324,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RefreshProgress sse_decode_refresh_progress(SseDeserializer deserializer);
 
   @protected
+  SasDecision sse_decode_sas_decision(SseDeserializer deserializer);
+
+  @protected
+  SasEntry sse_decode_sas_entry(SseDeserializer deserializer);
+
+  @protected
   ScanFound sse_decode_scan_found(SseDeserializer deserializer);
 
   @protected
@@ -1121,6 +1337,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ScanResult sse_decode_scan_result(SseDeserializer deserializer);
+
+  @protected
+  SealState sse_decode_seal_state(SseDeserializer deserializer);
+
+  @protected
+  SealedAnswer sse_decode_sealed_answer(SseDeserializer deserializer);
+
+  @protected
+  SealedSlateView sse_decode_sealed_slate_view(SseDeserializer deserializer);
 
   @protected
   SecretReply sse_decode_secret_reply(SseDeserializer deserializer);
@@ -1148,6 +1373,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SlateMessage sse_decode_slate_message(SseDeserializer deserializer);
+
+  @protected
+  SlatePurpose sse_decode_slate_purpose(SseDeserializer deserializer);
 
   @protected
   SlateRole sse_decode_slate_role(SseDeserializer deserializer);
@@ -1437,6 +1665,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_box_autoadd_bool(bool self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_contact_kind(
+    ContactKind self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_http_exposure(
     HttpExposure self,
     SseSerializer serializer,
@@ -1473,6 +1707,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_pairing_failure_reason(
+    PairingFailureReason self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_scan_found(
     ScanFound self,
     SseSerializer serializer,
@@ -1493,6 +1733,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_session_state(
     SessionState self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_slate_purpose(
+    SlatePurpose self,
     SseSerializer serializer,
   );
 
@@ -1551,6 +1797,42 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_chain_check(ChainCheck self, SseSerializer serializer);
 
   @protected
+  void sse_encode_collect_trigger(
+    CollectTrigger self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_contact_collect_report(
+    ContactCollectReport self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_contact_import_summary(
+    ContactImportSummary self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_contact_invoice_view(
+    ContactInvoiceView self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_contact_kind(ContactKind self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_contact_relay_mode(
+    ContactRelayMode self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_contact_view(ContactView self, SseSerializer serializer);
+
+  @protected
   void sse_encode_fee_estimate(FeeEstimate self, SseSerializer serializer);
 
   @protected
@@ -1558,6 +1840,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_found_during(FoundDuring self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_found_invite(FoundInvite self, SseSerializer serializer);
 
   @protected
   void sse_encode_http_exposure(HttpExposure self, SseSerializer serializer);
@@ -1608,16 +1893,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_inbox_report(InboxReport self, SseSerializer serializer);
 
   @protected
-  void sse_encode_incoming_invoice(
-    IncomingInvoice self,
-    SseSerializer serializer,
-  );
+  void sse_encode_invite_expiry(InviteExpiry self, SseSerializer serializer);
 
   @protected
-  void sse_encode_invoice_report(InvoiceReport self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_invoice_sender(InvoiceSender self, SseSerializer serializer);
+  void sse_encode_invite_preview(InvitePreview self, SseSerializer serializer);
 
   @protected
   void sse_encode_invoice_sweep(InvoiceSweep self, SseSerializer serializer);
@@ -1627,6 +1906,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_issued_invoice(IssuedInvoice self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_keys_decision(KeysDecision self, SseSerializer serializer);
 
   @protected
   void sse_encode_legacy_import(LegacyImport self, SseSerializer serializer);
@@ -1641,14 +1923,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_list_String(List<String> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_incoming_invoice(
-    List<IncomingInvoice> self,
+  void sse_encode_list_contact_invoice_view(
+    List<ContactInvoiceView> self,
     SseSerializer serializer,
   );
 
   @protected
-  void sse_encode_list_invoice_sender(
-    List<InvoiceSender> self,
+  void sse_encode_list_contact_view(
+    List<ContactView> self,
     SseSerializer serializer,
   );
 
@@ -1658,6 +1940,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_onion_route(
     List<OnionRoute> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_outbox_entry_view(
+    List<OutboxEntryView> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_pending_pairing_view(
+    List<PendingPairingView> self,
     SseSerializer serializer,
   );
 
@@ -1675,6 +1969,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     Uint8List self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_list_sas_entry(List<SasEntry> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_slate_message(
@@ -1725,6 +2022,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_opt_box_autoadd_bool(bool? self, SseSerializer serializer);
 
   @protected
+  void sse_encode_opt_box_autoadd_contact_kind(
+    ContactKind? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_http_exposure(
     HttpExposure? self,
     SseSerializer serializer,
@@ -1761,6 +2064,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_opt_box_autoadd_pairing_failure_reason(
+    PairingFailureReason? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_scan_found(
     ScanFound? self,
     SseSerializer serializer,
@@ -1781,6 +2090,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_session_state(
     SessionState? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_slate_purpose(
+    SlatePurpose? self,
     SseSerializer serializer,
   );
 
@@ -1827,6 +2142,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_outbox_entry_view(
+    OutboxEntryView self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_outbox_report(OutboxReport self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_outbox_state(OutboxState self, SseSerializer serializer);
+
+  @protected
   void sse_encode_output_category(
     OutputCategory self,
     SseSerializer serializer,
@@ -1839,8 +2166,38 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_paid_invoice(PaidInvoice self, SseSerializer serializer);
 
   @protected
-  void sse_encode_peer_capability(
-    PeerCapability self,
+  void sse_encode_pairing_answer(PairingAnswer self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_pairing_card(PairingCard self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_pairing_failure_reason(
+    PairingFailureReason self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_pairing_invite(PairingInvite self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_pairing_link_outcome(
+    PairingLinkOutcome self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_pairing_link_result(
+    PairingLinkResult self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_pairing_state(PairingState self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_pending_pairing_view(
+    PendingPairingView self,
     SseSerializer serializer,
   );
 
@@ -1860,6 +2217,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_sas_decision(SasDecision self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_sas_entry(SasEntry self, SseSerializer serializer);
+
+  @protected
   void sse_encode_scan_found(ScanFound self, SseSerializer serializer);
 
   @protected
@@ -1867,6 +2230,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_scan_result(ScanResult self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_seal_state(SealState self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_sealed_answer(SealedAnswer self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_sealed_slate_view(
+    SealedSlateView self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_secret_reply(SecretReply self, SseSerializer serializer);
@@ -1897,6 +2272,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_slate_message(SlateMessage self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_slate_purpose(SlatePurpose self, SseSerializer serializer);
 
   @protected
   void sse_encode_slate_role(SlateRole self, SseSerializer serializer);
