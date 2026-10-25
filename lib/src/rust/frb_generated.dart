@@ -7603,8 +7603,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ContactView dco_decode_contact_view(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 14)
-      throw Exception('unexpected arr length: expect 14 but see ${arr.length}');
+    if (arr.length != 15)
+      throw Exception('unexpected arr length: expect 15 but see ${arr.length}');
     return ContactView(
       contactId: dco_decode_String(arr[0]),
       label: dco_decode_String(arr[1]),
@@ -7619,7 +7619,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       homeRelay: dco_decode_opt_String(arr[10]),
       importedFromBackup: dco_decode_bool(arr[11]),
       lapsed: dco_decode_bool(arr[12]),
-      createdAtMs: dco_decode_i_64(arr[13]),
+      lastSealedInMs: dco_decode_opt_box_autoadd_i_64(arr[13]),
+      createdAtMs: dco_decode_i_64(arr[14]),
     );
   }
 
@@ -9540,6 +9541,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_homeRelay = sse_decode_opt_String(deserializer);
     var var_importedFromBackup = sse_decode_bool(deserializer);
     var var_lapsed = sse_decode_bool(deserializer);
+    var var_lastSealedInMs = sse_decode_opt_box_autoadd_i_64(deserializer);
     var var_createdAtMs = sse_decode_i_64(deserializer);
     return ContactView(
       contactId: var_contactId,
@@ -9555,6 +9557,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       homeRelay: var_homeRelay,
       importedFromBackup: var_importedFromBackup,
       lapsed: var_lapsed,
+      lastSealedInMs: var_lastSealedInMs,
       createdAtMs: var_createdAtMs,
     );
   }
@@ -11974,6 +11977,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_String(self.homeRelay, serializer);
     sse_encode_bool(self.importedFromBackup, serializer);
     sse_encode_bool(self.lapsed, serializer);
+    sse_encode_opt_box_autoadd_i_64(self.lastSealedInMs, serializer);
     sse_encode_i_64(self.createdAtMs, serializer);
   }
 

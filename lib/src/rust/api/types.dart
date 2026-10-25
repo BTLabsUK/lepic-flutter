@@ -231,6 +231,11 @@ class ContactView {
   /// Nothing sealed from the contact opened for 90 days: warn before a sealed send that the
   /// contact needs LEPIC to open it.
   final bool lapsed;
+
+  /// When an envelope from the contact was last opened (Unix milliseconds), if ever: of the
+  /// pairings attached to one address-book contact, the one heard from last is the one the
+  /// contact still uses.
+  final PlatformInt64? lastSealedInMs;
   final PlatformInt64 createdAtMs;
 
   const ContactView({
@@ -247,6 +252,7 @@ class ContactView {
     this.homeRelay,
     required this.importedFromBackup,
     required this.lapsed,
+    this.lastSealedInMs,
     required this.createdAtMs,
   });
 
@@ -265,6 +271,7 @@ class ContactView {
       homeRelay.hashCode ^
       importedFromBackup.hashCode ^
       lapsed.hashCode ^
+      lastSealedInMs.hashCode ^
       createdAtMs.hashCode;
 
   @override
@@ -285,6 +292,7 @@ class ContactView {
           homeRelay == other.homeRelay &&
           importedFromBackup == other.importedFromBackup &&
           lapsed == other.lapsed &&
+          lastSealedInMs == other.lastSealedInMs &&
           createdAtMs == other.createdAtMs;
 }
 
