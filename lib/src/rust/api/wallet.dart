@@ -90,23 +90,32 @@ Future<void> deleteWallet({
 
 /// Gives the wallet in `config.data_dir` a new vault in `store`, sealed under `new_password`,
 /// for a user who forgot the password: the seed of `mnemonic` is stored, once the database
-/// shows the phrase is this wallet's. The database, with its transaction history, labels and
+/// proves the phrase is this wallet's. The database, with its transaction history, labels and
 /// outputs, is kept as it is; no scan is needed. The PIN key and failure count are removed, as
 /// [`delete_wallet`] removes them, so a wallet from [`EpicWallet::create_with_pin`] opens with
-/// `new_password` afterwards; drop its sealed password. Call it with the wallet closed.
+/// `new_password` afterwards; drop its sealed password. Call it with the wallet closed. It
+/// needs no node: the node settings of `config` are not used.
 ///
-/// The new vault is written and read back as `lepic.vault-next` before it replaces
-/// `lepic.vault`, as [`EpicWallet::change_password`] describes, so the store never lacks a
-/// vault that opens: if the app stops part way, the old password or the new one opens the
-/// wallet, and calling this again finishes the reset.
+/// The phrase is proven by the seed check every open of this version stores in the database,
+/// never by the fingerprint alone, which [`wallet_fingerprint`] says only identifies. A
+/// database no open of this version has seen is proven by one of its outputs instead, and
+/// stores the seed check then; one with no output proves nothing, and is refused.
+///
+/// The PIN key is removed first, then the new vault is written and read back as
+/// `lepic.vault-next` before it replaces `lepic.vault`, as [`EpicWallet::change_password`]
+/// describes, so the store never lacks a vault that opens: if the app stops part way, the old
+/// password or the new one opens the wallet, without the PIN, and calling this again finishes
+/// the reset.
 ///
 /// Fails, with nothing changed, with `InvalidArgument` when `new_password` has fewer than eight
 /// characters, `InvalidMnemonic`, `PhraseMismatch` when the database belongs to another seed,
 /// `ForeignWallet` when it belongs to another chain, `WalletNotFound` when the directory holds
-/// no database a wallet has used (nothing to check the phrase against: delete the wallet with
-/// [`delete_wallet`] and restore it), `WalletBusy` while a wallet on the directory is open in
-/// any runtime, and `DamagedDatabase` as [`EpicWallet::open`] does; with `SecretStore` when the
-/// store fails while the vault is replaced, which leaves the old or the new password working.
+/// no database a wallet has used, or one that holds nothing to prove the phrase by (delete the
+/// wallet with [`delete_wallet`] and restore it), `WalletBusy` while a wallet on the directory
+/// is open in any runtime, and `DamagedDatabase` when the database is damaged, which, unlike
+/// [`EpicWallet::open`], leaves it where it is. A database of an older schema is migrated, as
+/// an open would. Fails with `SecretStore` when the store fails while the PIN key or the vault
+/// is replaced, which leaves the old or the new password working.
 Future<void> resetPassword({
   required LepicRuntime runtime,
   required WalletConfig config,
@@ -123,9 +132,12 @@ Future<void> resetPassword({
 
 /// The fingerprint of the wallet of `mnemonic` on `chain`: the value its database stores and
 /// [`EpicWallet::fingerprint`] returns, as lowercase hex. It tells whether a phrase belongs to
-/// a wallet the app already has without opening it. It is no secret, but it identifies the
-/// wallet, so keep it with the wallet's other data, not in logs. Case and extra whitespace are
-/// ignored; fails with `InvalidMnemonic`.
+/// a wallet the app already has without opening it. It does not depend on `chain`: a phrase
+/// has the same fingerprint on every chain, so compare the chain and the fingerprint. It
+/// identifies a wallet, never authenticates a phrase: being 32 bits, a phrase of another seed
+/// with the same fingerprint can be found; [`reset_password`] proves a phrase otherwise. It is
+/// no secret, but it identifies the wallet, so keep it with the wallet's other data, not in
+/// logs. Case and extra whitespace are ignored; fails with `InvalidMnemonic`.
 String walletFingerprint({required String mnemonic, required Chain chain}) =>
     RustLib.instance.api.crateApiWalletWalletFingerprint(
       mnemonic: mnemonic,
@@ -592,8 +604,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   Future<FinalizedTx> finalizeFile({required String path});
 
   /// The fingerprint of the wallet's seed that its database stores, as lowercase hex: the
-  /// value [`wallet_fingerprint`] gives for its recovery phrase. It is no secret, but it
-  /// identifies the wallet, so keep it with the wallet's other data, not in logs.
+  /// value [`wallet_fingerprint`] gives for its recovery phrase on any chain, so compare it
+  /// together with the chain. It identifies the wallet, never proves a phrase. It is no
+  /// secret, but keep it with the wallet's other data, not in logs.
   Future<String> fingerprint();
 
   /// The running HTTP listener, or `None`.

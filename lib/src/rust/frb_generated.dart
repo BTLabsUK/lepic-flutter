@@ -14119,8 +14119,9 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
       .crateApiWalletEpicWalletFinalizeFile(that: this, path: path);
 
   /// The fingerprint of the wallet's seed that its database stores, as lowercase hex: the
-  /// value [`wallet_fingerprint`] gives for its recovery phrase. It is no secret, but it
-  /// identifies the wallet, so keep it with the wallet's other data, not in logs.
+  /// value [`wallet_fingerprint`] gives for its recovery phrase on any chain, so compare it
+  /// together with the chain. It identifies the wallet, never proves a phrase. It is no
+  /// secret, but keep it with the wallet's other data, not in logs.
   Future<String> fingerprint() =>
       RustLib.instance.api.crateApiWalletEpicWalletFingerprint(that: this);
 
