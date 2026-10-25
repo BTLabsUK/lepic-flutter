@@ -137,6 +137,11 @@ class ContactInvoiceView {
 
   /// Unix seconds; advisory.
   final BigInt? expires;
+
+  /// The issuer's message, only when its signature verifies, with control characters,
+  /// bidirectional formatting and zero-width characters removed. Written by the contact;
+  /// show it as quoted text.
+  final String? message;
   final PlatformInt64 receivedAtMs;
 
   /// Other waiting invoices for the same amount from the same contact within 10 minutes:
@@ -150,6 +155,7 @@ class ContactInvoiceView {
     this.purpose,
     this.reference,
     this.expires,
+    this.message,
     required this.receivedAtMs,
     required this.sameAmount,
   });
@@ -162,6 +168,7 @@ class ContactInvoiceView {
       purpose.hashCode ^
       reference.hashCode ^
       expires.hashCode ^
+      message.hashCode ^
       receivedAtMs.hashCode ^
       sameAmount.hashCode;
 
@@ -176,6 +183,7 @@ class ContactInvoiceView {
           purpose == other.purpose &&
           reference == other.reference &&
           expires == other.expires &&
+          message == other.message &&
           receivedAtMs == other.receivedAtMs &&
           sameAmount == other.sameAmount;
 }
@@ -1501,6 +1509,11 @@ class SealedSlateView {
   /// Unix seconds; advisory.
   final BigInt? expires;
 
+  /// The messages whose signatures verify, in the order the participants joined, as
+  /// `TransactionDetails.messages` shows them: control characters, bidirectional formatting
+  /// and zero-width characters removed. Written by the other side; show them as quoted text.
+  final List<SlateMessage> messages;
+
   const SealedSlateView({
     this.contactId,
     required this.stage,
@@ -1510,6 +1523,7 @@ class SealedSlateView {
     this.purpose,
     this.reference,
     this.expires,
+    required this.messages,
   });
 
   @override
@@ -1521,7 +1535,8 @@ class SealedSlateView {
       fee.hashCode ^
       purpose.hashCode ^
       reference.hashCode ^
-      expires.hashCode;
+      expires.hashCode ^
+      messages.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1535,7 +1550,8 @@ class SealedSlateView {
           fee == other.fee &&
           purpose == other.purpose &&
           reference == other.reference &&
-          expires == other.expires;
+          expires == other.expires &&
+          messages == other.messages;
 }
 
 /// How a send chooses the outputs it spends, as `epic-wallet send --selection_strategy`.
@@ -2145,6 +2161,9 @@ class WalletEvent {
   /// Unix seconds; advisory.
   final BigInt? expires;
 
+  /// For `InvoiceFromContact`, the issuer's message as `ContactInvoiceView.message` gives it.
+  final String? message;
+
   const WalletEvent({
     required this.kind,
     this.session,
@@ -2170,6 +2189,7 @@ class WalletEvent {
     this.purpose,
     this.reference,
     this.expires,
+    this.message,
   });
 
   @override
@@ -2197,7 +2217,8 @@ class WalletEvent {
       relay.hashCode ^
       purpose.hashCode ^
       reference.hashCode ^
-      expires.hashCode;
+      expires.hashCode ^
+      message.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2227,7 +2248,8 @@ class WalletEvent {
           relay == other.relay &&
           purpose == other.purpose &&
           reference == other.reference &&
-          expires == other.expires;
+          expires == other.expires &&
+          message == other.message;
 }
 
 enum WalletEventKind {
@@ -2347,7 +2369,7 @@ enum WalletEventKind {
 
   /// A verified contact that may send invoices sent one; it waits in `contact_invoices`:
   /// `contact_id`, `slate_id`, `amount` and, when the contact gave them, `purpose`,
-  /// `reference` and `expires` are set. Nothing was paid.
+  /// `reference`, `expires` and `message` are set. Nothing was paid.
   invoiceFromContact,
 
   /// A contact's withdrawal arrived and was received; the answer is queued for the contact:
