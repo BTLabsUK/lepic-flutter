@@ -32,7 +32,9 @@ bool validateEpicboxAddress({required String address, required Chain chain}) =>
 
 /// What the V2 or V3 slate text `json` says, read as [`EpicWallet::receive_slate`] and
 /// [`EpicWallet::finalize_and_post`] read it, without a wallet and without checking signatures.
-/// `chain` sets the minimum fee a slate must pay. Fails with `InvalidSlate`.
+/// `chain` sets the minimum fee a slate must pay. Route a slate file by its `stage`: an S1 to
+/// `receive_slate`, an I1 to `pay_invoice_slate` after the user approved it, an S2 or I2 to
+/// `finalize_and_post`. Fails with `InvalidSlate`.
 Future<SlateInfo> inspectSlate({required String json, required Chain chain}) =>
     RustLib.instance.api.crateApiWalletInspectSlate(json: json, chain: chain);
 
@@ -497,9 +499,18 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   void expectTor();
 
-  /// Sender side: finalizes the recipient's answer and posts the transaction to the node.
-  /// Fails with `NotPosted` when it was finalized but the node did not accept it; post it
-  /// again with [`EpicWallet::repost_transaction`].
+  /// Sender or issuer side: finalizes the answer and posts the transaction to the node. The
+  /// answer is the recipient's S2 of a send this wallet made, or the payer's I2 of an invoice
+  /// this wallet issued; the stage decides. An I2 finalizes only an invoice this wallet
+  /// issued and still waits for, for the amount and outputs it asked: `InvalidSlate` for a
+  /// slate id it did not issue or a signature that does not verify, `InvoiceChanged` for a
+  /// payment that changed the invoice, `InvoiceAlreadyPaid` when another I2 finalized it,
+  /// `InvalidArgument` for a withdrawn or expired invoice, and `PaymentExpired` past the
+  /// time to live the payer set.
+  ///
+  /// Finalizing the same answer again returns the stored result. Fails with `NotPosted` when
+  /// it was finalized but the node did not accept it; post it again with
+  /// [`EpicWallet::repost_transaction`].
   Future<FinalizedTx> finalizeAndPost({required String slateJson});
 
   /// [`EpicWallet::finalize_and_post`] for the answer file at `path`.
@@ -570,6 +581,27 @@ abstract class EpicWallet implements RustOpaqueInterface {
     seedPassword: seedPassword,
     pin: pin,
   );
+
+  /// [`EpicWallet::issue_invoice_slate`] writing the I1 to the file at `path`. Fails with
+  /// `NotDelivered` when the file cannot be written; the invoice is stored then, and
+  /// `cancel_transaction` withdraws it.
+  Future<IssuedInvoice> issueInvoiceFile({
+    required BigInt amount,
+    required String path,
+    String? message,
+  });
+
+  /// Issuer side: issues an invoice for `amount`, what this wallet receives, and returns the
+  /// I1 text for the payer, whose answer goes to [`EpicWallet::finalize_and_post`]. The
+  /// invoice is stored as an incoming transaction waiting for payment;
+  /// `cancel_transaction` withdraws it and [`EpicWallet::sweep_invoices`] expires it unpaid.
+  ///
+  /// `message` goes to the payer signed with the invoice, cut to its first 256 bytes on a
+  /// character boundary.
+  ///
+  /// Fails with `InvalidArgument` for an amount of 0 and `NodeUnreachable` when the node's
+  /// tip cannot be read; nothing is stored then.
+  Future<Slate> issueInvoiceSlate({required BigInt amount, String? message});
 
   bool listenerRunning();
 
@@ -792,6 +824,39 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// The pairings in progress, oldest first: invites waiting for a reply and replies waiting
   /// for the confirmation, for Contacts › Pending.
   Future<List<PendingPairingView>> pairingsPending();
+
+  /// [`EpicWallet::pay_invoice_slate`] for the I1 file at `path`. The I2 is also written to
+  /// `<path>.response`, as `epic-wallet` names it. Fails with `TransportFailed` when the file
+  /// cannot be read, or when the response cannot be written; the payment is stored then, its
+  /// I2 is in `contact_plain_fallback(tx_id)` and `cancel_transaction` gives it up.
+  Future<PaidInvoiceSlate> payInvoiceFile({
+    required String path,
+    required BigInt amount,
+    required BigInt minimumConfirmations,
+    String? message,
+    SendOptions? options,
+  });
+
+  /// Payer side: pays the invoice in the I1 text `slate_json` and returns the I2 for the
+  /// issuer. Call it only after the user approved `amount`, which must be the invoiced amount;
+  /// the fee comes on top. `minimum_confirmations`, `message` and `options` are as in
+  /// `create_send_slate`. The inputs stay locked until the issuer posts the transaction or
+  /// the payment is cancelled with `cancel_transaction`.
+  ///
+  /// An I1 from LEPIC may carry a reply key: `sealed_answer_to_marker` with the I1 and the
+  /// returned I2 seals the answer to it.
+  ///
+  /// Fails with `InvalidSlate` for text that is not an I1 or whose message signature does not
+  /// verify, `AmountMismatch`, `InvoiceAlreadyPaid` for an invoice this wallet paid before,
+  /// `PaymentExpired` when the chain reached the invoice's time to live,
+  /// `InvoiceLockedAboveTip`, `NotEnoughFunds` and `NodeUnreachable`. Nothing is stored then.
+  Future<PaidInvoiceSlate> payInvoiceSlate({
+    required String slateJson,
+    required BigInt amount,
+    required BigInt minimumConfirmations,
+    String? message,
+    SendOptions? options,
+  });
 
   /// Signs a push registration for this wallet's Epicbox address, so a push service can tie
   /// the FCM `token` to it. LEPIC builds the text itself, `epic-push-v1`, `action`, the
@@ -1185,10 +1250,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// Expires what invoices left unpaid; run it from time to time, for example after
   /// collecting. Invoices from contacts received more than `expiry_secs` ago and still
-  /// waiting are deleted, and invoices this wallet issued that long ago and not paid are
-  /// cancelled, each with an `InvoiceExpired` event. Payments of invoices whose time to live
-  /// passed with the transaction neither on chain nor in the node's pool are listed in
-  /// `cancellable`, unchanged.
+  /// waiting are deleted, and invoices this wallet issued that long ago, to a contact or by
+  /// file, and not paid are cancelled, each with an `InvoiceExpired` event. Payments of
+  /// invoices whose time to live passed with the transaction neither on chain nor in the
+  /// node's pool are listed in `cancellable`, unchanged.
   ///
   /// `expiry_secs` defaults to a day and may be at most two days. Fails with
   /// `InvalidArgument` for 0 or more than two days, `NodeUnreachable` when a payment past its

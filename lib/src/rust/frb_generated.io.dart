@@ -552,6 +552,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PaidInvoice dco_decode_paid_invoice(dynamic raw);
 
   @protected
+  PaidInvoiceSlate dco_decode_paid_invoice_slate(dynamic raw);
+
+  @protected
   PairingAnswer dco_decode_pairing_answer(dynamic raw);
 
   @protected
@@ -1290,6 +1293,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PaidInvoice sse_decode_paid_invoice(SseDeserializer deserializer);
+
+  @protected
+  PaidInvoiceSlate sse_decode_paid_invoice_slate(SseDeserializer deserializer);
 
   @protected
   PairingAnswer sse_decode_pairing_answer(SseDeserializer deserializer);
@@ -2185,6 +2191,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_paid_invoice(PaidInvoice self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_paid_invoice_slate(
+    PaidInvoiceSlate self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_pairing_answer(PairingAnswer self, SseSerializer serializer);
