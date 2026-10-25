@@ -188,7 +188,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// Attaches a pairing to the app's address-book entry `app_contact`, an id the app
   /// chooses, or detaches it with `None`. Attaching a new pairing to an entry that has one
-  /// already is when to offer [`EpicWallet::contact_key_check`]. Fails with
+  /// already is when to offer [`EpicWallet::contact_key_check`]. The id is at most 256 bytes
+  /// with no control characters. Fails with `InvalidContactName` for another id and with
   /// `ContactNotFound`.
   Future<void> contactAttach({required String contactId, String? appContact});
 
@@ -248,10 +249,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// The messages for a contact in the outbox, by id, for the payment timeline.
   Future<List<OutboxEntryView>> contactOutbox({required String contactId});
 
-  /// "Send again": posts the outbox entry `id` once more, whatever its state. The contact
-  /// treats a repeat as the same message.
+  /// "Send again": posts the outbox entry `id` once more, delivered or stuck, while its
+  /// payment still waits for the contact. The contact treats a repeat as the same message.
   ///
-  /// Fails with `NoSlateToSend` for an id the outbox does not hold, `ContactsOffline` or
+  /// Fails with `NoSlateToSend` for an id the outbox does not hold or whose transaction
+  /// finished, was cancelled or expired, `ContactsOffline` or
   /// `EpicboxOff`, and `TransportFailed` when the relay fails.
   Future<void> contactOutboxResend({
     required BigInt id,
@@ -318,7 +320,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required bool allow,
   });
 
-  /// Sets the user's own name for a contact. Fails with `ContactNotFound`.
+  /// Sets the user's own name for a contact; an empty label clears it. A label follows the
+  /// rule of card names: at most 48 bytes, no control or hidden formatting characters. Fails
+  /// with `InvalidContactName` for another label and with `ContactNotFound`.
   Future<void> contactSetLabel({
     required String contactId,
     required String label,
@@ -354,8 +358,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// same keys, mailboxes and trust, marked as possibly living on another device too.
   /// Pairings this wallet holds already are kept as they are.
   ///
-  /// Fails with `InvalidArgument` or `Io` for a document this build cannot read or that is
-  /// for the other network; nothing is imported then.
+  /// Fails with `InvalidArgument` for a document over 32 MiB, and with `InvalidArgument` or
+  /// `Io` for a document this build cannot read or that is for the other network; nothing is
+  /// imported then. A pairing whose keys this wallet's seed does not derive is skipped as a
+  /// conflict.
   Future<ContactImportSummary> contactsImport({required String document});
 
   /// Posts every outbox entry that is due, raising `OutboxDelivered` for each that reached
@@ -723,8 +729,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   ///
   /// With `offer_words` the invite lasts 10 minutes and is also posted under five pairing
   /// words, returned in `words`, for the other side to type; that needs `Online` and fails
-  /// with `PairingWordsUnavailable` unless the wallet's relay is a built-in one, and with
-  /// `TransportFailed` when the post fails, the invite staying pending until it expires.
+  /// with `ContactsOffline` or `EpicboxOff` before anything is stored, with
+  /// `PairingWordsUnavailable` unless the wallet's relay is a built-in one, and with
+  /// `TransportFailed` when the post fails, the invite then withdrawn.
   ///
   /// Fails with `InvalidContactName` for a `name` a card cannot carry, and with `Io` when 64
   /// pairings are pending.
