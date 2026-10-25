@@ -1232,6 +1232,12 @@ class TransactionDetails {
   /// Empty when the wallet stores none, as for a cancelled send.
   final List<String> outputCommits;
 
+  /// For a payment received over Epicbox that still waits for its sender: when the sender
+  /// reported that it posted the transaction (`PaymentPosted`), while that report is under an
+  /// hour old. Advisory: show it as the sender's report, never as received; the payment
+  /// confirms when a refresh finds the kernel. `None` for every other transaction.
+  final PlatformInt64? senderReportedPostedAtMs;
+
   const TransactionDetails({
     required this.txId,
     required this.direction,
@@ -1256,6 +1262,7 @@ class TransactionDetails {
     this.imported,
     this.found,
     required this.outputCommits,
+    this.senderReportedPostedAtMs,
   });
 
   @override
@@ -1282,7 +1289,8 @@ class TransactionDetails {
       origin.hashCode ^
       imported.hashCode ^
       found.hashCode ^
-      outputCommits.hashCode;
+      outputCommits.hashCode ^
+      senderReportedPostedAtMs.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1311,7 +1319,8 @@ class TransactionDetails {
           origin == other.origin &&
           imported == other.imported &&
           found == other.found &&
-          outputCommits == other.outputCommits;
+          outputCommits == other.outputCommits &&
+          senderReportedPostedAtMs == other.senderReportedPostedAtMs;
 }
 
 /// Which of a transport's connections changed. A drain connects on its own beside a running
@@ -1486,7 +1495,7 @@ class WalletEvent {
   final String? slateId;
   final BigInt? amount;
 
-  /// Hex of the kernel excess, for `InvoicePosted`.
+  /// Hex of the kernel excess, for `InvoicePosted` and `PaymentPosted`.
   final String? kernelExcess;
 
   /// The Epicbox address a message came from, for `UnknownSlate`.
@@ -1640,6 +1649,13 @@ enum WalletEventKind {
   /// to the same payment. Tell the user that another install took this payment and offer a
   /// rescan to see it in the balance.
   receiveSuperseded,
+
+  /// The sender of a payment this wallet received over Epicbox reports that it posted the
+  /// transaction: `tx_id`, `slate_id` and `kernel_excess` are set. Raised once per payment,
+  /// while it waits for its sender, and only from that payment's sender with the kernel this
+  /// wallet's answer implies. Advisory: nothing changed. Refresh now; the payment confirms
+  /// when a refresh finds the kernel. Until then its `sender_reported_posted_at_ms` is set.
+  paymentPosted,
 }
 
 /// An output of the wallet, from `EpicWallet::outputs`.
