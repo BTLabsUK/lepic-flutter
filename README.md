@@ -585,6 +585,27 @@ final on = wallet.nodeOverTor();
   (`IsolateSOCKSAuth`), so use a fresh pair per connection or request series that should not
   be linked.
 
+## Invoices by file
+
+Anyone may be sent an invoice as a file or text, paired or not (LEPIC RFC 0002 11.5).
+
+- Issuer: `issueInvoiceSlate(amount, message)` returns the I1 as a `Slate`;
+  `issueInvoiceFile(amount, path, message)` writes it to `path` and returns an `IssuedInvoice`
+  (`notDelivered` when the file cannot be written; the invoice is stored). The invoice is an
+  `incoming` transaction with `flow` `invoice`, withdrawn with `cancelTransaction` and expired
+  unpaid by `sweepInvoices`.
+- Payer: route a file by `inspectSlate(json, chain).stage`. For `i1`, show the amount and,
+  after the user approved it, `payInvoiceSlate(slateJson, amount, minimumConfirmations,
+  message, options)` or `payInvoiceFile(path, ...)`, which also writes `<path>.response`. Both
+  return a `PaidInvoiceSlate` with the I2 in `json`. Refusals: `amountMismatch`,
+  `invoiceAlreadyPaid`, `paymentExpired`, `invoiceLockedAboveTip`, `notEnoughFunds`,
+  `invalidSlate`. A LEPIC I1 may carry a reply key: `sealedAnswerToMarker(i1, i2)` seals the
+  answer.
+- Issuer again: `finalizeAndPost(json)` and `finalizeFile(path)` take the I2 as they take an S2,
+  by its stage. An I2 finalizes only an invoice this wallet issued and still waits for:
+  `invalidSlate` for another slate id, `invoiceChanged` for a changed amount or outputs,
+  `invalidArgument` for a withdrawn or expired invoice.
+
 ## Invoices over Epicbox
 
 A service issues an invoice, the user pays it with one call, and the service finalizes and
