@@ -7238,13 +7238,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ContactCollectReport dco_decode_contact_collect_report(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
     return ContactCollectReport(
       mailboxes: dco_decode_u_32(arr[0]),
       messages: dco_decode_u_32(arr[1]),
       paired: dco_decode_u_32(arr[2]),
-      unreachable: dco_decode_list_String(arr[3]),
+      failed: dco_decode_list_failed_pairing(arr[3]),
+      delivered: dco_decode_u_32(arr[4]),
+      unreachable: dco_decode_list_String(arr[5]),
     );
   }
 
@@ -7312,6 +7314,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       importedFromBackup: dco_decode_bool(arr[11]),
       lapsed: dco_decode_bool(arr[12]),
       createdAtMs: dco_decode_i_64(arr[13]),
+    );
+  }
+
+  @protected
+  FailedPairing dco_decode_failed_pairing(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return FailedPairing(
+      contactId: dco_decode_String(arr[0]),
+      reason: dco_decode_pairing_failure_reason(arr[1]),
     );
   }
 
@@ -7586,6 +7600,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   List<ContactView> dco_decode_list_contact_view(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return (raw as List<dynamic>).map(dco_decode_contact_view).toList();
+  }
+
+  @protected
+  List<FailedPairing> dco_decode_list_failed_pairing(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_failed_pairing).toList();
   }
 
   @protected
@@ -9112,11 +9132,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_mailboxes = sse_decode_u_32(deserializer);
     var var_messages = sse_decode_u_32(deserializer);
     var var_paired = sse_decode_u_32(deserializer);
+    var var_failed = sse_decode_list_failed_pairing(deserializer);
+    var var_delivered = sse_decode_u_32(deserializer);
     var var_unreachable = sse_decode_list_String(deserializer);
     return ContactCollectReport(
       mailboxes: var_mailboxes,
       messages: var_messages,
       paired: var_paired,
+      failed: var_failed,
+      delivered: var_delivered,
       unreachable: var_unreachable,
     );
   }
@@ -9208,6 +9232,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       lapsed: var_lapsed,
       createdAtMs: var_createdAtMs,
     );
+  }
+
+  @protected
+  FailedPairing sse_decode_failed_pairing(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_contactId = sse_decode_String(deserializer);
+    var var_reason = sse_decode_pairing_failure_reason(deserializer);
+    return FailedPairing(contactId: var_contactId, reason: var_reason);
   }
 
   @protected
@@ -9524,6 +9556,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var ans_ = <ContactView>[];
     for (var idx_ = 0; idx_ < len_; ++idx_) {
       ans_.add(sse_decode_contact_view(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<FailedPairing> sse_decode_list_failed_pairing(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <FailedPairing>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_failed_pairing(deserializer));
     }
     return ans_;
   }
@@ -11518,6 +11564,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_u_32(self.mailboxes, serializer);
     sse_encode_u_32(self.messages, serializer);
     sse_encode_u_32(self.paired, serializer);
+    sse_encode_list_failed_pairing(self.failed, serializer);
+    sse_encode_u_32(self.delivered, serializer);
     sse_encode_list_String(self.unreachable, serializer);
   }
 
@@ -11580,6 +11628,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self.importedFromBackup, serializer);
     sse_encode_bool(self.lapsed, serializer);
     sse_encode_i_64(self.createdAtMs, serializer);
+  }
+
+  @protected
+  void sse_encode_failed_pairing(FailedPairing self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.contactId, serializer);
+    sse_encode_pairing_failure_reason(self.reason, serializer);
   }
 
   @protected
@@ -11817,6 +11872,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
       sse_encode_contact_view(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_failed_pairing(
+    List<FailedPairing> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_failed_pairing(item, serializer);
     }
   }
 
@@ -13058,7 +13125,8 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
 
   /// Attaches a pairing to the app's address-book entry `app_contact`, an id the app
   /// chooses, or detaches it with `None`. Attaching a new pairing to an entry that has one
-  /// already is when to offer [`EpicWallet::contact_key_check`]. Fails with
+  /// already is when to offer [`EpicWallet::contact_key_check`]. The id is at most 256 bytes
+  /// with no control characters. Fails with `InvalidContactName` for another id and with
   /// `ContactNotFound`.
   Future<void> contactAttach({required String contactId, String? appContact}) =>
       RustLib.instance.api.crateApiWalletEpicWalletContactAttach(
@@ -13153,10 +13221,11 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
         contactId: contactId,
       );
 
-  /// "Send again": posts the outbox entry `id` once more, whatever its state. The contact
-  /// treats a repeat as the same message.
+  /// "Send again": posts the outbox entry `id` once more, delivered or stuck, while its
+  /// payment still waits for the contact. The contact treats a repeat as the same message.
   ///
-  /// Fails with `NoSlateToSend` for an id the outbox does not hold, `ContactsOffline` or
+  /// Fails with `NoSlateToSend` for an id the outbox does not hold or whose transaction
+  /// finished, was cancelled or expired, `ContactsOffline` or
   /// `EpicboxOff`, and `TransportFailed` when the relay fails.
   Future<void> contactOutboxResend({
     required BigInt id,
@@ -13256,7 +13325,9 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
     allow: allow,
   );
 
-  /// Sets the user's own name for a contact. Fails with `ContactNotFound`.
+  /// Sets the user's own name for a contact; an empty label clears it. A label follows the
+  /// rule of card names: at most 48 bytes, no control or hidden formatting characters. Fails
+  /// with `InvalidContactName` for another label and with `ContactNotFound`.
   Future<void> contactSetLabel({
     required String contactId,
     required String label,
@@ -13309,8 +13380,10 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// same keys, mailboxes and trust, marked as possibly living on another device too.
   /// Pairings this wallet holds already are kept as they are.
   ///
-  /// Fails with `InvalidArgument` or `Io` for a document this build cannot read or that is
-  /// for the other network; nothing is imported then.
+  /// Fails with `InvalidArgument` for a document over 32 MiB, and with `InvalidArgument` or
+  /// `Io` for a document this build cannot read or that is for the other network; nothing is
+  /// imported then. A pairing whose keys this wallet's seed does not derive is skipped as a
+  /// conflict.
   Future<ContactImportSummary> contactsImport({required String document}) =>
       RustLib.instance.api.crateApiWalletEpicWalletContactsImport(
         that: this,
@@ -13623,8 +13696,9 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   ///
   /// With `offer_words` the invite lasts 10 minutes and is also posted under five pairing
   /// words, returned in `words`, for the other side to type; that needs `Online` and fails
-  /// with `PairingWordsUnavailable` unless the wallet's relay is a built-in one, and with
-  /// `TransportFailed` when the post fails, the invite staying pending until it expires.
+  /// with `ContactsOffline` or `EpicboxOff` before anything is stored, with
+  /// `PairingWordsUnavailable` unless the wallet's relay is a built-in one, and with
+  /// `TransportFailed` when the post fails, the invite then withdrawn.
   ///
   /// Fails with `InvalidContactName` for a `name` a card cannot carry, and with `Io` when 64
   /// pairings are pending.

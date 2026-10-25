@@ -282,6 +282,8 @@ against this list.
 | Dart to Rust | Recovery phrase of a test wallet, in `mock` builds only | `MockChain.fund` |
 | Rust to the `SecretStore`, and back | PIN key (`lepic.pin-key`), random, one per PIN wallet | written by `EpicWallet.createWithPin` and `importWalletSeedWithPin`, replaced by `changePin`; read by `openWithPin`, `mnemonicWithPin` and `changePin`; deleted by `deleteWallet` |
 | Rust to Dart | Recovery phrase, after the password or PIN is verified, for the backup screen | `EpicWallet.mnemonic`, `EpicWallet.mnemonicWithPin` |
+| Rust to Dart | Contact pairing invite link and its five pairing words, to show and share, never to store or log | `EpicWallet.pairingInvite` (`PairingInvite.link`, `.words`), `EpicWallet.pairingFindWords` (`FoundInvite.link`) |
+| Dart to Rust | An invite link or pairing words the user typed, pasted or scanned | `EpicWallet.pairingPreview`, `pairingAccept`, `pairingFindWords` |
 | Never | Seed bytes, private keys, blinding factors, nonces, vault keys, the generated wallet password of PIN unlock, the root secret and the app data key derived from it | none |
 
 Not secret, and crossing both ways: the sealed password text, the encrypted vault the
@@ -650,8 +652,10 @@ a verified contact may be allowed to send invoices (LEPIC's RFC 0002). Calls liv
 `EpicWallet` (LEPIC's `crates/lepic-ffi/src/api/contact.rs` has the details of each). Contact
 ids are 32 hex characters. Calls that may reach a relay take the app's `ContactRelayMode`
 (`online`, `offline`, `epicboxOff`); the ones that must connect fail with `contactsOffline` or
-`epicboxOff` before connecting. An invite link lets anyone who sees it pair as the user until
-it is used or expires: share it, never store it. Nothing else that crosses is secret.
+`epicboxOff` before connecting. An invite link, and the pairing words offered with it, let
+anyone who sees them pair as the user until the invite is used or expires: show and share them,
+never store or log them (ADR 0014). Reply and confirm links are sealed to the other side and card
+links are public. Nothing else that crosses is secret.
 
 - Pair online: `pairingInvite(name, kind, expiry, offerWords, mode)` returns the link and, with
   `offerWords`, five `SasEntry` words (10 minutes, built-in relays only). The other side runs
@@ -681,7 +685,11 @@ it is used or expires: share it, never store it. Nothing else that crosses is se
   minimumConfirmations, message, options, mode)` or `contactDeclineInvoice(slateId)`.
 - Delivery: `contactsCollect(trigger, mode)` and `contactsOutboxDeliver(mode)` on open, on a
   foreground tick and on a push wake-up; `contactOutbox(id)` for the timeline and
-  `contactOutboxResend(entryId, mode)` for "Send again".
+  `contactOutboxResend(entryId, mode)` for "Send again" (refused once the payment is no longer
+  waiting). Every trigger but `foreground` retries relays in backoff and the whole outbox at
+  once. The `ContactCollectReport` says what the cycle `delivered` and which pairings in
+  progress ended (`failed`, each a `FailedPairing` with its reason, also raised as
+  `pairingFailed`).
 - Backup: `contactsExport()` returns the JSON document for the `.wfeh` payload;
   `contactsImport(document)` restores it.
 

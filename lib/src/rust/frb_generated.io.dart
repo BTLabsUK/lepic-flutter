@@ -317,6 +317,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactView dco_decode_contact_view(dynamic raw);
 
   @protected
+  FailedPairing dco_decode_failed_pairing(dynamic raw);
+
+  @protected
   FeeEstimate dco_decode_fee_estimate(dynamic raw);
 
   @protected
@@ -396,6 +399,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<ContactView> dco_decode_list_contact_view(dynamic raw);
+
+  @protected
+  List<FailedPairing> dco_decode_list_failed_pairing(dynamic raw);
 
   @protected
   List<LogField> dco_decode_list_log_field(dynamic raw);
@@ -1001,6 +1007,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactView sse_decode_contact_view(SseDeserializer deserializer);
 
   @protected
+  FailedPairing sse_decode_failed_pairing(SseDeserializer deserializer);
+
+  @protected
   FeeEstimate sse_decode_fee_estimate(SseDeserializer deserializer);
 
   @protected
@@ -1088,6 +1097,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<ContactView> sse_decode_list_contact_view(SseDeserializer deserializer);
+
+  @protected
+  List<FailedPairing> sse_decode_list_failed_pairing(
+    SseDeserializer deserializer,
+  );
 
   @protected
   List<LogField> sse_decode_list_log_field(SseDeserializer deserializer);
@@ -1831,6 +1845,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_contact_view(ContactView self, SseSerializer serializer);
 
   @protected
+  void sse_encode_failed_pairing(FailedPairing self, SseSerializer serializer);
+
+  @protected
   void sse_encode_fee_estimate(FeeEstimate self, SseSerializer serializer);
 
   @protected
@@ -1929,6 +1946,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_contact_view(
     List<ContactView> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_failed_pairing(
+    List<FailedPairing> self,
     SseSerializer serializer,
   );
 
