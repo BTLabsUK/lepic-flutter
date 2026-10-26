@@ -848,7 +848,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// it.
   ///
   /// Fails with `InvalidPairingWords` for words not in the table, `PairingWordsNotFound`
-  /// when no relay holds the invite, and `ContactsOffline` or `EpicboxOff`.
+  /// when no relay holds the invite, `TransportFailed` when no built-in relay could be
+  /// reached, and `ContactsOffline` or `EpicboxOff`.
   Future<FoundInvite> pairingFindWords({
     required List<String> words,
     required ContactRelayMode relayMode,
@@ -860,10 +861,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// words nothing is sent, so this works offline.
   ///
   /// With `offer_words` the invite lasts 10 minutes and is also posted under five pairing
-  /// words, returned in `words`, for the other side to type; that needs `Online` and fails
-  /// with `ContactsOffline` or `EpicboxOff` before anything is stored, with
-  /// `PairingWordsUnavailable` unless the wallet's relay is a built-in one, and with
-  /// `TransportFailed` when the post fails, the invite then withdrawn.
+  /// words, returned in `words`, for the other side to type, on every built-in relay whatever
+  /// relay the wallet uses; that needs `Online` and fails with `ContactsOffline` or
+  /// `EpicboxOff` before anything is stored, with `PairingWordsUnavailable` when the network
+  /// has no built-in relay, and with `TransportFailed` when no built-in relay takes the post,
+  /// the invite then withdrawn.
   ///
   /// Fails with `InvalidContactName` for a `name` a card cannot carry, and with `Io` when 64
   /// pairings are pending.
