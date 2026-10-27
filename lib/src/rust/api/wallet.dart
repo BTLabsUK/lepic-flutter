@@ -764,6 +764,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// with its resend, one finalized is posted again with [`EpicWallet::repost_transaction`].
   void lock();
 
+  /// The confirmations an output needs to count as spendable in `summary` and to be spent by
+  /// a send: the wallet's setting, 6 until `set_minimum_confirmations` changes it. Reads only
+  /// the store.
+  Future<BigInt> minimumConfirmations();
+
   /// The recovery phrase, after checking `password` against the stored vault. Attempts are
   /// counted and delayed as in [`EpicWallet::open`].
   Future<String> mnemonic({required String password});
@@ -1313,6 +1318,12 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// on it are acknowledged, within 30 seconds; messages not acknowledged by then stay with
   /// the relay and come again. A send in progress finishes on its own connection.
   void setEpicboxOverTor({required bool enabled});
+
+  /// Sets the wallet's minimum confirmations, 1 to 30 (anything else fails with
+  /// `InvalidArgument`), and re-splits the balance at once without the node: the next
+  /// `summary(refresh: false)` and the balance events use it. Pass this value as the
+  /// `minimum_confirmations` of a send so it spends what the balance calls spendable.
+  Future<void> setMinimumConfirmations({required BigInt count});
 
   /// Says that [`EpicWallet::start_tor`] follows, so that a relay connection made before it,
   /// such as the listener's when the wallet opens, waits for tor instead of going directly.
