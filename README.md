@@ -229,6 +229,33 @@ tool/lepic.sh build linux android        # or windows, or Rust target triples
 tool/lepic.sh build aarch64-linux-android
 ```
 
+### Without Tor
+
+`WFE_TOR=0` (the app's switch for its build without Tor) builds the libraries without LEPIC's
+`tor` feature (`cargo xtask mobile --package --no-tor`, LEPIC ADR 0026): no tor controller, SOCKS
+client, onion service or Tor transport in them.
+
+```sh
+WFE_TOR=0 tool/lepic.sh build linux android
+```
+
+The Dart API is the same for both builds. Without Tor, `startTor`, `refreshTor`,
+`onionAddress`, `sendTor` and `resendTor` fail with `unsupported`; `torStatus` is `off`;
+`epicboxOverTor` and `nodeOverTor` read false and their setters do nothing, so the relay and the
+node are always reached directly; `validateOnionAddress` is false for every address;
+`setOnionRoutes` accepts any list and keeps none.
+
+Next to each library and its `SHA256SUMS` the build writes `FEATURES`, the `lepic-ffi` features it
+has (`tor` unless built without it). To make the app build fail when the wrong library is in
+`native/`, set the `tor` user define; without it the hook bundles either:
+
+```yaml
+hooks:
+  user_defines:
+    lepic:
+      tor: false # only a library built without Tor; true: only one with Tor
+```
+
 LEPIC's CI workflow `mobile.yml` builds the same libraries and uploads them as the artifacts
 `lepic-ffi-android`, `lepic-ffi-linux` and `lepic-ffi-ios`. To use libraries kept elsewhere, for
 example unpacked artifacts, set the directory in the app's `pubspec.yaml`:
