@@ -1,7 +1,9 @@
 // Bundles the prebuilt lepic-ffi library for the Android, iOS, Linux or Windows target being
 // built, so an app gets it by depending on this package. `tool/lepic.sh build` puts the libraries,
 // built from the pinned LEPIC, in `native/<rust target>/` next to a `SHA256SUMS` manifest, which
-// is checked before bundling; the `native_dir` user define points elsewhere.
+// is checked before bundling; the `native_dir` user define points elsewhere. The `tor` user
+// define, when set, also requires a library built with (true) or without (false) LEPIC's `tor`
+// feature, as the `FEATURES` file next to it records (LEPIC ADR 0026).
 //
 // `flutter test` on Linux runs this hook for the host too, so the package's own tests load the
 // library it bundles. macOS builds get no asset.
@@ -23,11 +25,43 @@ const androidApiLevel = 24;
 /// next to each library.
 const manifestFileName = 'SHA256SUMS';
 
+/// Must match `FEATURES_FILE` in LEPIC's `xtask/src/mobile.rs`: the `lepic-ffi` features the
+/// library next to it was built with, one per line.
+const featuresFileName = 'FEATURES';
+
+/// Whether the library in [features] (the `FEATURES` file next to it) has LEPIC's `tor` feature.
+/// A library packaged before LEPIC wrote the file has no file and always has Tor.
+bool libraryHasTor(File features) =>
+    !features.existsSync() ||
+    features.readAsLinesSync().any((line) => line.trim() == 'tor');
+
+/// Throws when the `tor` user define [wanted] is set and the library's [features] say otherwise,
+/// so a build without Tor never bundles a library with it, nor the other way round.
+void verifyTor(Object? wanted, File features, String target) {
+  if (wanted == null) {
+    return;
+  }
+  if (wanted is! bool) {
+    throw StateError(
+      'The lepic user define `tor` must be true or false, not $wanted.',
+    );
+  }
+  final hasTor = libraryHasTor(features);
+  if (hasTor != wanted) {
+    final build = wanted
+        ? '`tool/lepic.sh build $target`'
+        : '`WFE_TOR=0 tool/lepic.sh build $target`';
+    throw StateError(
+      'The $target library was built ${hasTor ? 'with' : 'without'} Tor, but the lepic user '
+      'define `tor` is $wanted. Run $build in the lepic package.',
+    );
+  }
+}
+
 /// Throws unless [manifest] exists and records the SHA-256 of [library], so a truncated,
 /// mixed-up or replaced library is not bundled into the app.
 void verifyLibrary(File library, File manifest, String target) {
-  final repackage =
-      'Run `tool/lepic.sh build $target` in the lepic package.';
+  final repackage = 'Run `tool/lepic.sh build $target` in the lepic package.';
   if (!manifest.existsSync()) {
     throw StateError(
       'No $manifestFileName next to ${library.path}. $repackage',
@@ -85,10 +119,15 @@ void main(List<String> args) async {
     }
     final manifest = File.fromUri(library.uri.resolve(manifestFileName));
     verifyLibrary(library, manifest, target);
+    final features = File.fromUri(library.uri.resolve(featuresFileName));
+    verifyTor(input.userDefines['tor'], features, target);
 
     output.dependencies
       ..add(library.uri)
       ..add(manifest.uri);
+    if (features.existsSync()) {
+      output.dependencies.add(features.uri);
+    }
     output.assets.code.add(
       CodeAsset(
         package: input.packageName,

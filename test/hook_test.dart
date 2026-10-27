@@ -11,9 +11,9 @@ import '../hook/build.dart' as hook;
 
 late Directory nativeDir;
 
-PackageUserDefines nativeDirDefine() => PackageUserDefines(
+PackageUserDefines nativeDirDefine({Object? tor}) => PackageUserDefines(
   workspacePubspec: PackageUserDefinesSource(
-    defines: {'native_dir': nativeDir.path},
+    defines: {'native_dir': nativeDir.path, 'tor': ?tor},
     basePath: nativeDir.uri,
   ),
 );
@@ -40,6 +40,7 @@ Future<List<CodeAsset>> bundled({
   IOSSdk iosSdk = IOSSdk.iPhoneOS,
   int androidApi = 30,
   LinkModePreference linkMode = LinkModePreference.dynamic,
+  Object? tor,
 }) async {
   late List<CodeAsset> assets;
   await testCodeBuildHook(
@@ -49,7 +50,7 @@ Future<List<CodeAsset>> bundled({
     targetIOSSdk: iosSdk,
     targetAndroidNdkApi: androidApi,
     linkModePreference: linkMode,
-    userDefines: nativeDirDefine(),
+    userDefines: nativeDirDefine(tor: tor),
     check: (input, output) => assets = output.assets.code,
   );
   return assets;
@@ -154,6 +155,63 @@ void main() {
     await expectLater(
       bundled(os: OS.android, arch: Architecture.arm64),
       failsWith('does not record one SHA-256'),
+    );
+  });
+
+  /// Writes the `FEATURES` file LEPIC's xtask puts next to a library built with [features].
+  void featuresFile(String target, List<String> features) =>
+      File('${nativeDir.path}/$target/FEATURES')
+          .writeAsStringSync(features.map((f) => '$f\n').join());
+
+  test('takes any library when the tor user define is not set', () async {
+    final library = standIn('x86_64-unknown-linux-gnu', 'liblepic_ffi.so');
+    featuresFile('x86_64-unknown-linux-gnu', []);
+    expect(
+      (await bundled(os: OS.linux, arch: Architecture.x64)).single.file,
+      library.uri,
+    );
+  });
+
+  test(
+    'bundles a library without tor when the tor user define is false',
+    () async {
+      final library = standIn('aarch64-linux-android', 'liblepic_ffi.so');
+      featuresFile('aarch64-linux-android', []);
+      expect(
+        (await bundled(
+          os: OS.android,
+          arch: Architecture.arm64,
+          tor: false,
+        )).single.file,
+        library.uri,
+      );
+      featuresFile('aarch64-linux-android', ['tor']);
+      await expectLater(
+        bundled(os: OS.android, arch: Architecture.arm64, tor: false),
+        failsWith('built with Tor'),
+      );
+    },
+  );
+
+  test('wants tor in the library when the tor user define is true', () async {
+    final library = standIn('aarch64-linux-android', 'liblepic_ffi.so');
+    // A library packaged before the FEATURES file existed has Tor.
+    expect(
+      (await bundled(
+        os: OS.android,
+        arch: Architecture.arm64,
+        tor: true,
+      )).single.file,
+      library.uri,
+    );
+    featuresFile('aarch64-linux-android', ['mock']);
+    await expectLater(
+      bundled(os: OS.android, arch: Architecture.arm64, tor: true),
+      failsWith('built without Tor'),
+    );
+    await expectLater(
+      bundled(os: OS.android, arch: Architecture.arm64, tor: 'no'),
+      failsWith('must be true or false'),
     );
   });
 

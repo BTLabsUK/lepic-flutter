@@ -12,6 +12,10 @@
 #   tool/lepic.sh check                 fail unless both halves match the pinned LEPIC
 #   tool/lepic.sh lib                   print the path of the Linux library
 #
+# WFE_TOR=0 (also false or off), the app's switch for its build without Tor, makes `build` leave
+# LEPIC's tor out (`cargo xtask mobile --package --no-tor`, LEPIC ADR 0026); unset or anything
+# else builds with Tor, as before.
+#
 # LEPIC_DIR names a LEPIC checkout to use instead of third_party/lepic. It must be clean and at
 # the pin, except for `generate`, which may run on any commit and writes into it. LEPIC_REPO is
 # where `sync` clones from, by default the GitHub repository.
@@ -48,10 +52,20 @@ require_pin() {
     || die "LEPIC at $lepic has local changes; it must match the pin exactly"
 }
 
-# Builds the release lepic-ffi library for each target into a directory, through LEPIC's xtask.
+# Whether WFE_TOR asks for the build without Tor.
+without_tor() {
+  case "${WFE_TOR:-1}" in
+    0|false|off) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# Builds the release lepic-ffi library for each target into a directory, through LEPIC's xtask,
+# without Tor when WFE_TOR says so.
 package_libraries() {
   local out="$1"; shift
   local args=()
+  without_tor && args+=(--no-tor)
   for target in "$@"; do args+=(--target "$target"); done
   (cd "$lepic" && cargo xtask mobile --package --out "$out" "${args[@]}")
 }
@@ -131,7 +145,11 @@ case "${1:-}" in
       esac
     done
     package_libraries "$package/native" "${targets[@]}"
-    echo "libraries: $package/native/"
+    if without_tor; then
+      echo "libraries without Tor: $package/native/"
+    else
+      echo "libraries: $package/native/"
+    fi
     ;;
   test)
     require_pin
@@ -196,7 +214,7 @@ case "${1:-}" in
     echo "$package/native/$linux_target/liblepic_ffi.so"
     ;;
   *)
-    sed -n '4,17p' "$0" >&2
+    sed -n '4,21p' "$0" >&2
     exit 2
     ;;
 esac
