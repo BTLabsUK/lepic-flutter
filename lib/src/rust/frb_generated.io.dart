@@ -3,6 +3,7 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
+import 'api/contact.dart';
 import 'api/diagnostics.dart';
 import 'api/error.dart';
 import 'api/http.dart';
@@ -311,6 +312,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactKind dco_decode_contact_kind(dynamic raw);
 
   @protected
+  ContactPayloadView dco_decode_contact_payload_view(dynamic raw);
+
+  @protected
   ContactRelayMode dco_decode_contact_relay_mode(dynamic raw);
 
   @protected
@@ -399,6 +403,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<ContactInvoiceView> dco_decode_list_contact_invoice_view(dynamic raw);
+
+  @protected
+  List<ContactPayloadView> dco_decode_list_contact_payload_view(dynamic raw);
 
   @protected
   List<ContactView> dco_decode_list_contact_view(dynamic raw);
@@ -537,6 +544,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   WalletSummary? dco_decode_opt_box_autoadd_wallet_summary(dynamic raw);
 
   @protected
+  List<String>? dco_decode_opt_list_String(dynamic raw);
+
+  @protected
   OutboxEntryView dco_decode_outbox_entry_view(dynamic raw);
 
   @protected
@@ -562,6 +572,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PairingCard dco_decode_pairing_card(dynamic raw);
+
+  @protected
+  PairingClass dco_decode_pairing_class(dynamic raw);
 
   @protected
   PairingFailureReason dco_decode_pairing_failure_reason(dynamic raw);
@@ -1007,6 +1020,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactKind sse_decode_contact_kind(SseDeserializer deserializer);
 
   @protected
+  ContactPayloadView sse_decode_contact_payload_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ContactRelayMode sse_decode_contact_relay_mode(SseDeserializer deserializer);
 
   @protected
@@ -1101,6 +1119,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<ContactInvoiceView> sse_decode_list_contact_invoice_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<ContactPayloadView> sse_decode_list_contact_payload_view(
     SseDeserializer deserializer,
   );
 
@@ -1283,6 +1306,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  List<String>? sse_decode_opt_list_String(SseDeserializer deserializer);
+
+  @protected
   OutboxEntryView sse_decode_outbox_entry_view(SseDeserializer deserializer);
 
   @protected
@@ -1308,6 +1334,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PairingCard sse_decode_pairing_card(SseDeserializer deserializer);
+
+  @protected
+  PairingClass sse_decode_pairing_class(SseDeserializer deserializer);
 
   @protected
   PairingFailureReason sse_decode_pairing_failure_reason(
@@ -1848,6 +1877,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_contact_kind(ContactKind self, SseSerializer serializer);
 
   @protected
+  void sse_encode_contact_payload_view(
+    ContactPayloadView self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_contact_relay_mode(
     ContactRelayMode self,
     SseSerializer serializer,
@@ -1955,6 +1990,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_contact_invoice_view(
     List<ContactInvoiceView> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_contact_payload_view(
+    List<ContactPayloadView> self,
     SseSerializer serializer,
   );
 
@@ -2178,6 +2219,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_opt_list_String(List<String>? self, SseSerializer serializer);
+
+  @protected
   void sse_encode_outbox_entry_view(
     OutboxEntryView self,
     SseSerializer serializer,
@@ -2212,6 +2256,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_pairing_card(PairingCard self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_pairing_class(PairingClass self, SseSerializer serializer);
 
   @protected
   void sse_encode_pairing_failure_reason(

@@ -268,7 +268,18 @@ enum WalletErrorKind {
   /// The invoice was made for another network, or its heights are wrong: its time to live
   /// ends further ahead than any issuer sets it, or it was made at a height the chain cannot
   /// have reached. Nothing was paid or stored.
-  invoiceNotForThisChain;
+  invoiceNotForThisChain,
+
+  /// The node refused the transaction because inputs of it are no longer unspent: another
+  /// wallet on the same recovery phrase spent them. The send was cancelled, its other inputs
+  /// released, and a refresh ran; the other wallet's spend shows as a transaction of origin
+  /// `OtherWallet`.
+  inputsSpentElsewhere,
+
+  /// The invite, contact or call is of the other pairing class: a private invite answered as
+  /// a contact or the other way round, words asked for a private pairing, a slate or invoice
+  /// for a private pairing, or a payload for a contact. Nothing was stored or sent.
+  wrongPairingClass;
 
   /// The stable number of this kind.
   Future<int> code() =>

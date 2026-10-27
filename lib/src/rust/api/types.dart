@@ -8,7 +8,7 @@ import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `network`, `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Which Epic chain the wallet talks to.
 enum Chain { mainnet, floonet }
@@ -190,6 +190,41 @@ class ContactInvoiceView {
 
 /// What a contact says it is.
 enum ContactKind { person, shop, exchange }
+
+/// A payload a paired contact sent, from `EpicWallet::contact_payloads`.
+class ContactPayloadView {
+  /// The sender's id for it, 32 hex characters; a repeat is kept once.
+  final String id;
+  final String contactId;
+  final PlatformInt64 receivedAtMs;
+
+  /// The bytes as the contact's app sent them; LEPIC does not read them.
+  final Uint8List payload;
+
+  const ContactPayloadView({
+    required this.id,
+    required this.contactId,
+    required this.receivedAtMs,
+    required this.payload,
+  });
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      contactId.hashCode ^
+      receivedAtMs.hashCode ^
+      payload.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ContactPayloadView &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          contactId == other.contactId &&
+          receivedAtMs == other.receivedAtMs &&
+          payload == other.payload;
+}
 
 /// Whether contact calls may reach relays, as the user set the app: `Online`, `Offline`
 /// (nothing connects anywhere) or Epicbox switched off (no relay is reached, home relays of
@@ -560,12 +595,16 @@ class InvitePreview {
   /// The invite comes from a service, such as an exchange.
   final bool service;
 
+  /// Answer it with this class in `EpicWallet::pairing_accept`.
+  final PairingClass pairingClass;
+
   const InvitePreview({
     required this.claimedName,
     required this.kind,
     required this.expiresAtMs,
     required this.homeRelay,
     required this.service,
+    required this.pairingClass,
   });
 
   @override
@@ -574,7 +613,8 @@ class InvitePreview {
       kind.hashCode ^
       expiresAtMs.hashCode ^
       homeRelay.hashCode ^
-      service.hashCode;
+      service.hashCode ^
+      pairingClass.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -585,7 +625,8 @@ class InvitePreview {
           kind == other.kind &&
           expiresAtMs == other.expiresAtMs &&
           homeRelay == other.homeRelay &&
-          service == other.service;
+          service == other.service &&
+          pairingClass == other.pairingClass;
 }
 
 /// What one `EpicWallet::sweep_invoices` did.
@@ -1107,6 +1148,19 @@ class PairingCard {
           runtimeType == other.runtimeType &&
           contactId == other.contactId &&
           link == other.link;
+}
+
+/// Which kind of pairing an invite makes. Values are only added, at the end.
+enum PairingClass {
+  /// A contact: slates, invoices and notices, listed by `EpicWallet::contacts`.
+  contact,
+
+  /// Two wallets of one owner: only the app's payloads (`EpicWallet::contact_post_payload`),
+  /// listed by `EpicWallet::private_pairings` and nowhere else. Its invite travels by QR or
+  /// paste only, never as words. Its keys and channel come from random secrets the two
+  /// wallets exchange while pairing, so the recovery phrase alone neither finds, reads nor
+  /// writes it. Payloads pass once both sides matched the words check.
+  private,
 }
 
 /// Why a pairing in progress ended, for `PairingFailed`.
@@ -1709,10 +1763,20 @@ class SendOptions {
   /// exactly makes no change output.
   final int changeOutputs;
 
-  const SendOptions({required this.strategy, required this.changeOutputs});
+  /// Commitments, 66 hex characters each, of outputs the send or estimate must not take,
+  /// for example ones another wallet on the same phrase is spending. At most 500; an
+  /// output this wallet does not hold is ignored.
+  final List<String> excludeOutputs;
+
+  const SendOptions({
+    required this.strategy,
+    required this.changeOutputs,
+    required this.excludeOutputs,
+  });
 
   @override
-  int get hashCode => strategy.hashCode ^ changeOutputs.hashCode;
+  int get hashCode =>
+      strategy.hashCode ^ changeOutputs.hashCode ^ excludeOutputs.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1720,7 +1784,8 @@ class SendOptions {
       other is SendOptions &&
           runtimeType == other.runtimeType &&
           strategy == other.strategy &&
-          changeOutputs == other.changeOutputs;
+          changeOutputs == other.changeOutputs &&
+          excludeOutputs == other.excludeOutputs;
 }
 
 /// A send that was stored and handed to its transport.
@@ -1958,6 +2023,11 @@ class TransactionDetails {
   /// Empty when the wallet stores none, as for a cancelled send.
   final List<String> outputCommits;
 
+  /// Hex of the commitments of this wallet's outputs the transaction spent: for a send or an
+  /// invoice payment made here, its inputs; for origin `OtherWallet` outgoing, the outputs
+  /// the other wallet spent. Empty for any other.
+  final List<String> spentCommits;
+
   /// For a payment received over Epicbox that still waits for its sender: when the sender
   /// reported that it posted the transaction (`PaymentPosted`), while that report is under an
   /// hour old. Advisory: show it as the sender's report, never as received; the payment
@@ -1988,6 +2058,7 @@ class TransactionDetails {
     this.imported,
     this.found,
     required this.outputCommits,
+    required this.spentCommits,
     this.senderReportedPostedAtMs,
   });
 
@@ -2016,6 +2087,7 @@ class TransactionDetails {
       imported.hashCode ^
       found.hashCode ^
       outputCommits.hashCode ^
+      spentCommits.hashCode ^
       senderReportedPostedAtMs.hashCode;
 
   @override
@@ -2046,6 +2118,7 @@ class TransactionDetails {
           imported == other.imported &&
           found == other.found &&
           outputCommits == other.outputCommits &&
+          spentCommits == other.spentCommits &&
           senderReportedPostedAtMs == other.senderReportedPostedAtMs;
 }
 
@@ -2095,6 +2168,14 @@ enum TxOrigin {
   /// An output a scan found that no record explains. `created_at_ms` is the time of its
   /// block when the node told it, else the time of the scan.
   foundByScan,
+
+  /// What another wallet on the same recovery phrase did, as the chain shows it. Outgoing:
+  /// outputs of this wallet a refresh found spent with no transaction here; `amount_debited`
+  /// is their value, `amount_credited` the outputs in the same blocks taken for its change,
+  /// `fee` unknown, `spent_commits` the outputs spent. Incoming: an output a refresh's
+  /// update scan found with no record here, one entry per output, `created_at_ms` its block's
+  /// time. A restore or a scan from genesis stores such outputs as `FoundByScan` instead.
+  otherWallet,
 }
 
 /// Where a transaction stands, as stored by the wallet.
@@ -2487,6 +2568,9 @@ enum WalletEventKind {
   /// notice: nothing sent through it arrives any more. The pairing stays, with
   /// `ContactView::removed_by_peer` set, until the user removes it too. Raised once.
   contactUnpaired,
+
+  /// The contact `contact_id` sent a payload; read it with `EpicWallet::contact_payloads`.
+  contactPayload,
 }
 
 /// An output of the wallet, from `EpicWallet::outputs`.
