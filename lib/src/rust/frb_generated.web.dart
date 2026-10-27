@@ -385,6 +385,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   IssuedInvoice dco_decode_issued_invoice(dynamic raw);
 
   @protected
+  KeyCheckStart dco_decode_key_check_start(dynamic raw);
+
+  @protected
   KeysDecision dco_decode_keys_decision(dynamic raw);
 
   @protected
@@ -1080,6 +1083,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   IssuedInvoice sse_decode_issued_invoice(SseDeserializer deserializer);
+
+  @protected
+  KeyCheckStart sse_decode_key_check_start(SseDeserializer deserializer);
 
   @protected
   KeysDecision sse_decode_keys_decision(SseDeserializer deserializer);
@@ -1929,6 +1935,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_issued_invoice(IssuedInvoice self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_key_check_start(KeyCheckStart self, SseSerializer serializer);
 
   @protected
   void sse_encode_keys_decision(KeysDecision self, SseSerializer serializer);
