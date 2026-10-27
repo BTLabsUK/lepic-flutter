@@ -32,12 +32,14 @@ Future<({String annaSide, String benSide})> pairContacts(
     expiry: InviteExpiry.oneDay,
     offerWords: false,
     relayMode: online,
+    pairingClass: PairingClass.contact,
   );
   final answer = await ben.pairingAccept(
     link: invite.link,
     name: 'Ben',
     byHand: false,
     relayMode: online,
+    pairingClass: PairingClass.contact,
   );
   expect(answer.posted, isTrue);
   expect(
@@ -121,6 +123,7 @@ void main() {
         expiry: InviteExpiry.oneHour,
         offerWords: false,
         relayMode: online,
+        pairingClass: PairingClass.contact,
       );
       expect(invite.link, startsWith('epiccash://pair/1/'));
       expect(invite.words, isEmpty);
@@ -137,6 +140,7 @@ void main() {
         name: 'Ben',
         byHand: false,
         relayMode: online,
+        pairingClass: PairingClass.contact,
       );
       await anna.contactsCollect(
         trigger: CollectTrigger.open,
@@ -201,12 +205,14 @@ void main() {
       expiry: InviteExpiry.sevenDays,
       offerWords: false,
       relayMode: offline,
+      pairingClass: PairingClass.contact,
     );
     final answer = await ben.pairingAccept(
       link: invite.link,
       name: 'Ben',
       byHand: true,
       relayMode: offline,
+      pairingClass: PairingClass.contact,
     );
     expect(answer.posted, isFalse);
     final confirm = await anna.pairingEnterLink(
@@ -266,6 +272,7 @@ void main() {
       expiry: InviteExpiry.oneDay,
       offerWords: true,
       relayMode: online,
+      pairingClass: PairingClass.contact,
     );
     expect(invite.words, hasLength(5));
     final words = [for (final word in invite.words) word.name];
@@ -282,6 +289,85 @@ void main() {
       ),
       throwsWalletError(WalletErrorKind.invalidPairingWords),
     );
+  });
+
+  test('two wallets pair privately and pass payloads both ways', () async {
+    final phone = await wallet();
+    final desk = await wallet();
+    expect(builtInPairingRelays(chain: Chain.floonet), [relayDomain]);
+    await expectLater(
+      phone.pairingInvite(
+        name: 'Phone',
+        kind: ContactKind.person,
+        expiry: InviteExpiry.oneDay,
+        offerWords: true,
+        relayMode: online,
+        pairingClass: PairingClass.private,
+      ),
+      throwsWalletError(WalletErrorKind.wrongPairingClass),
+    );
+    final invite = await phone.pairingInvite(
+      name: 'Phone',
+      kind: ContactKind.person,
+      expiry: InviteExpiry.oneDay,
+      offerWords: false,
+      relayMode: online,
+      pairingClass: PairingClass.private,
+    );
+    final preview = await desk.pairingPreview(link: invite.link);
+    expect(preview.pairingClass, PairingClass.private);
+    final answer = await desk.pairingAccept(
+      link: invite.link,
+      name: 'Desk',
+      byHand: false,
+      relayMode: online,
+      pairingClass: PairingClass.private,
+    );
+    expect(answer.posted, isTrue);
+    await phone.contactsCollect(
+      trigger: CollectTrigger.open,
+      relayMode: online,
+    );
+    await desk.contactsCollect(trigger: CollectTrigger.open, relayMode: online);
+    final phoneSide = (await phone.privatePairings()).single;
+    final deskSide = (await desk.privatePairings()).single;
+    expect(phoneSide.sas, deskSide.sas);
+    expect(await phone.contacts(), isEmpty);
+    for (final (party, id) in [
+      (phone, phoneSide.contactId),
+      (desk, deskSide.contactId),
+    ]) {
+      await party.pairingSas(
+        contactId: id,
+        decision: SasDecision.match,
+        relayMode: online,
+      );
+    }
+
+    final id = await phone.contactPostPayload(
+      contactId: phoneSide.contactId,
+      payload: [1, 2, 3],
+      relayMode: online,
+    );
+    await desk.contactsCollect(
+      trigger: CollectTrigger.pull,
+      relayMode: online,
+      only: [deskSide.contactId],
+    );
+    final kept = (await desk.contactPayloads()).single;
+    expect(kept.id, id);
+    expect(kept.payload, [1, 2, 3]);
+    expect(await desk.contactPayloadsAck(ids: [id]), 1);
+    await desk.contactPostPayload(
+      contactId: deskSide.contactId,
+      payload: [4],
+      relayMode: online,
+    );
+    await phone.contactsCollect(
+      trigger: CollectTrigger.pull,
+      relayMode: online,
+    );
+    expect((await phone.contactPayloads()).single.payload, [4]);
   });
 
   test('a contact keeps its settings and its address-book entry', () async {

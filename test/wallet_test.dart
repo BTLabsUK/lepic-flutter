@@ -146,6 +146,8 @@ const errorCodes = {
   WalletErrorKind.contactRefusesInvoices: 73,
   WalletErrorKind.phraseMismatch: 74,
   WalletErrorKind.invoiceNotForThisChain: 75,
+  WalletErrorKind.inputsSpentElsewhere: 76,
+  WalletErrorKind.wrongPairingClass: 77,
 };
 
 Matcher throwsWalletError(WalletErrorKind kind) => throwsA(
@@ -757,6 +759,7 @@ void main() {
         options: const SendOptions(
           strategy: SelectionStrategy.all,
           changeOutputs: 11,
+          excludeOutputs: [],
         ),
       ),
       throwsWalletError(WalletErrorKind.invalidArgument),
@@ -798,6 +801,7 @@ void main() {
       options: const SendOptions(
         strategy: SelectionStrategy.all,
         changeOutputs: 2,
+        excludeOutputs: [],
       ),
     );
     expect(split.changeOutputs, 2);
@@ -809,6 +813,7 @@ void main() {
         options: const SendOptions(
           strategy: SelectionStrategy.smallest,
           changeOutputs: 0,
+          excludeOutputs: [],
         ),
       ),
       throwsWalletError(WalletErrorKind.invalidArgument),
