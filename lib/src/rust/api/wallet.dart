@@ -30,6 +30,21 @@ bool validateEpicboxAddress({required String address, required Chain chain}) =>
       chain: chain,
     );
 
+/// True when `signature`, hex as [`EpicWallet::sign_with_address_key`] returns it, is that
+/// call's signature of `message` by the wallet whose Epicbox address has the key `public_key`.
+/// `public_key` is written as in the address, with or without `@<relay>`, on either chain. A
+/// signature made for a relay, a push registration or any other text never passes. False for
+/// anything malformed and for a `message` over 64 KiB.
+bool verifyAddressSignature({
+  required String publicKey,
+  required List<int> message,
+  required String signature,
+}) => RustLib.instance.api.crateApiWalletVerifyAddressSignature(
+  publicKey: publicKey,
+  message: message,
+  signature: signature,
+);
+
 /// What the V2 or V3 slate text `json` says, read as [`EpicWallet::receive_slate`] and
 /// [`EpicWallet::finalize_and_post`] read it, without a wallet and without checking signatures.
 /// `chain` sets the minimum fee a slate must pay. Route a slate file by its `stage`: an S1 to
@@ -1367,6 +1382,14 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// a node URL or relay that is not one, for another directory or chain, and when
   /// `config` turns Epicbox on or off; with `Locked` on a locked wallet.
   Future<void> setServers({required WalletConfig config});
+
+  /// Signs `message` with this wallet's Epicbox address key and returns the DER signature in
+  /// hex. Another wallet that holds the same recovery phrase makes the same signature, and
+  /// [`verify_address_signature`] checks it against the key in [`EpicWallet::epicbox_address`],
+  /// so two devices can prove they hold one wallet. The digest is tagged so that no text the
+  /// key signs for a relay or a push registration can ever equal it. Needs no relay. Fails
+  /// with `InvalidArgument` for a `message` over 64 KiB.
+  Future<String> signWithAddressKey({required List<int> message});
 
   /// Spends exactly the outputs `commitments` names, by `WalletOutput.commitment`, into one
   /// output of this wallet, as [`EpicWallet::consolidate_outputs`] does, and locks nothing
