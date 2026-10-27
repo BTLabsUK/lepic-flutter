@@ -370,6 +370,46 @@ void main() {
     expect((await phone.contactPayloads()).single.payload, [4]);
   });
 
+  test('two installs of one wallet prove it with the address key', () async {
+    final phone = await wallet();
+    final desk = await wallet(
+      mnemonic: await phone.mnemonic(password: password),
+    );
+    final other = await wallet();
+    final key = (await desk.epicboxAddress()).split('@').first;
+    final message = 'epiccash/device-link/hello/v1'.codeUnits;
+    final signature = await phone.signWithAddressKey(message: message);
+    expect(await desk.signWithAddressKey(message: message), signature);
+    expect(
+      verifyAddressSignature(
+        publicKey: key,
+        message: message,
+        signature: signature,
+      ),
+      isTrue,
+    );
+    expect(
+      verifyAddressSignature(
+        publicKey: key,
+        message: [...message, 0],
+        signature: signature,
+      ),
+      isFalse,
+    );
+    expect(
+      verifyAddressSignature(
+        publicKey: key,
+        message: message,
+        signature: await other.signWithAddressKey(message: message),
+      ),
+      isFalse,
+    );
+    await expectLater(
+      phone.signWithAddressKey(message: List.filled(64 * 1024 + 1, 7)),
+      throwsWalletError(WalletErrorKind.invalidArgument),
+    );
+  });
+
   test('a contact keeps its settings and its address-book entry', () async {
     final anna = await wallet();
     final ben = await wallet();
