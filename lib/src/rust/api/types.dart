@@ -2034,6 +2034,11 @@ class TransactionDetails {
   /// confirms when a refresh finds the kernel. `None` for every other transaction.
   final PlatformInt64? senderReportedPostedAtMs;
 
+  /// For origin `OtherWallet` outgoing: no completed scan has covered its blocks yet, so the
+  /// node's answers are its only evidence. Show it as unverified until a scan confirms it.
+  /// `false` for every other transaction.
+  final bool unverified;
+
   const TransactionDetails({
     required this.txId,
     required this.direction,
@@ -2060,6 +2065,7 @@ class TransactionDetails {
     required this.outputCommits,
     required this.spentCommits,
     this.senderReportedPostedAtMs,
+    required this.unverified,
   });
 
   @override
@@ -2088,7 +2094,8 @@ class TransactionDetails {
       found.hashCode ^
       outputCommits.hashCode ^
       spentCommits.hashCode ^
-      senderReportedPostedAtMs.hashCode;
+      senderReportedPostedAtMs.hashCode ^
+      unverified.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2119,7 +2126,8 @@ class TransactionDetails {
           found == other.found &&
           outputCommits == other.outputCommits &&
           spentCommits == other.spentCommits &&
-          senderReportedPostedAtMs == other.senderReportedPostedAtMs;
+          senderReportedPostedAtMs == other.senderReportedPostedAtMs &&
+          unverified == other.unverified;
 }
 
 /// Which of a transport's connections changed. A drain connects on its own beside a running

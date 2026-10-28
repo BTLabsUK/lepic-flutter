@@ -28,7 +28,8 @@ abstract class AppSecretStore implements RustOpaqueInterface {
 }
 
 /// The answer of one store call. The Dart wrapper in `package:lepic` builds it, so an exception
-/// in the app's store becomes `ok: false` instead of an unanswered call.
+/// in the app's store becomes `ok: false` instead of an unanswered call. A read's value is the
+/// PIN key or the sealed vault, so `Debug` shows only whether there is one (ADR 0014).
 class SecretReply {
   final bool ok;
 
