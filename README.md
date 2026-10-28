@@ -6,15 +6,14 @@
 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Flutter 3.47.5](https://img.shields.io/badge/flutter-3.47.5-02569B.svg)](.github/workflows/check.yml)
-[![CI](https://github.com/BTLabs-EPIC/lepic-flutter/actions/workflows/check.yml/badge.svg)](https://github.com/BTLabs-EPIC/lepic-flutter/actions/workflows/check.yml)
 
 [Quick start](#quick-start) · [Usage guide](doc/guide.md) ·
-[LEPIC](https://github.com/BTLabs-EPIC/lepic) · [Security](SECURITY.md)
+[LEPIC](https://gitlab.com/btlabs/lepic) · [Security](SECURITY.md)
 
 </div>
 
 `lepic` is a Dart package that lets a Flutter app run an Epic Cash wallet in its own process. It
-wraps the FFI API of [LEPIC](https://github.com/BTLabs-EPIC/lepic) (`crates/lepic-ffi`) through
+wraps the FFI API of [LEPIC](https://gitlab.com/btlabs/lepic) (`crates/lepic-ffi`) through
 [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge) 2.13.0. Epic Cash Desktop
 and Epic Cash Mobile use it.
 
@@ -76,7 +75,7 @@ Add the package from git (it is not on pub.dev):
 dependencies:
   lepic:
     git:
-      url: https://github.com/BTLabs-EPIC/lepic-flutter.git
+      url: https://gitlab.com/btlabs/lepic-flutter.git
 ```
 
 Create a wallet:
@@ -138,7 +137,7 @@ emulator test and the local-chain test are run by hand; see the
 
 Secrets stay at the boundary: only secrets the user types or configures enter Rust, and only the
 recovery phrase and the PIN key (for the app's secret store) leave it ([LEPIC ADR
-0014](https://github.com/BTLabs-EPIC/lepic/blob/main/docs/adr/0014-secrets-at-the-flutter-boundary.md)).
+0014](https://gitlab.com/btlabs/lepic/-/blob/main/docs/adr/0014-secrets-at-the-flutter-boundary.md)).
 Please do not open public issues for vulnerabilities; [SECURITY.md](SECURITY.md) explains how to
 report one privately.
 
@@ -151,7 +150,7 @@ Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. This p
 
 - Usage guide: [doc/guide.md](doc/guide.md)
 - Developer documentation: https://docs.btlabs.uk/developers/lepic-flutter/
-- Wiki: https://github.com/BTLabs-EPIC/lepic-flutter/wiki
+- Wiki: https://gitlab.com/btlabs/lepic-flutter/-/wikis/home
 
 ## License
 

@@ -5,7 +5,7 @@ Thanks for helping. Contributors follow the [Code of Conduct](CODE_OF_CONDUCT.md
 ## Making a change
 
 - Commits follow Conventional Commits with a DCO sign-off (`git commit -s`), the same as LEPIC;
-  see [LEPIC's CONTRIBUTING.md](https://github.com/BTLabs-EPIC/lepic/blob/main/CONTRIBUTING.md)
+  see [LEPIC's CONTRIBUTING.md](https://gitlab.com/btlabs/lepic/-/blob/main/CONTRIBUTING.md)
   for the format, the types and the [DCO](https://developercertificate.org/).
 - Every change passes, from the package root after `tool/lepic.sh sync`:
 

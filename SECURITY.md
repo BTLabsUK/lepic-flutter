@@ -2,8 +2,8 @@
 
 ## Reporting a vulnerability
 
-Do not open a public issue. Email support@btlabs.uk, or use GitHub private vulnerability reporting
-(Security tab → Report a vulnerability).
+Do not open a public issue. Email **support@btlabs.uk**, or open a *confidential* issue on GitLab
+(New issue, then tick "Turn on confidentiality"); only the maintainers can see it.
 
 Include the affected version or commit, what an attacker controls, what happens, and the smallest
 reproduction you have.
@@ -16,7 +16,7 @@ native library is loaded and verified in `hook/build.dart` (the checksum, the pi
 feature checks).
 
 Issues in the wallet engine itself (transactions, keys, storage, parsing of untrusted input) belong
-to LEPIC: see [LEPIC's SECURITY.md](https://github.com/BTLabs-EPIC/lepic/blob/main/SECURITY.md).
+to LEPIC: see [LEPIC's SECURITY.md](https://gitlab.com/btlabs/lepic/-/blob/main/SECURITY.md).
 Issues in the Epic Cash node, the reference wallet or the Epicbox relay belong to those projects.
 
 ## Supported versions
