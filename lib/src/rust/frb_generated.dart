@@ -80,13 +80,12 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   @override
   int get rustContentHash => -2134089686;
 
-  static const kDefaultExternalLibraryLoaderConfig =
-      ExternalLibraryLoaderConfig(
-        stem: 'lepic_ffi',
-        ioDirectory: null,
-        webPrefix: 'pkg/',
-        wasmBindgenName: 'wasm_bindgen',
-      );
+  static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
+    stem: 'lepic_ffi',
+    ioDirectory: null,
+    webPrefix: 'pkg/',
+    wasmBindgenName: 'wasm_bindgen',
+  );
 }
 
 abstract class RustLibApi extends BaseApi {
@@ -9417,8 +9416,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TransactionDetails dco_decode_transaction_details(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 26)
-      throw Exception('unexpected arr length: expect 26 but see ${arr.length}');
+    if (arr.length != 27)
+      throw Exception('unexpected arr length: expect 27 but see ${arr.length}');
     return TransactionDetails(
       txId: dco_decode_u_32(arr[0]),
       direction: dco_decode_tx_direction(arr[1]),
@@ -9445,7 +9444,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       outputCommits: dco_decode_list_String(arr[22]),
       spentCommits: dco_decode_list_String(arr[23]),
       senderReportedPostedAtMs: dco_decode_opt_box_autoadd_i_64(arr[24]),
-      unverified: dco_decode_bool(arr[25]),
+      senderReportedCancelledAtMs: dco_decode_opt_box_autoadd_i_64(arr[25]),
+      unverified: dco_decode_bool(arr[26]),
     );
   }
 
@@ -11750,6 +11750,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_senderReportedPostedAtMs = sse_decode_opt_box_autoadd_i_64(
       deserializer,
     );
+    var var_senderReportedCancelledAtMs = sse_decode_opt_box_autoadd_i_64(
+      deserializer,
+    );
     var var_unverified = sse_decode_bool(deserializer);
     return TransactionDetails(
       txId: var_txId,
@@ -11777,6 +11780,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       outputCommits: var_outputCommits,
       spentCommits: var_spentCommits,
       senderReportedPostedAtMs: var_senderReportedPostedAtMs,
+      senderReportedCancelledAtMs: var_senderReportedCancelledAtMs,
       unverified: var_unverified,
     );
   }
@@ -13971,6 +13975,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_list_String(self.outputCommits, serializer);
     sse_encode_list_String(self.spentCommits, serializer);
     sse_encode_opt_box_autoadd_i_64(self.senderReportedPostedAtMs, serializer);
+    sse_encode_opt_box_autoadd_i_64(
+      self.senderReportedCancelledAtMs,
+      serializer,
+    );
     sse_encode_bool(self.unverified, serializer);
   }
 
