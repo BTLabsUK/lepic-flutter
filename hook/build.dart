@@ -3,7 +3,8 @@
 // built from the pinned LEPIC, in `native/<rust target>/` next to a `SHA256SUMS` manifest, which
 // is checked before bundling; the `native_dir` user define points elsewhere. The `tor` user
 // define, when set, also requires a library built with (true) or without (false) LEPIC's `tor`
-// feature, as the `FEATURES` file next to it records (LEPIC ADR 0026).
+// feature, as the `FEATURES` file next to it records (LEPIC ADR 0026). The `SOURCE` file next to
+// the library must name the LEPIC commit in `lepic.rev`, built from an unmodified tree.
 //
 // `flutter test` on Linux runs this hook for the host too, so the package's own tests load the
 // library it bundles. macOS builds get no asset.
@@ -28,6 +29,36 @@ const manifestFileName = 'SHA256SUMS';
 /// Must match `FEATURES_FILE` in LEPIC's `xtask/src/mobile.rs`: the `lepic-ffi` features the
 /// library next to it was built with, one per line.
 const featuresFileName = 'FEATURES';
+
+/// Must match `SOURCE_FILE` in LEPIC's `xtask/src/mobile.rs`: `lepic <commit>`, `tree clean` or
+/// `tree modified`, and the rustc version, one per line.
+const sourceFileName = 'SOURCE';
+
+/// Throws unless [source] (the `SOURCE` file next to the library) says the library was built
+/// from LEPIC at [rev], the commit in this package's `lepic.rev`, with no local changes. The
+/// SHA-256 gate only proves the file is the one xtask packaged; this ties it to the pin.
+void verifySource(File source, String rev, String target) {
+  final repackage = 'Run `tool/lepic.sh build $target` in the lepic package.';
+  if (!source.existsSync()) {
+    throw StateError(
+      'No $sourceFileName next to the $target library: it was packaged before LEPIC recorded '
+      'its commit. $repackage',
+    );
+  }
+  final lines = source.readAsLinesSync().map((line) => line.trim()).toList();
+  if (!lines.contains('lepic $rev')) {
+    final built = lines.firstWhere((line) => line.startsWith('lepic '), orElse: () => 'lepic ?');
+    throw StateError(
+      'The $target library was built from ${built.substring(6)}, not the pinned LEPIC $rev. '
+      '$repackage',
+    );
+  }
+  if (!lines.contains('tree clean')) {
+    throw StateError(
+      'The $target library was built from a LEPIC tree with local changes. $repackage',
+    );
+  }
+}
 
 /// Whether the library in [features] (the `FEATURES` file next to it) has LEPIC's `tor` feature.
 /// A library packaged before LEPIC wrote the file has no file and always has Tor.
@@ -121,10 +152,15 @@ void main(List<String> args) async {
     verifyLibrary(library, manifest, target);
     final features = File.fromUri(library.uri.resolve(featuresFileName));
     verifyTor(input.userDefines['tor'], features, target);
+    final source = File.fromUri(library.uri.resolve(sourceFileName));
+    final rev = File.fromUri(input.packageRoot.resolve('lepic.rev'));
+    verifySource(source, rev.readAsStringSync().trim(), target);
 
     output.dependencies
       ..add(library.uri)
-      ..add(manifest.uri);
+      ..add(manifest.uri)
+      ..add(source.uri)
+      ..add(rev.uri);
     if (features.existsSync()) {
       output.dependencies.add(features.uri);
     }
