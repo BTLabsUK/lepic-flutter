@@ -281,6 +281,16 @@ its own `<rust triple>/` directory, so flatten or rename CI artifact layouts to 
   refuses a library that is not in it with that hash. Keep the file with the library when you
   move artifacts into a `native_dir`. It catches truncated, stale or mixed-up files; it is not a
   signature, so it does not stand in for trusting where the directory came from.
+- Next to it, `SOURCE` names the LEPIC commit the library was built from, whether that tree had
+  local changes, and the rustc version. The hook refuses a library without the file, from
+  another commit than `lepic.rev`, or from a modified tree, so a library built from other LEPIC
+  code with the same API cannot be bundled by mistake.
+- The generated loader has no `ioDirectory`, but flutter_rust_bridge's default search still
+  tries the directory in `FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR` before the bundled
+  library on Linux, Windows, iOS and macOS. A release app should pass the bundled file to
+  `RustLib.init(externalLibrary: ...)` by its place in the bundle (`lib/liblepic_ffi.so` beside
+  the executable on Linux, `lepic_ffi.dll` beside it on Windows, `liblepic_ffi.so` by name on
+  Android).
 - The Windows library is built with MSVC and loads the Visual C++ runtime, as Flutter's Windows
   runner does. A Windows app bundles it next to its executable.
 - macOS builds get no bundled library. `flutter test` on Linux gets the Linux

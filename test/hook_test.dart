@@ -22,14 +22,29 @@ PackageUserDefines nativeDirDefine({Object? tor}) => PackageUserDefines(
 const standInSha256 =
     '6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d';
 
-/// A stand-in library and, unless [manifest] is false, its `SHA256SUMS` as LEPIC's xtask writes it.
-File standIn(String target, String fileName, {bool manifest = true}) {
+/// The LEPIC commit this package pins.
+final pinnedRev = File('lepic.rev').readAsStringSync().trim();
+
+/// A stand-in library and, unless [manifest] is false, its `SHA256SUMS` as LEPIC's xtask writes
+/// it, with a `SOURCE` that names [rev] (the pin by default) and [tree].
+File standIn(
+  String target,
+  String fileName, {
+  bool manifest = true,
+  String? rev,
+  String tree = 'clean',
+  bool source = true,
+}) {
   final library = File('${nativeDir.path}/$target/$fileName')
     ..createSync(recursive: true)
     ..writeAsBytesSync([0]);
   if (manifest) {
     File('${nativeDir.path}/$target/SHA256SUMS')
         .writeAsStringSync('$standInSha256  $fileName\n');
+  }
+  if (source) {
+    File('${nativeDir.path}/$target/SOURCE')
+        .writeAsStringSync('lepic ${rev ?? pinnedRev}\ntree $tree\nrustc 1.99.0\n');
   }
   return library;
 }
@@ -162,6 +177,30 @@ void main() {
   void featuresFile(String target, List<String> features) =>
       File('${nativeDir.path}/$target/FEATURES')
           .writeAsStringSync(features.map((f) => '$f\n').join());
+
+  test('fails without a SOURCE naming the pinned LEPIC commit', () async {
+    standIn('aarch64-linux-android', 'liblepic_ffi.so', source: false);
+    await expectLater(
+      bundled(os: OS.android, arch: Architecture.arm64),
+      failsWith('No SOURCE'),
+    );
+  });
+
+  test('fails when the library was built from another LEPIC commit', () async {
+    standIn('aarch64-linux-android', 'liblepic_ffi.so', rev: '0' * 40);
+    await expectLater(
+      bundled(os: OS.android, arch: Architecture.arm64),
+      failsWith('not the pinned LEPIC'),
+    );
+  });
+
+  test('fails when the library was built from a modified LEPIC tree', () async {
+    standIn('aarch64-linux-android', 'liblepic_ffi.so', tree: 'modified');
+    await expectLater(
+      bundled(os: OS.android, arch: Architecture.arm64),
+      failsWith('local changes'),
+    );
+  });
 
   test('takes any library when the tor user define is not set', () async {
     final library = standIn('x86_64-unknown-linux-gnu', 'liblepic_ffi.so');

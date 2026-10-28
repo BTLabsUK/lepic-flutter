@@ -83,7 +83,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
         stem: 'lepic_ffi',
-        ioDirectory: '../../crates/lepic-ffi/target/release/',
+        ioDirectory: null,
         webPrefix: 'pkg/',
         wasmBindgenName: 'wasm_bindgen',
       );

@@ -18,11 +18,11 @@ const rustInput = 'crate::api';
 /// The library file stem, `lepic-ffi`'s lib target, which the build hook bundles under that name.
 const libraryStem = 'lepic_ffi';
 
-/// The codegen derives `ioDirectory`, a fallback directory searched first for the library, from
-/// where the LEPIC checkout sits. It is fixed to the value the package has always had, so the
-/// output does not depend on that location and loading behaves as before.
-const ioDirectory = '../../crates/lepic-ffi/target/release/';
-final ioDirectoryItem = RegExp(r"ioDirectory:\s*'[^']*',");
+/// The codegen derives `ioDirectory`, a directory under the working directory searched first for
+/// the library, from where the LEPIC checkout sits. It is set to null: a shipped app must not
+/// look for its library under whatever directory it was started from. Tests and `dart run` pass
+/// the library file to `RustLib.init`.
+final ioDirectoryItem = RegExp(r"ioDirectory:\s*(?:'[^']*'|null),");
 const anyhowDecoder = 'decodeErrorData: sse_decode_AnyhowException,';
 const walletErrorDecoder = 'decodeErrorData: sse_decode_wallet_error,';
 
@@ -70,7 +70,7 @@ Future<void> main(List<String> args) async {
     stderr.writeln('expected one ioDirectory in $generated: check tool/generate.dart');
     exit(1);
   }
-  source = source.replaceFirst(ioDirectoryItem, "ioDirectory: '$ioDirectory',");
+  source = source.replaceFirst(ioDirectoryItem, 'ioDirectory: null,');
   var sinks = 0;
   var replaced = 0;
   final patched = source.replaceAllMapped(streamSinkEncoder, (match) {
