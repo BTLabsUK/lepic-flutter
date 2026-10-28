@@ -2,6 +2,8 @@ name: lepic
 description: Dart bindings for the LEPIC Epic Cash wallet engine.
 version: 0.1.0
 publish_to: none
+repository: https://github.com/BTLabs-EPIC/lepic-flutter
+homepage: https://docs.btlabs.uk/developers/lepic-flutter/
 
 environment:
   sdk: ^3.13.0
