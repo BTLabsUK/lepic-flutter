@@ -25,7 +25,7 @@ set -euo pipefail
 package="$(cd "$(dirname "$0")/.." && pwd)"
 rev="$(tr -d '[:space:]' < "$package/lepic.rev")"
 lepic="${LEPIC_DIR:-$package/third_party/lepic}"
-lepic_repo="${LEPIC_REPO:-https://gitlab.com/bt-labs-group/lepic.git}"
+lepic_repo="${LEPIC_REPO:-https://gitlab.com/epic-cash-bt/lepic.git}"
 # One target directory per checkout: xtask finds the libraries it builds under it.
 unset CARGO_TARGET_DIR
 
