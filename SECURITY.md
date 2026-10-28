@@ -16,7 +16,7 @@ native library is loaded and verified in `hook/build.dart` (the checksum, the pi
 feature checks).
 
 Issues in the wallet engine itself (transactions, keys, storage, parsing of untrusted input) belong
-to LEPIC: see [LEPIC's SECURITY.md](https://gitlab.com/btlabs/lepic/-/blob/main/SECURITY.md).
+to LEPIC: see [LEPIC's SECURITY.md](https://gitlab.com/bt-labs-group/lepic/-/blob/main/SECURITY.md).
 Issues in the Epic Cash node, the reference wallet or the Epicbox relay belong to those projects.
 
 ## Supported versions
