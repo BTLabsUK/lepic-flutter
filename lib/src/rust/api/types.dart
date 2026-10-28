@@ -2034,6 +2034,12 @@ class TransactionDetails {
   /// confirms when a refresh finds the kernel. `None` for every other transaction.
   final PlatformInt64? senderReportedPostedAtMs;
 
+  /// For a received payment this wallet answered and that is not confirmed: when its sender
+  /// reported that it cancelled the payment (`PaymentCancelled`). Kept after the payment
+  /// ended here; cleared once the chain confirms it. Advisory: nothing was released on the
+  /// report; a cancel here still runs its own checks. `None` for every other transaction.
+  final PlatformInt64? senderReportedCancelledAtMs;
+
   /// For origin `OtherWallet` outgoing: no completed scan has covered its blocks yet, so the
   /// node's answers are its only evidence. Show it as unverified until a scan confirms it.
   /// `false` for every other transaction.
@@ -2065,6 +2071,7 @@ class TransactionDetails {
     required this.outputCommits,
     required this.spentCommits,
     this.senderReportedPostedAtMs,
+    this.senderReportedCancelledAtMs,
     required this.unverified,
   });
 
@@ -2095,6 +2102,7 @@ class TransactionDetails {
       outputCommits.hashCode ^
       spentCommits.hashCode ^
       senderReportedPostedAtMs.hashCode ^
+      senderReportedCancelledAtMs.hashCode ^
       unverified.hashCode;
 
   @override
@@ -2127,6 +2135,7 @@ class TransactionDetails {
           outputCommits == other.outputCommits &&
           spentCommits == other.spentCommits &&
           senderReportedPostedAtMs == other.senderReportedPostedAtMs &&
+          senderReportedCancelledAtMs == other.senderReportedCancelledAtMs &&
           unverified == other.unverified;
 }
 
@@ -2579,6 +2588,14 @@ enum WalletEventKind {
 
   /// The contact `contact_id` sent a payload; read it with `EpicWallet::contact_payloads`.
   contactPayload,
+
+  /// The sender of a payment this wallet received and answered, over Epicbox or as a paired
+  /// contact, reports that it cancelled the payment: `tx_id` and `slate_id` are set. Raised
+  /// once per payment, while it waits for its sender, and only from that payment's sender.
+  /// Advisory: nothing changed and nothing was released. The payment's
+  /// `sender_reported_cancelled_at_ms` is set from now on; whether to cancel it here is the
+  /// app's choice, and `EpicWallet::cancel` keeps its own checks.
+  paymentCancelled,
 }
 
 /// An output of the wallet, from `EpicWallet::outputs`.
