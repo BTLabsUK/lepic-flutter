@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Invoices between paired contacts on the mock chain and the mock relay: issued, paid with the
 // typed amount, declined and expired. Runs as wallet_test.dart does; from the repository root:
 //   tool/lepic.sh test

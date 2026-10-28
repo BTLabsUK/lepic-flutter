@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # Builds, tests and generates package:lepic against the LEPIC commit in lepic.rev.
 #
 # Usage:

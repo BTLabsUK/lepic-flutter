@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Regenerates the bindings: runs `flutter_rust_bridge_codegen generate`, then makes every stream
 // decode its errors as `WalletError`.
 //

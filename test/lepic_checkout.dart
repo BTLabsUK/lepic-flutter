@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import 'dart:io';
 
 /// [relative] inside the LEPIC checkout the package is tested against: `LEPIC_DIR`, which

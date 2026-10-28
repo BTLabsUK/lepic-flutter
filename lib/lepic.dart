@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /// Dart bindings for the LEPIC wallet engine.
 ///
 /// Call `RustLib.init()` once, create one [LepicRuntime], and give every wallet an

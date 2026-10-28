@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Runs the binding against the local interop chain: a reference node, an Epicbox relay and
 // the epic-wallet funder of interop/acceptance. Skipped unless LEPIC_INTEROP=1. With the stack
 // running (interop/acceptance/run.sh --stack-only, see README.md), from the repository root:
