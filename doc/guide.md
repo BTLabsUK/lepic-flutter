@@ -16,7 +16,7 @@ The package bundles the Android, iOS and Linux libraries through its build hook 
 
 ## Repository and codegen
 
-LEPIC (https://gitlab.com/btlabs/lepic) is a Rust library; this repository is its Flutter
+LEPIC (https://gitlab.com/bt-labs-group/lepic) is a Rust library; this repository is its Flutter
 binding, the Dart package `lepic`. It versions with SemVer on its own, starting at 0.1.0.
 
 | Path | Holds |

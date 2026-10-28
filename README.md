@@ -5,15 +5,15 @@
 **The Flutter binding of LEPIC, the Epic Cash wallet core in Rust.**
 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Flutter 3.47.5](https://img.shields.io/badge/flutter-3.47.5-02569B.svg)](.github/workflows/check.yml)
+[![Flutter 3.47.5](https://img.shields.io/badge/flutter-3.47.5-02569B.svg)](pubspec.yaml)
 
 [Quick start](#quick-start) · [Usage guide](doc/guide.md) ·
-[LEPIC](https://gitlab.com/btlabs/lepic) · [Security](SECURITY.md)
+[LEPIC](https://gitlab.com/bt-labs-group/lepic) · [Security](SECURITY.md)
 
 </div>
 
 `lepic` is a Dart package that lets a Flutter app run an Epic Cash wallet in its own process. It
-wraps the FFI API of [LEPIC](https://gitlab.com/btlabs/lepic) (`crates/lepic-ffi`) through
+wraps the FFI API of [LEPIC](https://gitlab.com/bt-labs-group/lepic) (`crates/lepic-ffi`) through
 [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge) 2.13.0. Epic Cash Desktop
 and Epic Cash Mobile use it.
 
@@ -58,10 +58,10 @@ asset for the target being built. See [Native libraries](doc/guide.md#native-lib
 
 | Platform | Built on | What is tested |
 |---|---|---|
-| Linux x86_64 | Linux x86_64 | CI runs the host tests and checks the bridge on every change |
+| Linux x86_64 | Linux x86_64 | the host tests and the bridge check, before every merge |
 | Android arm64, armv7, x86_64 | Linux or macOS, with NDK and `cargo-ndk` | an integration test on an Android emulator, run by hand |
-| Windows x86_64 | Windows x86_64 | not tested in this repository's CI |
-| iOS device and simulator, arm64 | macOS with Xcode | not tested in this repository's CI |
+| Windows x86_64 | Windows x86_64 | through Epic Cash Desktop's Windows builds |
+| iOS device and simulator, arm64 | macOS with Xcode | through Epic Cash Mobile's iOS preview builds |
 | macOS | none | the hook bundles no library yet |
 
 Libraries are built with Tor. Set `WFE_TOR=0` to build without it
@@ -75,7 +75,7 @@ Add the package from git (it is not on pub.dev):
 dependencies:
   lepic:
     git:
-      url: https://gitlab.com/btlabs/lepic-flutter.git
+      url: https://gitlab.com/bt-labs-group/lepic-flutter.git
 ```
 
 Create a wallet:
@@ -129,7 +129,8 @@ tool/lepic.sh test             # builds the scripted-node library, runs flutter 
 tool/lepic.sh emulator-test    # on an attached Android device or emulator
 ```
 
-`check`, `flutter analyze` and `test` run in CI (`.github/workflows/check.yml`) on Linux. The
+`check`, `flutter analyze` and `test` run on our own machines before every merge; there is no
+hosted CI, so run them yourself before you send a change. The
 emulator test and the local-chain test are run by hand; see the
 [guide](doc/guide.md#develop).
 
@@ -137,7 +138,7 @@ emulator test and the local-chain test are run by hand; see the
 
 Secrets stay at the boundary: only secrets the user types or configures enter Rust, and only the
 recovery phrase and the PIN key (for the app's secret store) leave it ([LEPIC ADR
-0014](https://gitlab.com/btlabs/lepic/-/blob/main/docs/adr/0014-secrets-at-the-flutter-boundary.md)).
+0014](https://gitlab.com/bt-labs-group/lepic/-/blob/main/docs/adr/0014-secrets-at-the-flutter-boundary.md)).
 Please do not open public issues for vulnerabilities; [SECURITY.md](SECURITY.md) explains how to
 report one privately.
 
@@ -150,7 +151,7 @@ Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. This p
 
 - Usage guide: [doc/guide.md](doc/guide.md)
 - Developer documentation: https://docs.btlabs.uk/developers/lepic-flutter/
-- Wiki: https://gitlab.com/btlabs/lepic-flutter/-/wikis/home
+- Wiki: https://gitlab.com/bt-labs-group/lepic-flutter/-/wikis/home
 
 ## License
 
