@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Runs on Linux against the library the build hook bundles from `test_native/`, which holds
 // lepic-ffi built with the mock node. From the repository root:
 //   tool/lepic.sh test

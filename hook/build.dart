@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Bundles the prebuilt lepic-ffi library for the Android, iOS, Linux or Windows target being
 // built, so an app gets it by depending on this package. `tool/lepic.sh build` puts the libraries,
 // built from the pinned LEPIC, in `native/<rust target>/` next to a `SHA256SUMS` manifest, which

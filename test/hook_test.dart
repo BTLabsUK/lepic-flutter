@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Runs hook/build.dart in isolation for each target it handles. Needs no native library: the
 // bundling cases point the `native_dir` user define at stand-in files.
 

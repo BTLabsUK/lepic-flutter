@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Pairing with contacts between wallets on the mock chain and the mock relay: by link, by hand,
 // in person and by pairing words, the words check, sealed slates, the events and the backup.
 // Runs as wallet_test.dart does; from the repository root:

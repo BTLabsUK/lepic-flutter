@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Runs on an Android device or emulator against the bundled liblepic_ffi.so built with the mock
 // node. Start it with `tool/lepic.sh emulator-test` from the package root.
 
