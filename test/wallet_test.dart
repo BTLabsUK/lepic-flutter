@@ -11,6 +11,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lepic/lepic.dart';
 
+import 'shipped_tuning.dart';
+
 import 'lepic_checkout.dart';
 
 const password = 'correct horse battery staple';
@@ -75,6 +77,8 @@ WalletConfig configFor(Directory dir) => WalletConfig(
   nodeUrl: 'http://127.0.0.1:1',
   epicboxDomain: '',
   epicboxPort: 443,
+  onionRoutes: const [],
+  tuning: shippedTuning,
 );
 
 /// The stable codes of README.md, which apps may store.
@@ -623,6 +627,8 @@ void main() {
         nodeUrl: 'http://127.0.0.1:1',
         epicboxDomain: 'epicbox.example',
         epicboxPort: 443,
+        onionRoutes: const [],
+        tuning: shippedTuning,
       ),
       store: lepicSecretStore(MemoryStore()),
       password: password,
@@ -1987,6 +1993,8 @@ void main() {
           nodeUrl: 'http://127.0.0.1:1',
           epicboxDomain: 'epicbox.example',
           epicboxPort: 443,
+          onionRoutes: const [],
+          tuning: shippedTuning,
         ),
         store: lepicSecretStore(MemoryStore()),
         seedFile: vector.file,

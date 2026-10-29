@@ -10,6 +10,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lepic/lepic.dart';
 
+import 'shipped_tuning.dart';
+
 import 'contact_test.dart' show online, pairContacts, relayDomain;
 import 'wallet_test.dart'
     show
@@ -83,6 +85,8 @@ void main() {
     nodeUrl: 'http://127.0.0.1:1',
     epicboxDomain: relayDomain,
     epicboxPort: 443,
+    onionRoutes: const [],
+    tuning: shippedTuning,
   );
 
   List<WalletEvent> record(EpicWallet wallet) {
