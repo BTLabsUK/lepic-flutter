@@ -56,7 +56,7 @@ final wallet = await EpicWallet.create(
     dataDir: dir.path,
     chain: Chain.mainnet,
     nodeUrl: 'https://node.example:3413',
-    epicboxDomain: settings.epicboxDefault, // [epicbox] default of the app's settings.toml
+    epicboxDomain: settings.epicboxServers.first, // the first [epicbox] server of the app's settings.toml
     epicboxPort: 443,
     onionRoutes: appConfig.onionRoutes, // [tor] onions of app-config.toml
     tuning: appConfig.tuning, // the tuning keys of app-config.toml
@@ -600,7 +600,7 @@ final on = wallet.epicboxOverTor();
   listener is not connected yet: the relay waits for tor, it never falls back to a direct
   connection.
 - Hosts with an onion are reached at it. LEPIC knows none of its own: the routes come from
-  `WalletConfig.onionRoutes` (the `[[tor.onions]]` of the app's settings) when the wallet opens,
+  `WalletConfig.onionRoutes` (the `[tor] onions` of the app's read-only app-config.toml) when the wallet opens,
   for the relay and the node client (below), and the app may replace them later, for example
   with the signed list it fetched:
 
@@ -749,7 +749,7 @@ links are public. Nothing else that crosses is secret.
 
 - Pair online: `pairingInvite(name, kind, expiry, offerWords, mode, meetingRelays)` returns the
   link and, with `offerWords`, five `SasEntry` words (10 minutes), posted only to the
-  `meetingRelays`, the `[pairing] servers` of the app's settings: LEPIC has none of its own, and
+  `meetingRelays`, the first `[epicbox] pairing_servers` entries of the user's Epicbox list (app-config.toml and settings.toml): LEPIC has none of its own, and
   an empty list throws `pairingWordsUnavailable`. The other side runs
   `pairingPreview(link)` for the "Pair with Anna?" sheet, or `pairingFindWords(words, mode, meetingRelays)`,
   then `pairingAccept(link, name, byHand, mode)`. Replies and confirmations arrive with
