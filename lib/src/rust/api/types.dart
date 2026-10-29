@@ -10,7 +10,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'tor.dart';
 
 // These functions are ignored because they are not marked as `pub`: `network`, `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Which Epic chain the wallet talks to.
 enum Chain { mainnet, floonet }
@@ -340,6 +340,71 @@ class ContactView {
           createdAtMs == other.createdAtMs;
 }
 
+/// The Epicbox relay connection.
+class EpicboxTuning {
+  /// The TCP, TLS and websocket handshakes together.
+  final int connectTimeoutS;
+
+  /// Each relay answer.
+  final int responseTimeoutS;
+
+  /// Below the relay proxy's idle timeout.
+  final int pingIntervalS;
+  final int reconnectMinS;
+  final int reconnectMaxS;
+
+  /// One whole mailbox drain.
+  final int drainTimeoutS;
+
+  /// The least a relay connection through tor is given.
+  final int torConnectTimeoutS;
+
+  /// Asking a relay for its onion through tor.
+  final int onionDiscoveryTimeoutS;
+
+  /// How long a relay that could not be asked is not asked again.
+  final int onionDiscoveryRetryS;
+
+  const EpicboxTuning({
+    required this.connectTimeoutS,
+    required this.responseTimeoutS,
+    required this.pingIntervalS,
+    required this.reconnectMinS,
+    required this.reconnectMaxS,
+    required this.drainTimeoutS,
+    required this.torConnectTimeoutS,
+    required this.onionDiscoveryTimeoutS,
+    required this.onionDiscoveryRetryS,
+  });
+
+  @override
+  int get hashCode =>
+      connectTimeoutS.hashCode ^
+      responseTimeoutS.hashCode ^
+      pingIntervalS.hashCode ^
+      reconnectMinS.hashCode ^
+      reconnectMaxS.hashCode ^
+      drainTimeoutS.hashCode ^
+      torConnectTimeoutS.hashCode ^
+      onionDiscoveryTimeoutS.hashCode ^
+      onionDiscoveryRetryS.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EpicboxTuning &&
+          runtimeType == other.runtimeType &&
+          connectTimeoutS == other.connectTimeoutS &&
+          responseTimeoutS == other.responseTimeoutS &&
+          pingIntervalS == other.pingIntervalS &&
+          reconnectMinS == other.reconnectMinS &&
+          reconnectMaxS == other.reconnectMaxS &&
+          drainTimeoutS == other.drainTimeoutS &&
+          torConnectTimeoutS == other.torConnectTimeoutS &&
+          onionDiscoveryTimeoutS == other.onionDiscoveryTimeoutS &&
+          onionDiscoveryRetryS == other.onionDiscoveryRetryS;
+}
+
 /// A pairing in progress that ended with nothing stored.
 class FailedPairing {
   /// The id of the pairing's record, now removed.
@@ -459,6 +524,63 @@ class FoundInvite {
           runtimeType == other.runtimeType &&
           link == other.link &&
           preview == other.preview;
+}
+
+/// The wallet's HTTP listener, which tor's onion forwards to too, and sends to other
+/// wallets' listeners.
+class HttpTuning {
+  final int headerTimeoutS;
+  final int bodyTimeoutS;
+  final int requestTimeoutS;
+  final int answerTimeoutS;
+  final int maxConnections;
+  final int maxConnectionsPerAddress;
+  final int requestsPerMinute;
+  final int receivesPerMinute;
+  final int sendConnectTimeoutS;
+  final int sendRequestTimeoutS;
+
+  const HttpTuning({
+    required this.headerTimeoutS,
+    required this.bodyTimeoutS,
+    required this.requestTimeoutS,
+    required this.answerTimeoutS,
+    required this.maxConnections,
+    required this.maxConnectionsPerAddress,
+    required this.requestsPerMinute,
+    required this.receivesPerMinute,
+    required this.sendConnectTimeoutS,
+    required this.sendRequestTimeoutS,
+  });
+
+  @override
+  int get hashCode =>
+      headerTimeoutS.hashCode ^
+      bodyTimeoutS.hashCode ^
+      requestTimeoutS.hashCode ^
+      answerTimeoutS.hashCode ^
+      maxConnections.hashCode ^
+      maxConnectionsPerAddress.hashCode ^
+      requestsPerMinute.hashCode ^
+      receivesPerMinute.hashCode ^
+      sendConnectTimeoutS.hashCode ^
+      sendRequestTimeoutS.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HttpTuning &&
+          runtimeType == other.runtimeType &&
+          headerTimeoutS == other.headerTimeoutS &&
+          bodyTimeoutS == other.bodyTimeoutS &&
+          requestTimeoutS == other.requestTimeoutS &&
+          answerTimeoutS == other.answerTimeoutS &&
+          maxConnections == other.maxConnections &&
+          maxConnectionsPerAddress == other.maxConnectionsPerAddress &&
+          requestsPerMinute == other.requestsPerMinute &&
+          receivesPerMinute == other.receivesPerMinute &&
+          sendConnectTimeoutS == other.sendConnectTimeoutS &&
+          sendRequestTimeoutS == other.sendRequestTimeoutS;
 }
 
 /// What the old wallet recorded of an imported transaction beyond the common fields.
@@ -874,6 +996,36 @@ enum ListenerEventKind {
   invoiceBounced,
 }
 
+/// The app configuration's `[node]`, `[epicbox]`, `[http]` and `[tor]` tuning keys. Every
+/// field is required: LEPIC has no defaults of its own.
+class NetTuning {
+  final NodeTuning node;
+  final EpicboxTuning epicbox;
+  final HttpTuning http;
+  final TorTuning tor;
+
+  const NetTuning({
+    required this.node,
+    required this.epicbox,
+    required this.http,
+    required this.tor,
+  });
+
+  @override
+  int get hashCode =>
+      node.hashCode ^ epicbox.hashCode ^ http.hashCode ^ tor.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NetTuning &&
+          runtimeType == other.runtimeType &&
+          node == other.node &&
+          epicbox == other.epicbox &&
+          http == other.http &&
+          tor == other.tor;
+}
+
 /// What `node_tip` learns from a node's foreign API, which needs no API secret.
 class NodeTip {
   final BigInt height;
@@ -911,6 +1063,64 @@ class NodeTip {
           nodeVersion == other.nodeVersion &&
           readyForTxs == other.readyForTxs &&
           tipTimeMs == other.tipTimeMs;
+}
+
+/// Requests to the node.
+class NodeTuning {
+  final int connectTimeoutS;
+
+  /// From sending a request to the last byte of its answer.
+  final int requestTimeoutS;
+
+  /// How long an idle connection is kept; below the node server's keep-alive timeout.
+  final int idleTimeoutS;
+
+  /// Tries of a read, the first included.
+  final int retryAttempts;
+  final int retryBackoffMinMs;
+  final int retryBackoffMaxMs;
+
+  /// Outputs asked for in one request.
+  final int outputsPerRequest;
+
+  /// Output requests in flight at once.
+  final int concurrentRequests;
+
+  const NodeTuning({
+    required this.connectTimeoutS,
+    required this.requestTimeoutS,
+    required this.idleTimeoutS,
+    required this.retryAttempts,
+    required this.retryBackoffMinMs,
+    required this.retryBackoffMaxMs,
+    required this.outputsPerRequest,
+    required this.concurrentRequests,
+  });
+
+  @override
+  int get hashCode =>
+      connectTimeoutS.hashCode ^
+      requestTimeoutS.hashCode ^
+      idleTimeoutS.hashCode ^
+      retryAttempts.hashCode ^
+      retryBackoffMinMs.hashCode ^
+      retryBackoffMaxMs.hashCode ^
+      outputsPerRequest.hashCode ^
+      concurrentRequests.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NodeTuning &&
+          runtimeType == other.runtimeType &&
+          connectTimeoutS == other.connectTimeoutS &&
+          requestTimeoutS == other.requestTimeoutS &&
+          idleTimeoutS == other.idleTimeoutS &&
+          retryAttempts == other.retryAttempts &&
+          retryBackoffMinMs == other.retryBackoffMinMs &&
+          retryBackoffMaxMs == other.retryBackoffMaxMs &&
+          outputsPerRequest == other.outputsPerRequest &&
+          concurrentRequests == other.concurrentRequests;
 }
 
 /// A message for a contact's mailbox, from `EpicWallet::contact_outbox`.
@@ -1947,6 +2157,60 @@ enum SlateStage {
   i3,
 }
 
+/// The wallet's tor. Ignored in a build without tor, but still checked.
+class TorTuning {
+  final int bootstrapTimeoutS;
+
+  /// Bootstrap without a cached consensus.
+  final int coldBootstrapTimeoutS;
+
+  /// Bootstrap progress unchanged this long is a network failure.
+  final int stallTimeoutS;
+  final int coldStallTimeoutS;
+
+  /// The onion's descriptor uploaded.
+  final int publishTimeoutS;
+
+  /// Reaching a host or an onion through tor.
+  final int connectTimeoutS;
+
+  /// One send to an onion, to the last byte of its answer.
+  final int requestTimeoutS;
+
+  const TorTuning({
+    required this.bootstrapTimeoutS,
+    required this.coldBootstrapTimeoutS,
+    required this.stallTimeoutS,
+    required this.coldStallTimeoutS,
+    required this.publishTimeoutS,
+    required this.connectTimeoutS,
+    required this.requestTimeoutS,
+  });
+
+  @override
+  int get hashCode =>
+      bootstrapTimeoutS.hashCode ^
+      coldBootstrapTimeoutS.hashCode ^
+      stallTimeoutS.hashCode ^
+      coldStallTimeoutS.hashCode ^
+      publishTimeoutS.hashCode ^
+      connectTimeoutS.hashCode ^
+      requestTimeoutS.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TorTuning &&
+          runtimeType == other.runtimeType &&
+          bootstrapTimeoutS == other.bootstrapTimeoutS &&
+          coldBootstrapTimeoutS == other.coldBootstrapTimeoutS &&
+          stallTimeoutS == other.stallTimeoutS &&
+          coldStallTimeoutS == other.coldStallTimeoutS &&
+          publishTimeoutS == other.publishTimeoutS &&
+          connectTimeoutS == other.connectTimeoutS &&
+          requestTimeoutS == other.requestTimeoutS;
+}
+
 /// One stored transaction of the default account. Times are milliseconds since the Unix epoch,
 /// by the device clock.
 class TransactionDetails {
@@ -2279,6 +2543,12 @@ class WalletConfig {
   /// without tor.
   final List<OnionRoute> onionRoutes;
 
+  /// Timeouts, retries and limits for the node, the relay, HTTP and tor, from the app's
+  /// configuration. Read when a wallet is created, restored or opened, and by `node_tip`;
+  /// `set_servers` and `node_tip_for` keep the open wallet's. A zero, or a minimum above its
+  /// maximum, fails the call with `InvalidArgument`.
+  final NetTuning tuning;
+
   const WalletConfig({
     required this.dataDir,
     required this.chain,
@@ -2287,6 +2557,7 @@ class WalletConfig {
     required this.epicboxDomain,
     required this.epicboxPort,
     required this.onionRoutes,
+    required this.tuning,
   });
 
   @override
@@ -2297,7 +2568,8 @@ class WalletConfig {
       nodeApiSecret.hashCode ^
       epicboxDomain.hashCode ^
       epicboxPort.hashCode ^
-      onionRoutes.hashCode;
+      onionRoutes.hashCode ^
+      tuning.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2310,7 +2582,8 @@ class WalletConfig {
           nodeApiSecret == other.nodeApiSecret &&
           epicboxDomain == other.epicboxDomain &&
           epicboxPort == other.epicboxPort &&
-          onionRoutes == other.onionRoutes;
+          onionRoutes == other.onionRoutes &&
+          tuning == other.tuning;
 }
 
 /// What the wallet reports while it runs, from `EpicWallet::events`. Only the fields its
