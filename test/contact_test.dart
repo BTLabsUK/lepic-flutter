@@ -16,7 +16,7 @@ import 'wallet_test.dart'
     show MemoryStore, epic, libraryPath, password, scanToEnd, throwsWalletError;
 
 /// A built-in floonet relay, so pairing words are offered; the mock relay serves it.
-const relayDomain = 'flooepicbox.btlabs.uk';
+const relayDomain = 'epicbox.btlabs.uk';
 
 const online = ContactRelayMode.online;
 const offline = ContactRelayMode.offline;

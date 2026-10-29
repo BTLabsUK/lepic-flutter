@@ -582,12 +582,12 @@ final on = wallet.epicboxOverTor();
 - Show "Connecting via Tor" while the setting is on, `torStatus()` is not `off` and the
   listener is not connected yet: the relay waits for tor, it never falls back to a direct
   connection.
-- Hosts with an onion are reached at it: a built-in table holds `flooepicbox.btlabs.uk:443`
+- Hosts with an onion are reached at it: a built-in table holds `epicbox.btlabs.uk:443`
   and `node.btlabs.uk:443` (the node client, below) until the app passes its own list, for example the signed one it fetched:
 
   ```dart
   wallet.setOnionRoutes(routes: [
-    OnionRoute(host: 'flooepicbox.btlabs.uk', port: 443, onion: '<56 characters>.onion', onionPort: 443),
+    OnionRoute(host: 'epicbox.btlabs.uk', port: 443, onion: '<56 characters>.onion', onionPort: 443),
   ]);
   ```
 
