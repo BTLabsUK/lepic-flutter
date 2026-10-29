@@ -83,6 +83,7 @@ void main() {
     nodeUrl: 'http://127.0.0.1:1',
     epicboxDomain: relayDomain,
     epicboxPort: 443,
+    onionRoutes: const [],
   );
 
   List<WalletEvent> record(EpicWallet wallet) {

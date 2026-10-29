@@ -96,6 +96,7 @@ final wallet = await EpicWallet.create(
     nodeUrl: 'https://node.example:3413',
     epicboxDomain: 'epicbox.epiccash.com',
     epicboxPort: 443,
+    onionRoutes: const [],
   ),
   store: store,
   password: password,

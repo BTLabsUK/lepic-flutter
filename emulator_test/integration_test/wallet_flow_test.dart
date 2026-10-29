@@ -36,6 +36,7 @@ WalletConfig configFor(Directory dir) => WalletConfig(
   nodeUrl: 'http://127.0.0.1:1',
   epicboxDomain: '',
   epicboxPort: 443,
+  onionRoutes: const [],
 );
 
 Future<void> scanToEnd(EpicWallet wallet) async {
