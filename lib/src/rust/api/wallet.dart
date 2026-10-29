@@ -914,20 +914,20 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Finds the invite that five pairing words name, typed as names or emoji, on the
   /// meeting relays, and returns its link with its preview, for
   /// [`EpicWallet::pairing_accept`]. The meeting relays are `meeting_relays`, each
-  /// `domain[:port]` over TLS, or with `None` the built-in ones
-  /// ([`built_in_pairing_relays`]); all are asked at once, each for at most 20 seconds, and
+  /// `domain[:port]` over TLS, which the app takes from its settings; all are asked at once,
+  /// each for at most 20 seconds, and
   /// the first invite that opens wins. That copy is taken off its relay, so nobody else finds
   /// it; copies on other relays expire.
   ///
   /// Fails with `InvalidPairingWords` for words not in the table, `PairingWordsNotFound`
   /// when no relay holds the invite, `TransportFailed` when no meeting relay could be
-  /// reached, `PairingWordsUnavailable` when there is no meeting relay, `InvalidArgument`
+  /// reached, `PairingWordsUnavailable` when `meeting_relays` is empty, `InvalidArgument`
   /// for a meeting relay that is not `domain[:port]` or more than 16 of them, and
   /// `ContactsOffline` or `EpicboxOff`.
   Future<FoundInvite> pairingFindWords({
     required List<String> words,
     required ContactRelayMode relayMode,
-    List<String>? meetingRelays,
+    required List<String> meetingRelays,
   });
 
   /// Makes an invite to pair, valid for `expiry`, whose messages go through this wallet's
@@ -937,13 +937,12 @@ abstract class EpicWallet implements RustOpaqueInterface {
   ///
   /// With `offer_words` the invite lasts 10 minutes and is also posted under five pairing
   /// words, returned in `words`, for the other side to type, on every meeting relay whatever
-  /// relay the wallet uses: the `meeting_relays`, each `domain[:port]` over TLS, or with
-  /// `None` the built-in ones ([`built_in_pairing_relays`]). The other side must look on at
+  /// relay the wallet uses: the `meeting_relays`, each `domain[:port]` over TLS, which the
+  /// app takes from its settings; LEPIC has none of its own. The other side must look on at
   /// least one of them. That needs `Online` and fails with `ContactsOffline` or `EpicboxOff`
-  /// before anything is stored, with `PairingWordsUnavailable` when there is no meeting relay
-  /// (an empty list, or a network without built-in relays), and with `TransportFailed` when
-  /// no meeting relay takes the post, the invite then withdrawn. Without `offer_words`,
-  /// `meeting_relays` is ignored.
+  /// before anything is stored, with `PairingWordsUnavailable` when `meeting_relays` is
+  /// empty, and with `TransportFailed` when no meeting relay takes the post, the invite then
+  /// withdrawn. Without `offer_words`, `meeting_relays` is ignored and may be empty.
   ///
   /// The pairing's mailboxes live on `home_relay`, `domain[:port]` reached over TLS, or with
   /// `None` on the wallet's own Epicbox relay; the other side reaches them there whatever
@@ -962,7 +961,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required InviteExpiry expiry,
     required bool offerWords,
     required ContactRelayMode relayMode,
-    List<String>? meetingRelays,
+    required List<String> meetingRelays,
     String? homeRelay,
     required PairingClass pairingClass,
   });
@@ -1360,9 +1359,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   void setNodeOverTor({required bool enabled});
 
   /// Replaces the onion routes the wallet uses through tor, for example with the signed list
-  /// the app fetched; until then a built-in table holds `epicbox.btlabs.uk:443` and
-  /// `node.btlabs.uk:443`, for the relay and for the node client. Only TLS
-  /// hosts belong here: the connection still checks `host`'s certificate. Applies from the
+  /// the app fetched; until then the wallet uses the `onion_routes` of its `WalletConfig`,
+  /// for the relay and for the node client. LEPIC has none of its own. Only TLS hosts belong
+  /// here: the connection still checks `host`'s certificate. Applies from the
   /// next connection. An empty list leaves no route, so every host goes through a Tor exit.
   ///
   /// Fails with `InvalidArgument`, changing nothing, when a host is not a host name, an onion

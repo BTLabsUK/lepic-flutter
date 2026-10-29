@@ -6,7 +6,6 @@
 // Static analysis wrongly picks the IO variant, thus ignore this
 // ignore_for_file: argument_type_not_assignable
 
-import 'api/contact.dart';
 import 'api/diagnostics.dart';
 import 'api/error.dart';
 import 'api/http.dart';
@@ -323,6 +322,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactView dco_decode_contact_view(dynamic raw);
 
   @protected
+  EpicboxTuning dco_decode_epicbox_tuning(dynamic raw);
+
+  @protected
   FailedPairing dco_decode_failed_pairing(dynamic raw);
 
   @protected
@@ -357,6 +359,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   HttpSentTx dco_decode_http_sent_tx(dynamic raw);
+
+  @protected
+  HttpTuning dco_decode_http_tuning(dynamic raw);
 
   @protected
   int dco_decode_i_32(dynamic raw);
@@ -464,7 +469,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   LogLevel dco_decode_log_level(dynamic raw);
 
   @protected
+  NetTuning dco_decode_net_tuning(dynamic raw);
+
+  @protected
   NodeTip dco_decode_node_tip(dynamic raw);
+
+  @protected
+  NodeTuning dco_decode_node_tuning(dynamic raw);
 
   @protected
   OnionRoute dco_decode_onion_route(dynamic raw);
@@ -682,6 +693,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TorStatusKind dco_decode_tor_status_kind(dynamic raw);
+
+  @protected
+  TorTuning dco_decode_tor_tuning(dynamic raw);
 
   @protected
   TransactionDetails dco_decode_transaction_details(dynamic raw);
@@ -1033,6 +1047,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactView sse_decode_contact_view(SseDeserializer deserializer);
 
   @protected
+  EpicboxTuning sse_decode_epicbox_tuning(SseDeserializer deserializer);
+
+  @protected
   FailedPairing sse_decode_failed_pairing(SseDeserializer deserializer);
 
   @protected
@@ -1071,6 +1088,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   HttpSentTx sse_decode_http_sent_tx(SseDeserializer deserializer);
+
+  @protected
+  HttpTuning sse_decode_http_tuning(SseDeserializer deserializer);
 
   @protected
   int sse_decode_i_32(SseDeserializer deserializer);
@@ -1198,7 +1218,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   LogLevel sse_decode_log_level(SseDeserializer deserializer);
 
   @protected
+  NetTuning sse_decode_net_tuning(SseDeserializer deserializer);
+
+  @protected
   NodeTip sse_decode_node_tip(SseDeserializer deserializer);
+
+  @protected
+  NodeTuning sse_decode_node_tuning(SseDeserializer deserializer);
 
   @protected
   OnionRoute sse_decode_onion_route(SseDeserializer deserializer);
@@ -1452,6 +1478,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TorStatusKind sse_decode_tor_status_kind(SseDeserializer deserializer);
+
+  @protected
+  TorTuning sse_decode_tor_tuning(SseDeserializer deserializer);
 
   @protected
   TransactionDetails sse_decode_transaction_details(
@@ -1894,6 +1923,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_contact_view(ContactView self, SseSerializer serializer);
 
   @protected
+  void sse_encode_epicbox_tuning(EpicboxTuning self, SseSerializer serializer);
+
+  @protected
   void sse_encode_failed_pairing(FailedPairing self, SseSerializer serializer);
 
   @protected
@@ -1937,6 +1969,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_http_sent_tx(HttpSentTx self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_http_tuning(HttpTuning self, SseSerializer serializer);
 
   @protected
   void sse_encode_i_32(int self, SseSerializer serializer);
@@ -2089,7 +2124,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_log_level(LogLevel self, SseSerializer serializer);
 
   @protected
+  void sse_encode_net_tuning(NetTuning self, SseSerializer serializer);
+
+  @protected
   void sse_encode_node_tip(NodeTip self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_node_tuning(NodeTuning self, SseSerializer serializer);
 
   @protected
   void sse_encode_onion_route(OnionRoute self, SseSerializer serializer);
@@ -2390,6 +2431,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_tor_status_kind(TorStatusKind self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_tor_tuning(TorTuning self, SseSerializer serializer);
 
   @protected
   void sse_encode_transaction_details(

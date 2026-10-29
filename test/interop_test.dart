@@ -14,6 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lepic/lepic.dart';
 
 import 'lepic_checkout.dart';
+import 'shipped_tuning.dart';
 
 const password = 'interop test password';
 const epic = 100000000;
@@ -120,6 +121,8 @@ Future<void> fundOverEpicboxAndSendBackByFile() async {
           .trim(),
       epicboxDomain: stack['LEPIC_INTEROP_EPICBOX_DOMAIN']!,
       epicboxPort: int.parse(stack['LEPIC_INTEROP_EPICBOX_PORT']!),
+      onionRoutes: const [],
+      tuning: shippedTuning,
     ),
     store: lepicSecretStore(MemoryStore()),
     password: password,
