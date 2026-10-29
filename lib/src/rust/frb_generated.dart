@@ -8259,6 +8259,25 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  EpicboxTuning dco_decode_epicbox_tuning(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 9)
+      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
+    return EpicboxTuning(
+      connectTimeoutS: dco_decode_u_32(arr[0]),
+      responseTimeoutS: dco_decode_u_32(arr[1]),
+      pingIntervalS: dco_decode_u_32(arr[2]),
+      reconnectMinS: dco_decode_u_32(arr[3]),
+      reconnectMaxS: dco_decode_u_32(arr[4]),
+      drainTimeoutS: dco_decode_u_32(arr[5]),
+      torConnectTimeoutS: dco_decode_u_32(arr[6]),
+      onionDiscoveryTimeoutS: dco_decode_u_32(arr[7]),
+      onionDiscoveryRetryS: dco_decode_u_32(arr[8]),
+    );
+  }
+
+  @protected
   FailedPairing dco_decode_failed_pairing(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -8388,6 +8407,26 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       amount: dco_decode_u_64(arr[2]),
       fee: dco_decode_u_64(arr[3]),
       posted: dco_decode_bool(arr[4]),
+    );
+  }
+
+  @protected
+  HttpTuning dco_decode_http_tuning(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 10)
+      throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
+    return HttpTuning(
+      headerTimeoutS: dco_decode_u_32(arr[0]),
+      bodyTimeoutS: dco_decode_u_32(arr[1]),
+      requestTimeoutS: dco_decode_u_32(arr[2]),
+      answerTimeoutS: dco_decode_u_32(arr[3]),
+      maxConnections: dco_decode_u_32(arr[4]),
+      maxConnectionsPerAddress: dco_decode_u_32(arr[5]),
+      requestsPerMinute: dco_decode_u_32(arr[6]),
+      receivesPerMinute: dco_decode_u_32(arr[7]),
+      sendConnectTimeoutS: dco_decode_u_32(arr[8]),
+      sendRequestTimeoutS: dco_decode_u_32(arr[9]),
     );
   }
 
@@ -8684,6 +8723,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  NetTuning dco_decode_net_tuning(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return NetTuning(
+      node: dco_decode_node_tuning(arr[0]),
+      epicbox: dco_decode_epicbox_tuning(arr[1]),
+      http: dco_decode_http_tuning(arr[2]),
+      tor: dco_decode_tor_tuning(arr[3]),
+    );
+  }
+
+  @protected
   NodeTip dco_decode_node_tip(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -8694,6 +8747,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       nodeVersion: dco_decode_String(arr[1]),
       readyForTxs: dco_decode_opt_box_autoadd_bool(arr[2]),
       tipTimeMs: dco_decode_opt_box_autoadd_i_64(arr[3]),
+    );
+  }
+
+  @protected
+  NodeTuning dco_decode_node_tuning(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 8)
+      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
+    return NodeTuning(
+      connectTimeoutS: dco_decode_u_32(arr[0]),
+      requestTimeoutS: dco_decode_u_32(arr[1]),
+      idleTimeoutS: dco_decode_u_32(arr[2]),
+      retryAttempts: dco_decode_u_32(arr[3]),
+      retryBackoffMinMs: dco_decode_u_32(arr[4]),
+      retryBackoffMaxMs: dco_decode_u_32(arr[5]),
+      outputsPerRequest: dco_decode_u_32(arr[6]),
+      concurrentRequests: dco_decode_u_32(arr[7]),
     );
   }
 
@@ -9380,6 +9451,23 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TorTuning dco_decode_tor_tuning(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
+    return TorTuning(
+      bootstrapTimeoutS: dco_decode_u_32(arr[0]),
+      coldBootstrapTimeoutS: dco_decode_u_32(arr[1]),
+      stallTimeoutS: dco_decode_u_32(arr[2]),
+      coldStallTimeoutS: dco_decode_u_32(arr[3]),
+      publishTimeoutS: dco_decode_u_32(arr[4]),
+      connectTimeoutS: dco_decode_u_32(arr[5]),
+      requestTimeoutS: dco_decode_u_32(arr[6]),
+    );
+  }
+
+  @protected
   TransactionDetails dco_decode_transaction_details(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -9506,8 +9594,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   WalletConfig dco_decode_wallet_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 7)
-      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
+    if (arr.length != 8)
+      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
     return WalletConfig(
       dataDir: dco_decode_String(arr[0]),
       chain: dco_decode_chain(arr[1]),
@@ -9516,6 +9604,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       epicboxDomain: dco_decode_String(arr[4]),
       epicboxPort: dco_decode_u_16(arr[5]),
       onionRoutes: dco_decode_list_onion_route(arr[6]),
+      tuning: dco_decode_net_tuning(arr[7]),
     );
   }
 
@@ -10247,6 +10336,31 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  EpicboxTuning sse_decode_epicbox_tuning(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_connectTimeoutS = sse_decode_u_32(deserializer);
+    var var_responseTimeoutS = sse_decode_u_32(deserializer);
+    var var_pingIntervalS = sse_decode_u_32(deserializer);
+    var var_reconnectMinS = sse_decode_u_32(deserializer);
+    var var_reconnectMaxS = sse_decode_u_32(deserializer);
+    var var_drainTimeoutS = sse_decode_u_32(deserializer);
+    var var_torConnectTimeoutS = sse_decode_u_32(deserializer);
+    var var_onionDiscoveryTimeoutS = sse_decode_u_32(deserializer);
+    var var_onionDiscoveryRetryS = sse_decode_u_32(deserializer);
+    return EpicboxTuning(
+      connectTimeoutS: var_connectTimeoutS,
+      responseTimeoutS: var_responseTimeoutS,
+      pingIntervalS: var_pingIntervalS,
+      reconnectMinS: var_reconnectMinS,
+      reconnectMaxS: var_reconnectMaxS,
+      drainTimeoutS: var_drainTimeoutS,
+      torConnectTimeoutS: var_torConnectTimeoutS,
+      onionDiscoveryTimeoutS: var_onionDiscoveryTimeoutS,
+      onionDiscoveryRetryS: var_onionDiscoveryRetryS,
+    );
+  }
+
+  @protected
   FailedPairing sse_decode_failed_pairing(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_contactId = sse_decode_String(deserializer);
@@ -10377,6 +10491,33 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       amount: var_amount,
       fee: var_fee,
       posted: var_posted,
+    );
+  }
+
+  @protected
+  HttpTuning sse_decode_http_tuning(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_headerTimeoutS = sse_decode_u_32(deserializer);
+    var var_bodyTimeoutS = sse_decode_u_32(deserializer);
+    var var_requestTimeoutS = sse_decode_u_32(deserializer);
+    var var_answerTimeoutS = sse_decode_u_32(deserializer);
+    var var_maxConnections = sse_decode_u_32(deserializer);
+    var var_maxConnectionsPerAddress = sse_decode_u_32(deserializer);
+    var var_requestsPerMinute = sse_decode_u_32(deserializer);
+    var var_receivesPerMinute = sse_decode_u_32(deserializer);
+    var var_sendConnectTimeoutS = sse_decode_u_32(deserializer);
+    var var_sendRequestTimeoutS = sse_decode_u_32(deserializer);
+    return HttpTuning(
+      headerTimeoutS: var_headerTimeoutS,
+      bodyTimeoutS: var_bodyTimeoutS,
+      requestTimeoutS: var_requestTimeoutS,
+      answerTimeoutS: var_answerTimeoutS,
+      maxConnections: var_maxConnections,
+      maxConnectionsPerAddress: var_maxConnectionsPerAddress,
+      requestsPerMinute: var_requestsPerMinute,
+      receivesPerMinute: var_receivesPerMinute,
+      sendConnectTimeoutS: var_sendConnectTimeoutS,
+      sendRequestTimeoutS: var_sendRequestTimeoutS,
     );
   }
 
@@ -10797,6 +10938,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  NetTuning sse_decode_net_tuning(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_node = sse_decode_node_tuning(deserializer);
+    var var_epicbox = sse_decode_epicbox_tuning(deserializer);
+    var var_http = sse_decode_http_tuning(deserializer);
+    var var_tor = sse_decode_tor_tuning(deserializer);
+    return NetTuning(
+      node: var_node,
+      epicbox: var_epicbox,
+      http: var_http,
+      tor: var_tor,
+    );
+  }
+
+  @protected
   NodeTip sse_decode_node_tip(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_height = sse_decode_u_64(deserializer);
@@ -10808,6 +10964,29 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       nodeVersion: var_nodeVersion,
       readyForTxs: var_readyForTxs,
       tipTimeMs: var_tipTimeMs,
+    );
+  }
+
+  @protected
+  NodeTuning sse_decode_node_tuning(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_connectTimeoutS = sse_decode_u_32(deserializer);
+    var var_requestTimeoutS = sse_decode_u_32(deserializer);
+    var var_idleTimeoutS = sse_decode_u_32(deserializer);
+    var var_retryAttempts = sse_decode_u_32(deserializer);
+    var var_retryBackoffMinMs = sse_decode_u_32(deserializer);
+    var var_retryBackoffMaxMs = sse_decode_u_32(deserializer);
+    var var_outputsPerRequest = sse_decode_u_32(deserializer);
+    var var_concurrentRequests = sse_decode_u_32(deserializer);
+    return NodeTuning(
+      connectTimeoutS: var_connectTimeoutS,
+      requestTimeoutS: var_requestTimeoutS,
+      idleTimeoutS: var_idleTimeoutS,
+      retryAttempts: var_retryAttempts,
+      retryBackoffMinMs: var_retryBackoffMinMs,
+      retryBackoffMaxMs: var_retryBackoffMaxMs,
+      outputsPerRequest: var_outputsPerRequest,
+      concurrentRequests: var_concurrentRequests,
     );
   }
 
@@ -11687,6 +11866,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TorTuning sse_decode_tor_tuning(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_bootstrapTimeoutS = sse_decode_u_32(deserializer);
+    var var_coldBootstrapTimeoutS = sse_decode_u_32(deserializer);
+    var var_stallTimeoutS = sse_decode_u_32(deserializer);
+    var var_coldStallTimeoutS = sse_decode_u_32(deserializer);
+    var var_publishTimeoutS = sse_decode_u_32(deserializer);
+    var var_connectTimeoutS = sse_decode_u_32(deserializer);
+    var var_requestTimeoutS = sse_decode_u_32(deserializer);
+    return TorTuning(
+      bootstrapTimeoutS: var_bootstrapTimeoutS,
+      coldBootstrapTimeoutS: var_coldBootstrapTimeoutS,
+      stallTimeoutS: var_stallTimeoutS,
+      coldStallTimeoutS: var_coldStallTimeoutS,
+      publishTimeoutS: var_publishTimeoutS,
+      connectTimeoutS: var_connectTimeoutS,
+      requestTimeoutS: var_requestTimeoutS,
+    );
+  }
+
+  @protected
   TransactionDetails sse_decode_transaction_details(
     SseDeserializer deserializer,
   ) {
@@ -11857,6 +12057,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_epicboxDomain = sse_decode_String(deserializer);
     var var_epicboxPort = sse_decode_u_16(deserializer);
     var var_onionRoutes = sse_decode_list_onion_route(deserializer);
+    var var_tuning = sse_decode_net_tuning(deserializer);
     return WalletConfig(
       dataDir: var_dataDir,
       chain: var_chain,
@@ -11865,6 +12066,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       epicboxDomain: var_epicboxDomain,
       epicboxPort: var_epicboxPort,
       onionRoutes: var_onionRoutes,
+      tuning: var_tuning,
     );
   }
 
@@ -12734,6 +12936,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_epicbox_tuning(EpicboxTuning self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self.connectTimeoutS, serializer);
+    sse_encode_u_32(self.responseTimeoutS, serializer);
+    sse_encode_u_32(self.pingIntervalS, serializer);
+    sse_encode_u_32(self.reconnectMinS, serializer);
+    sse_encode_u_32(self.reconnectMaxS, serializer);
+    sse_encode_u_32(self.drainTimeoutS, serializer);
+    sse_encode_u_32(self.torConnectTimeoutS, serializer);
+    sse_encode_u_32(self.onionDiscoveryTimeoutS, serializer);
+    sse_encode_u_32(self.onionDiscoveryRetryS, serializer);
+  }
+
+  @protected
   void sse_encode_failed_pairing(FailedPairing self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.contactId, serializer);
@@ -12833,6 +13049,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_u_64(self.amount, serializer);
     sse_encode_u_64(self.fee, serializer);
     sse_encode_bool(self.posted, serializer);
+  }
+
+  @protected
+  void sse_encode_http_tuning(HttpTuning self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self.headerTimeoutS, serializer);
+    sse_encode_u_32(self.bodyTimeoutS, serializer);
+    sse_encode_u_32(self.requestTimeoutS, serializer);
+    sse_encode_u_32(self.answerTimeoutS, serializer);
+    sse_encode_u_32(self.maxConnections, serializer);
+    sse_encode_u_32(self.maxConnectionsPerAddress, serializer);
+    sse_encode_u_32(self.requestsPerMinute, serializer);
+    sse_encode_u_32(self.receivesPerMinute, serializer);
+    sse_encode_u_32(self.sendConnectTimeoutS, serializer);
+    sse_encode_u_32(self.sendRequestTimeoutS, serializer);
   }
 
   @protected
@@ -13184,12 +13415,34 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_net_tuning(NetTuning self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_node_tuning(self.node, serializer);
+    sse_encode_epicbox_tuning(self.epicbox, serializer);
+    sse_encode_http_tuning(self.http, serializer);
+    sse_encode_tor_tuning(self.tor, serializer);
+  }
+
+  @protected
   void sse_encode_node_tip(NodeTip self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_64(self.height, serializer);
     sse_encode_String(self.nodeVersion, serializer);
     sse_encode_opt_box_autoadd_bool(self.readyForTxs, serializer);
     sse_encode_opt_box_autoadd_i_64(self.tipTimeMs, serializer);
+  }
+
+  @protected
+  void sse_encode_node_tuning(NodeTuning self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self.connectTimeoutS, serializer);
+    sse_encode_u_32(self.requestTimeoutS, serializer);
+    sse_encode_u_32(self.idleTimeoutS, serializer);
+    sse_encode_u_32(self.retryAttempts, serializer);
+    sse_encode_u_32(self.retryBackoffMinMs, serializer);
+    sse_encode_u_32(self.retryBackoffMaxMs, serializer);
+    sse_encode_u_32(self.outputsPerRequest, serializer);
+    sse_encode_u_32(self.concurrentRequests, serializer);
   }
 
   @protected
@@ -13915,6 +14168,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_tor_tuning(TorTuning self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_32(self.bootstrapTimeoutS, serializer);
+    sse_encode_u_32(self.coldBootstrapTimeoutS, serializer);
+    sse_encode_u_32(self.stallTimeoutS, serializer);
+    sse_encode_u_32(self.coldStallTimeoutS, serializer);
+    sse_encode_u_32(self.publishTimeoutS, serializer);
+    sse_encode_u_32(self.connectTimeoutS, serializer);
+    sse_encode_u_32(self.requestTimeoutS, serializer);
+  }
+
+  @protected
   void sse_encode_transaction_details(
     TransactionDetails self,
     SseSerializer serializer,
@@ -14051,6 +14316,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.epicboxDomain, serializer);
     sse_encode_u_16(self.epicboxPort, serializer);
     sse_encode_list_onion_route(self.onionRoutes, serializer);
+    sse_encode_net_tuning(self.tuning, serializer);
   }
 
   @protected

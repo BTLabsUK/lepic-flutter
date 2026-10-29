@@ -59,11 +59,27 @@ final wallet = await EpicWallet.create(
     epicboxDomain: settings.epicboxDefault, // [epicbox] default of the app's settings.toml
     epicboxPort: 443,
     onionRoutes: settings.onionRoutes, // its [[tor.onions]]
+    tuning: appConfig.tuning, // the tuning keys of app-config.toml
   ),
   store: store,
   password: password,
 );
 ```
+
+LEPIC has no defaults for its timeouts, retries and server limits: `WalletConfig.tuning`
+(`NetTuning`) carries all of them, read from the app's read-only `app-config.toml`. Its groups
+mirror that file's sections, with the unit in each field name:
+
+| `NetTuning` field | app-config.toml keys |
+|---|---|
+| `node` (`NodeTuning`) | `[node] connect_timeout_s`, `request_timeout_s`, `idle_timeout_s`, `retry_attempts`, `retry_backoff_min_ms`, `retry_backoff_max_ms`, `outputs_per_request`, `concurrent_requests` |
+| `epicbox` (`EpicboxTuning`) | `[epicbox] connect_timeout_s`, `response_timeout_s`, `ping_interval_s`, `reconnect_min_s`, `reconnect_max_s`, `drain_timeout_s`, `tor_connect_timeout_s`, `onion_discovery_timeout_s`, `onion_discovery_retry_s` |
+| `http` (`HttpTuning`) | `[http] header_timeout_s`, `body_timeout_s`, `request_timeout_s`, `answer_timeout_s`, `max_connections`, `max_connections_per_address`, `requests_per_minute`, `receives_per_minute`, `send_connect_timeout_s`, `send_request_timeout_s` |
+| `tor` (`TorTuning`) | `[tor] bootstrap_timeout_s`, `cold_bootstrap_timeout_s`, `stall_timeout_s`, `cold_stall_timeout_s`, `publish_timeout_s`, `connect_timeout_s`, `request_timeout_s` |
+
+A zero, or a minimum above its maximum, fails the call with `invalidArgument`. The tuning is read
+when a wallet is created, restored or opened, and by `nodeTip`; `setServers` and `nodeTipFor`
+keep the open wallet's. The HTTP listen port stays an argument of `startHttpListener`.
 
 - A password set by `EpicWallet.create` or `EpicWallet.importWalletSeed` has at least eight
   characters, or the call fails with `invalidArgument` before anything is written. `open` and

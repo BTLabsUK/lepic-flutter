@@ -11,6 +11,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lepic/lepic.dart';
 
+import 'shipped_tuning.dart';
+
 import 'invoice_test.dart' show eventWhere;
 import 'wallet_test.dart'
     show MemoryStore, epic, libraryPath, password, scanToEnd, throwsWalletError;
@@ -102,6 +104,7 @@ void main() {
         epicboxDomain: relayDomain,
         epicboxPort: 443,
         onionRoutes: const [],
+        tuning: shippedTuning,
       ),
       store: lepicSecretStore(MemoryStore()),
       mnemonic: mnemonic,
