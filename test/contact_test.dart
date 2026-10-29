@@ -15,8 +15,11 @@ import 'invoice_test.dart' show eventWhere;
 import 'wallet_test.dart'
     show MemoryStore, epic, libraryPath, password, scanToEnd, throwsWalletError;
 
-/// A built-in floonet relay, so pairing words are offered; the mock relay serves it.
-const relayDomain = 'epicbox.btlabs.uk';
+/// The wallets' relay and their meeting relay for pairing words; the mock relay serves it.
+const relayDomain = 'relay.example.invalid';
+
+/// The meeting relays every pairing call names, as the app's settings would.
+const meeting = [relayDomain];
 
 const online = ContactRelayMode.online;
 const offline = ContactRelayMode.offline;
@@ -33,6 +36,7 @@ Future<({String annaSide, String benSide})> pairContacts(
     expiry: InviteExpiry.oneDay,
     offerWords: false,
     relayMode: online,
+    meetingRelays: meeting,
     pairingClass: PairingClass.contact,
   );
   final answer = await ben.pairingAccept(
@@ -97,6 +101,7 @@ void main() {
         nodeUrl: 'http://127.0.0.1:1',
         epicboxDomain: relayDomain,
         epicboxPort: 443,
+        onionRoutes: const [],
       ),
       store: lepicSecretStore(MemoryStore()),
       mnemonic: mnemonic,
@@ -124,6 +129,7 @@ void main() {
         expiry: InviteExpiry.oneHour,
         offerWords: false,
         relayMode: online,
+        meetingRelays: meeting,
         pairingClass: PairingClass.contact,
       );
       expect(invite.link, startsWith('epiccash://pair/1/'));
@@ -206,6 +212,7 @@ void main() {
       expiry: InviteExpiry.sevenDays,
       offerWords: false,
       relayMode: offline,
+      meetingRelays: meeting,
       pairingClass: PairingClass.contact,
     );
     final answer = await ben.pairingAccept(
@@ -273,20 +280,30 @@ void main() {
       expiry: InviteExpiry.oneDay,
       offerWords: true,
       relayMode: online,
+      meetingRelays: meeting,
       pairingClass: PairingClass.contact,
     );
     expect(invite.words, hasLength(5));
     final words = [for (final word in invite.words) word.name];
-    final found = await ben.pairingFindWords(words: words, relayMode: online);
+    final found = await ben.pairingFindWords(
+      words: words,
+      relayMode: online,
+      meetingRelays: meeting,
+    );
     expect(found.preview.claimedName, 'Anna');
     await expectLater(
-      ben.pairingFindWords(words: words, relayMode: online),
+      ben.pairingFindWords(
+        words: words,
+        relayMode: online,
+        meetingRelays: meeting,
+      ),
       throwsWalletError(WalletErrorKind.pairingWordsNotFound),
     );
     await expectLater(
       ben.pairingFindWords(
         words: List.filled(5, 'nonsense'),
         relayMode: online,
+        meetingRelays: meeting,
       ),
       throwsWalletError(WalletErrorKind.invalidPairingWords),
     );
@@ -295,7 +312,6 @@ void main() {
   test('two wallets pair privately and pass payloads both ways', () async {
     final phone = await wallet();
     final desk = await wallet();
-    expect(builtInPairingRelays(chain: Chain.floonet), [relayDomain]);
     await expectLater(
       phone.pairingInvite(
         name: 'Phone',
@@ -303,6 +319,7 @@ void main() {
         expiry: InviteExpiry.oneDay,
         offerWords: true,
         relayMode: online,
+        meetingRelays: meeting,
         pairingClass: PairingClass.private,
       ),
       throwsWalletError(WalletErrorKind.wrongPairingClass),
@@ -313,6 +330,7 @@ void main() {
       expiry: InviteExpiry.oneDay,
       offerWords: false,
       relayMode: online,
+      meetingRelays: meeting,
       pairingClass: PairingClass.private,
     );
     final preview = await desk.pairingPreview(link: invite.link);

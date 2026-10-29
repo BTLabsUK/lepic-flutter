@@ -75,6 +75,7 @@ WalletConfig configFor(Directory dir) => WalletConfig(
   nodeUrl: 'http://127.0.0.1:1',
   epicboxDomain: '',
   epicboxPort: 443,
+  onionRoutes: const [],
 );
 
 /// The stable codes of README.md, which apps may store.
@@ -623,6 +624,7 @@ void main() {
         nodeUrl: 'http://127.0.0.1:1',
         epicboxDomain: 'epicbox.example',
         epicboxPort: 443,
+        onionRoutes: const [],
       ),
       store: lepicSecretStore(MemoryStore()),
       password: password,
@@ -1987,6 +1989,7 @@ void main() {
           nodeUrl: 'http://127.0.0.1:1',
           epicboxDomain: 'epicbox.example',
           epicboxPort: 443,
+          onionRoutes: const [],
         ),
         store: lepicSecretStore(MemoryStore()),
         seedFile: vector.file,

@@ -56,8 +56,9 @@ final wallet = await EpicWallet.create(
     dataDir: dir.path,
     chain: Chain.mainnet,
     nodeUrl: 'https://node.example:3413',
-    epicboxDomain: 'epicbox.epiccash.com',
+    epicboxDomain: settings.epicboxDefault, // [epicbox] default of the app's settings.toml
     epicboxPort: 443,
+    onionRoutes: settings.onionRoutes, // its [[tor.onions]]
   ),
   store: store,
   password: password,
@@ -582,16 +583,18 @@ final on = wallet.epicboxOverTor();
 - Show "Connecting via Tor" while the setting is on, `torStatus()` is not `off` and the
   listener is not connected yet: the relay waits for tor, it never falls back to a direct
   connection.
-- Hosts with an onion are reached at it: a built-in table holds `epicbox.btlabs.uk:443`
-  and `node.btlabs.uk:443` (the node client, below) until the app passes its own list, for example the signed one it fetched:
+- Hosts with an onion are reached at it. LEPIC knows none of its own: the routes come from
+  `WalletConfig.onionRoutes` (the `[[tor.onions]]` of the app's settings) when the wallet opens,
+  for the relay and the node client (below), and the app may replace them later, for example
+  with the signed list it fetched:
 
   ```dart
   wallet.setOnionRoutes(routes: [
-    OnionRoute(host: 'epicbox.btlabs.uk', port: 443, onion: '<56 characters>.onion', onionPort: 443),
+    OnionRoute(host: '<host>', port: 443, onion: '<56 characters>.onion', onionPort: 443),
   ]);
   ```
 
-  The list replaces the table, from the next connection; only TLS hosts belong in it, since the
+  The list replaces the routes, from the next connection; only TLS hosts belong in it, since the
   connection still checks the host's certificate. A list with an invalid host, onion or port 0,
   or more than 256 routes, throws `invalidArgument` and changes nothing. For a relay not in the
   list LEPIC asks it once per wallet session for `/.well-known/epicbox.json` through tor, and
@@ -609,7 +612,7 @@ final on = wallet.nodeOverTor();
 ```
 
 - On, with tor running or expected (`expectTor()`, `startTor`): every node request goes through
-  tor and never directly. A node in the onion list (built in: `https://node.btlabs.uk`) is
+  tor and never directly. A node in the onion routes is
   reached at its onion with TLS for its domain; any other node is reached by name through a Tor
   exit, which resolves the name: the system resolver is not used. The user's node does not
   change.
@@ -728,9 +731,11 @@ anyone who sees them pair as the user until the invite is used or expires: show 
 never store or log them (ADR 0014). Reply and confirm links are sealed to the other side and card
 links are public. Nothing else that crosses is secret.
 
-- Pair online: `pairingInvite(name, kind, expiry, offerWords, mode)` returns the link and, with
-  `offerWords`, five `SasEntry` words (10 minutes, built-in relays only). The other side runs
-  `pairingPreview(link)` for the "Pair with Anna?" sheet, or `pairingFindWords(words, mode)`,
+- Pair online: `pairingInvite(name, kind, expiry, offerWords, mode, meetingRelays)` returns the
+  link and, with `offerWords`, five `SasEntry` words (10 minutes), posted only to the
+  `meetingRelays`, the `[pairing] servers` of the app's settings: LEPIC has none of its own, and
+  an empty list throws `pairingWordsUnavailable`. The other side runs
+  `pairingPreview(link)` for the "Pair with Anna?" sheet, or `pairingFindWords(words, mode, meetingRelays)`,
   then `pairingAccept(link, name, byHand, mode)`. Replies and confirmations arrive with
   `contactsCollect`; by hand they are pasted into `pairingEnterLink(text, mode)`.
 - Pair in person: `pairingShowCard(name, kind, mode)` for "Show my code", then

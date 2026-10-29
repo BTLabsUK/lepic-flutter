@@ -120,6 +120,7 @@ Future<void> fundOverEpicboxAndSendBackByFile() async {
           .trim(),
       epicboxDomain: stack['LEPIC_INTEROP_EPICBOX_DOMAIN']!,
       epicboxPort: int.parse(stack['LEPIC_INTEROP_EPICBOX_PORT']!),
+      onionRoutes: const [],
     ),
     store: lepicSecretStore(MemoryStore()),
     password: password,

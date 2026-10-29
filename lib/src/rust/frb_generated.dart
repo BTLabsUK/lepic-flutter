@@ -3,7 +3,6 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
-import 'api/contact.dart';
 import 'api/diagnostics.dart';
 import 'api/error.dart';
 import 'api/http.dart';
@@ -78,15 +77,14 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.13.0';
 
   @override
-  int get rustContentHash => -2134089686;
+  int get rustContentHash => 1663732635;
 
-  static const kDefaultExternalLibraryLoaderConfig =
-      ExternalLibraryLoaderConfig(
-        stem: 'lepic_ffi',
-        ioDirectory: null,
-        webPrefix: 'pkg/',
-        wasmBindgenName: 'wasm_bindgen',
-      );
+  static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
+    stem: 'lepic_ffi',
+    ioDirectory: null,
+    webPrefix: 'pkg/',
+    wasmBindgenName: 'wasm_bindgen',
+  );
 }
 
 abstract class RustLibApi extends BaseApi {
@@ -493,7 +491,7 @@ abstract class RustLibApi extends BaseApi {
     required EpicWallet that,
     required List<String> words,
     required ContactRelayMode relayMode,
-    List<String>? meetingRelays,
+    required List<String> meetingRelays,
   });
 
   Future<PairingInvite> crateApiWalletEpicWalletPairingInvite({
@@ -503,7 +501,7 @@ abstract class RustLibApi extends BaseApi {
     required InviteExpiry expiry,
     required bool offerWords,
     required ContactRelayMode relayMode,
-    List<String>? meetingRelays,
+    required List<String> meetingRelays,
     String? homeRelay,
     required PairingClass pairingClass,
   });
@@ -902,8 +900,6 @@ abstract class RustLibApi extends BaseApi {
     required String to,
     required String text,
   });
-
-  List<String> crateApiContactBuiltInPairingRelays({required Chain chain});
 
   Future<UrSlateProgress> crateApiWalletDecodeUrSlate({
     required List<String> parts,
@@ -3895,7 +3891,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     required EpicWallet that,
     required List<String> words,
     required ContactRelayMode relayMode,
-    List<String>? meetingRelays,
+    required List<String> meetingRelays,
   }) {
     return handler.executeNormal(
       NormalTask(
@@ -3907,7 +3903,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
           sse_encode_list_String(words, serializer);
           sse_encode_contact_relay_mode(relayMode, serializer);
-          sse_encode_opt_list_String(meetingRelays, serializer);
+          sse_encode_list_String(meetingRelays, serializer);
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
@@ -3940,7 +3936,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     required InviteExpiry expiry,
     required bool offerWords,
     required ContactRelayMode relayMode,
-    List<String>? meetingRelays,
+    required List<String> meetingRelays,
     String? homeRelay,
     required PairingClass pairingClass,
   }) {
@@ -3957,7 +3953,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_invite_expiry(expiry, serializer);
           sse_encode_bool(offerWords, serializer);
           sse_encode_contact_relay_mode(relayMode, serializer);
-          sse_encode_opt_list_String(meetingRelays, serializer);
+          sse_encode_list_String(meetingRelays, serializer);
           sse_encode_opt_String(homeRelay, serializer);
           sse_encode_pairing_class(pairingClass, serializer);
           pdeCallFfi(
@@ -7112,36 +7108,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  List<String> crateApiContactBuiltInPairingRelays({required Chain chain}) {
-    return handler.executeSync(
-      SyncTask(
-        callFfi: () {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_chain(chain, serializer);
-          return pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 153,
-          )!;
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_list_String,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateApiContactBuiltInPairingRelaysConstMeta,
-        argValues: [chain],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateApiContactBuiltInPairingRelaysConstMeta =>
-      const TaskConstMeta(
-        debugName: "built_in_pairing_relays",
-        argNames: ["chain"],
-      );
-
-  @override
   Future<UrSlateProgress> crateApiWalletDecodeUrSlate({
     required List<String> parts,
   }) {
@@ -7153,7 +7119,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 154,
+            funcId: 153,
             port: port_,
           );
         },
@@ -7193,7 +7159,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 155,
+            funcId: 154,
             port: port_,
           );
         },
@@ -7227,7 +7193,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 156,
+            funcId: 155,
             port: port_,
           );
         },
@@ -7257,7 +7223,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 157,
+            funcId: 156,
             port: port_,
           );
         },
@@ -7284,7 +7250,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 158,
+            funcId: 157,
             port: port_,
           );
         },
@@ -7316,7 +7282,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 159,
+            funcId: 158,
             port: port_,
           );
         },
@@ -7353,7 +7319,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 160,
+            funcId: 159,
             port: port_,
           );
         },
@@ -7399,7 +7365,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 161,
+            funcId: 160,
             port: port_,
           );
         },
@@ -7434,7 +7400,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           return pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 162,
+            funcId: 161,
           )!;
         },
         codec: SseCodec(
@@ -7464,7 +7430,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           return pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 163,
+            funcId: 162,
           )!;
         },
         codec: SseCodec(
@@ -7491,7 +7457,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           return pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 164,
+            funcId: 163,
           )!;
         },
         codec: SseCodec(
@@ -7527,7 +7493,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           return pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 165,
+            funcId: 164,
           )!;
         },
         codec: SseCodec(
@@ -7559,7 +7525,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 166,
+            funcId: 165,
             port: port_,
           );
         },
@@ -7600,7 +7566,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 167,
+            funcId: 166,
             port: port_,
           );
         },
@@ -7634,7 +7600,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           return pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 168,
+            funcId: 167,
           )!;
         },
         codec: SseCodec(
@@ -9540,8 +9506,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   WalletConfig dco_decode_wallet_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 6)
-      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
     return WalletConfig(
       dataDir: dco_decode_String(arr[0]),
       chain: dco_decode_chain(arr[1]),
@@ -9549,6 +9515,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       nodeApiSecret: dco_decode_opt_String(arr[3]),
       epicboxDomain: dco_decode_String(arr[4]),
       epicboxPort: dco_decode_u_16(arr[5]),
+      onionRoutes: dco_decode_list_onion_route(arr[6]),
     );
   }
 
@@ -11889,6 +11856,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_nodeApiSecret = sse_decode_opt_String(deserializer);
     var var_epicboxDomain = sse_decode_String(deserializer);
     var var_epicboxPort = sse_decode_u_16(deserializer);
+    var var_onionRoutes = sse_decode_list_onion_route(deserializer);
     return WalletConfig(
       dataDir: var_dataDir,
       chain: var_chain,
@@ -11896,6 +11864,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       nodeApiSecret: var_nodeApiSecret,
       epicboxDomain: var_epicboxDomain,
       epicboxPort: var_epicboxPort,
+      onionRoutes: var_onionRoutes,
     );
   }
 
@@ -14081,6 +14050,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_String(self.nodeApiSecret, serializer);
     sse_encode_String(self.epicboxDomain, serializer);
     sse_encode_u_16(self.epicboxPort, serializer);
+    sse_encode_list_onion_route(self.onionRoutes, serializer);
   }
 
   @protected
@@ -15037,20 +15007,20 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// Finds the invite that five pairing words name, typed as names or emoji, on the
   /// meeting relays, and returns its link with its preview, for
   /// [`EpicWallet::pairing_accept`]. The meeting relays are `meeting_relays`, each
-  /// `domain[:port]` over TLS, or with `None` the built-in ones
-  /// ([`built_in_pairing_relays`]); all are asked at once, each for at most 20 seconds, and
+  /// `domain[:port]` over TLS, which the app takes from its settings; all are asked at once,
+  /// each for at most 20 seconds, and
   /// the first invite that opens wins. That copy is taken off its relay, so nobody else finds
   /// it; copies on other relays expire.
   ///
   /// Fails with `InvalidPairingWords` for words not in the table, `PairingWordsNotFound`
   /// when no relay holds the invite, `TransportFailed` when no meeting relay could be
-  /// reached, `PairingWordsUnavailable` when there is no meeting relay, `InvalidArgument`
+  /// reached, `PairingWordsUnavailable` when `meeting_relays` is empty, `InvalidArgument`
   /// for a meeting relay that is not `domain[:port]` or more than 16 of them, and
   /// `ContactsOffline` or `EpicboxOff`.
   Future<FoundInvite> pairingFindWords({
     required List<String> words,
     required ContactRelayMode relayMode,
-    List<String>? meetingRelays,
+    required List<String> meetingRelays,
   }) => RustLib.instance.api.crateApiWalletEpicWalletPairingFindWords(
     that: this,
     words: words,
@@ -15065,13 +15035,12 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   ///
   /// With `offer_words` the invite lasts 10 minutes and is also posted under five pairing
   /// words, returned in `words`, for the other side to type, on every meeting relay whatever
-  /// relay the wallet uses: the `meeting_relays`, each `domain[:port]` over TLS, or with
-  /// `None` the built-in ones ([`built_in_pairing_relays`]). The other side must look on at
+  /// relay the wallet uses: the `meeting_relays`, each `domain[:port]` over TLS, which the
+  /// app takes from its settings; LEPIC has none of its own. The other side must look on at
   /// least one of them. That needs `Online` and fails with `ContactsOffline` or `EpicboxOff`
-  /// before anything is stored, with `PairingWordsUnavailable` when there is no meeting relay
-  /// (an empty list, or a network without built-in relays), and with `TransportFailed` when
-  /// no meeting relay takes the post, the invite then withdrawn. Without `offer_words`,
-  /// `meeting_relays` is ignored.
+  /// before anything is stored, with `PairingWordsUnavailable` when `meeting_relays` is
+  /// empty, and with `TransportFailed` when no meeting relay takes the post, the invite then
+  /// withdrawn. Without `offer_words`, `meeting_relays` is ignored and may be empty.
   ///
   /// The pairing's mailboxes live on `home_relay`, `domain[:port]` reached over TLS, or with
   /// `None` on the wallet's own Epicbox relay; the other side reaches them there whatever
@@ -15090,7 +15059,7 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
     required InviteExpiry expiry,
     required bool offerWords,
     required ContactRelayMode relayMode,
-    List<String>? meetingRelays,
+    required List<String> meetingRelays,
     String? homeRelay,
     required PairingClass pairingClass,
   }) => RustLib.instance.api.crateApiWalletEpicWalletPairingInvite(
@@ -15632,9 +15601,9 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
       .crateApiWalletEpicWalletSetNodeOverTor(that: this, enabled: enabled);
 
   /// Replaces the onion routes the wallet uses through tor, for example with the signed list
-  /// the app fetched; until then a built-in table holds `epicbox.btlabs.uk:443` and
-  /// `node.btlabs.uk:443`, for the relay and for the node client. Only TLS
-  /// hosts belong here: the connection still checks `host`'s certificate. Applies from the
+  /// the app fetched; until then the wallet uses the `onion_routes` of its `WalletConfig`,
+  /// for the relay and for the node client. LEPIC has none of its own. Only TLS hosts belong
+  /// here: the connection still checks `host`'s certificate. Applies from the
   /// next connection. An empty list leaves no route, so every host goes through a Tor exit.
   ///
   /// Fails with `InvalidArgument`, changing nothing, when a host is not a host name, an onion
