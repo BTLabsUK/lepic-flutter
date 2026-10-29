@@ -94,7 +94,7 @@ final wallet = await EpicWallet.create(
     dataDir: dir.path,
     chain: Chain.mainnet,
     nodeUrl: 'https://node.example:3413',
-    epicboxDomain: 'epicbox.epiccash.com',
+    epicboxDomain: 'relay.example.org', // the first [epicbox] server of the app's settings.toml
     epicboxPort: 443,
     onionRoutes: const [],
     tuning: appConfigTuning, // the [node], [epicbox], [http] and [tor] keys of app-config.toml
