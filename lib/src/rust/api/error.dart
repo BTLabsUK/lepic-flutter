@@ -7,7 +7,7 @@ import '../frb_generated.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `engine_kind`, `from_inner`, `new`
+// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `engine_kind`, `from_inner`, `new`, `refused_offline`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// The error of every fallible call. `message` is English for logs and bug reports; it never
@@ -279,7 +279,12 @@ enum WalletErrorKind {
   /// The invite, contact or call is of the other pairing class: a private invite answered as
   /// a contact or the other way round, words asked for a private pairing, a slate or invoice
   /// for a private pairing, or a payload for a contact. Nothing was stored or sent.
-  wrongPairingClass;
+  wrongPairingClass,
+
+  /// The wallet was opened offline (`WalletConfig.offline`), so the call reached no node or
+  /// relay, or found no confirmed tip to work offline from. Nothing was sent; what was
+  /// stored stays.
+  offline;
 
   /// The stable number of this kind.
   Future<int> code() =>

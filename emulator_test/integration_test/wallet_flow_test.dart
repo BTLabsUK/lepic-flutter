@@ -38,6 +38,7 @@ WalletConfig configFor(Directory dir) => WalletConfig(
   epicboxPort: 443,
   onionRoutes: const [],
   tuning: shippedTuning,
+  offline: false,
 );
 
 Future<void> scanToEnd(EpicWallet wallet) async {

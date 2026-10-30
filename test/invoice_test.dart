@@ -87,6 +87,7 @@ void main() {
     epicboxPort: 443,
     onionRoutes: const [],
     tuning: shippedTuning,
+    offline: false,
   );
 
   List<WalletEvent> record(EpicWallet wallet) {

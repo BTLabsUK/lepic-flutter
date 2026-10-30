@@ -123,6 +123,7 @@ Future<void> fundOverEpicboxAndSendBackByFile() async {
       epicboxPort: int.parse(stack['LEPIC_INTEROP_EPICBOX_PORT']!),
       onionRoutes: const [],
       tuning: shippedTuning,
+      offline: false,
     ),
     store: lepicSecretStore(MemoryStore()),
     password: password,
