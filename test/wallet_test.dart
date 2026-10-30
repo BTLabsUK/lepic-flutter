@@ -154,6 +154,9 @@ const errorCodes = {
   WalletErrorKind.invoiceNotForThisChain: 75,
   WalletErrorKind.inputsSpentElsewhere: 76,
   WalletErrorKind.wrongPairingClass: 77,
+  WalletErrorKind.offline: 78,
+  WalletErrorKind.inputsSpentByOwnTransaction: 79,
+  WalletErrorKind.peerInputsSpent: 80,
 };
 
 Matcher throwsWalletError(WalletErrorKind kind) => throwsA(
