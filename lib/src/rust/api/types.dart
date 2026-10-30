@@ -1990,15 +1990,26 @@ class SendOptions {
   /// output this wallet does not hold is ignored.
   final List<String> excludeOutputs;
 
+  /// The receiver's payment proof address, 64 hex characters (the ed25519 key of its onion
+  /// address, as `epic-wallet` derives it). The receiver is asked to sign a payment proof,
+  /// and its answer is finalized only when that proof verifies for this address, so a
+  /// wallet holding another key cannot complete the payment. The slate then needs the V3
+  /// shape. `None` asks for no proof. Not a valid address: `InvalidArgument`.
+  final String? paymentProofRecipient;
+
   const SendOptions({
     required this.strategy,
     required this.changeOutputs,
     required this.excludeOutputs,
+    this.paymentProofRecipient,
   });
 
   @override
   int get hashCode =>
-      strategy.hashCode ^ changeOutputs.hashCode ^ excludeOutputs.hashCode;
+      strategy.hashCode ^
+      changeOutputs.hashCode ^
+      excludeOutputs.hashCode ^
+      paymentProofRecipient.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2007,7 +2018,8 @@ class SendOptions {
           runtimeType == other.runtimeType &&
           strategy == other.strategy &&
           changeOutputs == other.changeOutputs &&
-          excludeOutputs == other.excludeOutputs;
+          excludeOutputs == other.excludeOutputs &&
+          paymentProofRecipient == other.paymentProofRecipient;
 }
 
 /// A send that was stored and handed to its transport.
@@ -2568,6 +2580,14 @@ class WalletConfig {
   /// `set_servers` and `node_tip_for` fail with `InvalidArgument` for another value.
   final bool offline;
 
+  /// The app will start the wallet's tor for this session. Node requests, the Epicbox relay
+  /// connection and HTTP sends then wait for tor from the session's first connection, and
+  /// never go directly until `stop_tor` (or tor is never started and they time out), as
+  /// after `expect_tor`. With `false` they go directly until tor is expected or started,
+  /// unless the last session on `data_dir` expected tor and was not stopped. Read when a
+  /// wallet is created, restored or opened. Ignored on iOS and in a build without tor.
+  final bool torWanted;
+
   const WalletConfig({
     required this.dataDir,
     required this.chain,
@@ -2578,6 +2598,7 @@ class WalletConfig {
     required this.onionRoutes,
     required this.tuning,
     required this.offline,
+    required this.torWanted,
   });
 
   @override
@@ -2590,7 +2611,8 @@ class WalletConfig {
       epicboxPort.hashCode ^
       onionRoutes.hashCode ^
       tuning.hashCode ^
-      offline.hashCode;
+      offline.hashCode ^
+      torWanted.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2605,7 +2627,8 @@ class WalletConfig {
           epicboxPort == other.epicboxPort &&
           onionRoutes == other.onionRoutes &&
           tuning == other.tuning &&
-          offline == other.offline;
+          offline == other.offline &&
+          torWanted == other.torWanted;
 }
 
 /// What the wallet reports while it runs, from `EpicWallet::events`. Only the fields its
