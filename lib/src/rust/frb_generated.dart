@@ -9357,12 +9357,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   SendOptions dco_decode_send_options(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 3)
-      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
     return SendOptions(
       strategy: dco_decode_selection_strategy(arr[0]),
       changeOutputs: dco_decode_u_32(arr[1]),
       excludeOutputs: dco_decode_list_String(arr[2]),
+      paymentProofRecipient: dco_decode_opt_String(arr[3]),
     );
   }
 
@@ -9642,8 +9643,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   WalletConfig dco_decode_wallet_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 9)
-      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
+    if (arr.length != 10)
+      throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
     return WalletConfig(
       dataDir: dco_decode_String(arr[0]),
       chain: dco_decode_chain(arr[1]),
@@ -9654,6 +9655,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       onionRoutes: dco_decode_list_onion_route(arr[6]),
       tuning: dco_decode_net_tuning(arr[7]),
       offline: dco_decode_bool(arr[8]),
+      torWanted: dco_decode_bool(arr[9]),
     );
   }
 
@@ -11768,10 +11770,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_strategy = sse_decode_selection_strategy(deserializer);
     var var_changeOutputs = sse_decode_u_32(deserializer);
     var var_excludeOutputs = sse_decode_list_String(deserializer);
+    var var_paymentProofRecipient = sse_decode_opt_String(deserializer);
     return SendOptions(
       strategy: var_strategy,
       changeOutputs: var_changeOutputs,
       excludeOutputs: var_excludeOutputs,
+      paymentProofRecipient: var_paymentProofRecipient,
     );
   }
 
@@ -12113,6 +12117,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_onionRoutes = sse_decode_list_onion_route(deserializer);
     var var_tuning = sse_decode_net_tuning(deserializer);
     var var_offline = sse_decode_bool(deserializer);
+    var var_torWanted = sse_decode_bool(deserializer);
     return WalletConfig(
       dataDir: var_dataDir,
       chain: var_chain,
@@ -12123,6 +12128,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       onionRoutes: var_onionRoutes,
       tuning: var_tuning,
       offline: var_offline,
+      torWanted: var_torWanted,
     );
   }
 
@@ -14114,6 +14120,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_selection_strategy(self.strategy, serializer);
     sse_encode_u_32(self.changeOutputs, serializer);
     sse_encode_list_String(self.excludeOutputs, serializer);
+    sse_encode_opt_String(self.paymentProofRecipient, serializer);
   }
 
   @protected
@@ -14375,6 +14382,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_list_onion_route(self.onionRoutes, serializer);
     sse_encode_net_tuning(self.tuning, serializer);
     sse_encode_bool(self.offline, serializer);
+    sse_encode_bool(self.torWanted, serializer);
   }
 
   @protected
@@ -15831,6 +15839,12 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   ///
   /// Plain `http` to any host but this device needs `allow_plain_http`, set only after the
   /// user agreed that the slate travels unencrypted.
+  ///
+  /// While the wallet's tor runs or is expected (`WalletConfig::tor_wanted`,
+  /// [`EpicWallet::expect_tor`]), the connection goes through tor, which resolves the host,
+  /// and waits for a tor that is still starting within the request timeout; a host on this
+  /// device stays direct. A tor that fails fails the send: it never goes directly instead.
+  /// Otherwise the wallet is reached directly.
   ///
   /// Fails, storing nothing, with `HttpUrlInvalid` or `PlainHttpNotAllowed` for the URL and
   /// the errors of [`EpicWallet::estimate_fee`]. Fails with `TransportFailed` when the other

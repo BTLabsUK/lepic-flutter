@@ -99,6 +99,7 @@ final wallet = await EpicWallet.create(
     onionRoutes: const [],
     tuning: appConfigTuning, // the [node], [epicbox], [http] and [tor] keys of app-config.toml
     offline: false, // true opens a cold wallet: no node or relay call (doc/guide.md)
+    torWanted: false, // true when the app starts tor: the session waits for it from the start
   ),
   store: store,
   password: password,

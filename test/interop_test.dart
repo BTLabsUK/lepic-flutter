@@ -124,6 +124,7 @@ Future<void> fundOverEpicboxAndSendBackByFile() async {
       onionRoutes: const [],
       tuning: shippedTuning,
       offline: false,
+      torWanted: false,
     ),
     store: lepicSecretStore(MemoryStore()),
     password: password,
