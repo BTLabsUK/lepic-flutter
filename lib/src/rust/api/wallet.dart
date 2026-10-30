@@ -669,6 +669,13 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// secret, but keep it with the wallet's other data, not in logs.
   Future<String> fingerprint();
 
+  /// The finished payment of `tx_id`: its stored S3, or the I3 of an invoice this wallet
+  /// issued, as legacy V3 slate JSON, which `epic-wallet post -i` reads. Save it as a file,
+  /// or show it with `encode_ur_slate`, for a device that posts it, such as from an offline
+  /// session. Reads only the wallet. Fails with `InvalidArgument` for an unknown transaction
+  /// or one that is not `finalized`, `posted` or `confirmed`.
+  Future<String> finishedPayment({required int txId});
+
   /// The running HTTP listener, or `None`.
   HttpListenerInfo? httpListenerStatus();
 
@@ -1461,7 +1468,15 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// app left running on the wallet's files, as after the app was killed, is halted first.
   /// The onion is the same on every start. On iOS nothing is started: the stream gets
   /// `Failed` with `Missing`, then `Stopped`.
-  Stream<TorEvent> startTor({required String torBinary, String? libDir});
+  ///
+  /// With `publish_onion` false the wallet's onion is not published and no listener runs
+  /// behind it: tor only carries the node, relay and Tor-send connections, and the stream
+  /// stops at `Bootstrapped`, never `Publishing` or `Ready`.
+  Stream<TorEvent> startTor({
+    required String torBinary,
+    String? libDir,
+    required bool publishOnion,
+  });
 
   /// Stops the HTTP listener. Requests in progress finish; its stream ends with `Stopped`
   /// once the port is free.

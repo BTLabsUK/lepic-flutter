@@ -79,6 +79,7 @@ WalletConfig configFor(Directory dir) => WalletConfig(
   epicboxPort: 443,
   onionRoutes: const [],
   tuning: shippedTuning,
+  offline: false,
 );
 
 /// The stable codes of README.md, which apps may store.
@@ -629,6 +630,7 @@ void main() {
         epicboxPort: 443,
         onionRoutes: const [],
         tuning: shippedTuning,
+        offline: false,
       ),
       store: lepicSecretStore(MemoryStore()),
       password: password,
@@ -773,7 +775,7 @@ void main() {
     );
 
     final events = await alice
-        .startTor(torBinary: '/nonexistent/tor', libDir: null)
+        .startTor(torBinary: '/nonexistent/tor', libDir: null, publishOnion: true)
         .toList();
     expect(events.map((event) => event.kind), contains(TorEventKind.failed));
     expect(
@@ -1995,6 +1997,7 @@ void main() {
           epicboxPort: 443,
           onionRoutes: const [],
           tuning: shippedTuning,
+          offline: false,
         ),
         store: lepicSecretStore(MemoryStore()),
         seedFile: vector.file,

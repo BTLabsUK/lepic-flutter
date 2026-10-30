@@ -476,15 +476,24 @@ class FeeEstimate {
           changeOutputs == other.changeOutputs;
 }
 
-/// A send that was finalized and accepted by the node.
+/// A send or issued invoice that was finalized and, unless the session is offline, accepted by
+/// the node.
 class FinalizedTx {
   final int txId;
   final String slateId;
 
-  const FinalizedTx({required this.txId, required this.slateId});
+  /// `false` in an offline session: the transaction is stored `finalized` and nothing went to
+  /// the node. `EpicWallet::finished_payment` gives its final slate to post elsewhere.
+  final bool posted;
+
+  const FinalizedTx({
+    required this.txId,
+    required this.slateId,
+    required this.posted,
+  });
 
   @override
-  int get hashCode => txId.hashCode ^ slateId.hashCode;
+  int get hashCode => txId.hashCode ^ slateId.hashCode ^ posted.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -492,7 +501,8 @@ class FinalizedTx {
       other is FinalizedTx &&
           runtimeType == other.runtimeType &&
           txId == other.txId &&
-          slateId == other.slateId;
+          slateId == other.slateId &&
+          posted == other.posted;
 }
 
 /// Which scan stored an entry for an output it found with no record.
@@ -2549,6 +2559,15 @@ class WalletConfig {
   /// maximum, fails the call with `InvalidArgument`.
   final NetTuning tuning;
 
+  /// An offline session, for a cold wallet. Every call to the node or the Epicbox relay fails
+  /// at once with `Offline`, before any name lookup or connect. Sending, receiving and
+  /// finalizing by slate text or file, and their invoice stages, use the highest chain tip
+  /// the last refresh confirmed (with none, they fail with `Offline`); finalizing stores the
+  /// transaction `finalized` without posting it, with `FinalizedTx.posted` false. Read when a
+  /// wallet is created, restored or opened; changing it means opening the wallet again, and
+  /// `set_servers` and `node_tip_for` fail with `InvalidArgument` for another value.
+  final bool offline;
+
   const WalletConfig({
     required this.dataDir,
     required this.chain,
@@ -2558,6 +2577,7 @@ class WalletConfig {
     required this.epicboxPort,
     required this.onionRoutes,
     required this.tuning,
+    required this.offline,
   });
 
   @override
@@ -2569,7 +2589,8 @@ class WalletConfig {
       epicboxDomain.hashCode ^
       epicboxPort.hashCode ^
       onionRoutes.hashCode ^
-      tuning.hashCode;
+      tuning.hashCode ^
+      offline.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2583,7 +2604,8 @@ class WalletConfig {
           epicboxDomain == other.epicboxDomain &&
           epicboxPort == other.epicboxPort &&
           onionRoutes == other.onionRoutes &&
-          tuning == other.tuning;
+          tuning == other.tuning &&
+          offline == other.offline;
 }
 
 /// What the wallet reports while it runs, from `EpicWallet::events`. Only the fields its

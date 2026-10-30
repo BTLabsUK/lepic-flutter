@@ -105,6 +105,7 @@ void main() {
         epicboxPort: 443,
         onionRoutes: const [],
         tuning: shippedTuning,
+        offline: false,
       ),
       store: lepicSecretStore(MemoryStore()),
       mnemonic: mnemonic,
