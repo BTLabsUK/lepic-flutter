@@ -10,6 +10,8 @@
 [Quick start](#quick-start) · [Usage guide](doc/guide.md) ·
 [LEPIC](https://gitlab.com/epic-cash-bt/lepic) · [Security](SECURITY.md)
 
+Source: [GitLab](https://gitlab.com/epic-cash-bt/lepic-flutter) · Mirror: [GitHub](https://github.com/BTLabsUK/lepic-flutter)
+
 </div>
 
 `lepic` is a Dart package that lets a Flutter app run an Epic Cash wallet in its own process. It
@@ -155,6 +157,8 @@ Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. This p
 - Usage guide: [doc/guide.md](doc/guide.md)
 - Developer documentation: https://docs.btlabs.uk/developers/lepic-flutter/
 - Wiki: https://gitlab.com/epic-cash-bt/lepic-flutter/-/wikis/home
+- Source: https://gitlab.com/epic-cash-bt/lepic-flutter (read-only mirror:
+  https://github.com/BTLabsUK/lepic-flutter)
 
 ## License
 
