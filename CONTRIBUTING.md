@@ -2,6 +2,10 @@
 
 Thanks for helping. Contributors follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
+The source lives on [GitLab](https://gitlab.com/epic-cash-bt/lepic-flutter): open issues and merge
+requests there. [github.com/BTLabsUK/lepic-flutter](https://github.com/BTLabsUK/lepic-flutter) is a
+read-only mirror.
+
 ## Making a change
 
 - Commits follow Conventional Commits with a DCO sign-off (`git commit -s`), the same as LEPIC;
