@@ -39,6 +39,7 @@ WalletConfig configFor(Directory dir) => WalletConfig(
   onionRoutes: const [],
   tuning: shippedTuning,
   offline: false,
+  torWanted: false,
 );
 
 Future<void> scanToEnd(EpicWallet wallet) async {
