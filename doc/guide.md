@@ -198,14 +198,19 @@ keep the open wallet's. The HTTP listen port stays an argument of `startHttpList
   `TransactionDetails` has the required fields `flow` and `origin` (and `imported`, nullable)
   and `ListenerEvent` the required field `slateId`; code that builds them, such as a fake
   wallet, must pass them.
-- `spendOutputsToSelf(commitments, minimumConfirmations)` (new)spends exactly the
-  outputs named by `WalletOutput.commitment` into one output of this wallet, with the usual fee,
-  and locks nothing else; it returns a `SelfSentTx` as `consolidateOutputs` does. Use it to make
-  a cancelled payment final: the other wallet, for example the issuer of a paid invoice, may
-  still hold a signed copy spending those inputs until they are spent elsewhere. It fails with
-  `invalidArgument` when `commitments` is empty or names an output that is unknown, not
-  unspent with `minimumConfirmations`, or named twice, and with `notEnoughFunds` when the fee
-  takes their whole value; nothing is stored then.
+- `spendOutputsToSelf(commitments, outputs, minimumConfirmations)` spends exactly the
+  outputs named by `WalletOutput.commitment` into `outputs` outputs of this wallet, with the
+  usual fee, and locks nothing else; it returns a `SelfSentTx` as `consolidateOutputs` does.
+  `outputs` is 1 to 10: 1 merges them into one, as before; 2 to 10 splits their value less the
+  fee into that many outputs of nearly equal value, the last taking the remainder, so passing
+  the number of coins spent keeps the number of coins. The fee is `4 * outputs + 1 - inputs`
+  base fees, so each output adds four. Use it to make a cancelled payment final: the other wallet, for example the issuer of a paid invoice, may still hold a
+  signed copy spending those inputs until they are spent elsewhere. It fails with
+  `invalidArgument` when `outputs` is outside 1 to 10, or `commitments` is empty or names an
+  output that is unknown, not unspent with `minimumConfirmations`, or named twice, and with
+  `notEnoughFunds` when their value less the fee leaves less than one base unit for each
+  output; nothing is stored then. The `outputs` argument is required: a call without it no
+  longer compiles.
 - `importLegacyHistory(sourceDir)` brings across the transaction history of the epic-wallet
   wallet (GUI or CLI) that a wallet was just made from, for example with `importWalletSeed`
   from that folder's `wallet.seed`. Call it once after the import, before or after the restore

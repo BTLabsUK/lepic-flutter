@@ -14,7 +14,7 @@ import 'secret_store.dart';
 import 'tor.dart';
 import 'types.dart';
 
-// These functions are ignored because they are not marked as `pub`: `boundary`, `create_pin_wallet`, `new_password`, `run_until_stopped`, `run`, `split_shape`
+// These functions are ignored because they are not marked as `pub`: `boundary`, `create_pin_wallet`, `new_password`, `run_until_stopped`, `run`, `spend_back_shape`, `split_shape`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `drop`
 
 /// True when every word is in the English wordlist and the checksum matches. Case and extra
@@ -1397,18 +1397,23 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// with `InvalidArgument` for a `message` over 64 KiB.
   Future<String> signWithAddressKey({required List<int> message});
 
-  /// Spends exactly the outputs `commitments` names, by `WalletOutput.commitment`, into one
-  /// output of this wallet, as [`EpicWallet::consolidate_outputs`] does, and locks nothing
-  /// else. Use it to make a cancelled payment final: once a payment is cancelled its inputs
+  /// Spends exactly the outputs `commitments` names, by `WalletOutput.commitment`, into
+  /// `outputs` outputs of this wallet, and locks nothing else. With `outputs` 1 it merges
+  /// them as [`EpicWallet::consolidate_outputs`] does; with 2 to 10 the value less the fee
+  /// is split into that many outputs of nearly equal value, the last one taking the
+  /// remainder, as [`EpicWallet::split_outputs`] does, so the wallet can keep its number of
+  /// coins. The fee grows with the outputs. Use it to make a cancelled payment final: once a payment is cancelled its inputs
   /// are spendable here, but the other wallet may still hold a signed copy that spends them,
   /// for example the issuer of an invoice that was paid, until they are spent elsewhere.
   ///
-  /// Fails with `InvalidArgument` when `commitments` is empty, or names an output that is
-  /// unknown, not unspent with `minimum_confirmations`, or named twice; with `NotEnoughFunds`
-  /// when the fee takes their whole value; and otherwise as
+  /// Fails with `InvalidArgument` when `outputs` is outside 1..=10, or `commitments` is empty,
+  /// or names an output that is unknown, not unspent with `minimum_confirmations`, or named
+  /// twice; with `NotEnoughFunds` when their value less the fee leaves less than one base
+  /// unit for each output; and otherwise as
   /// [`EpicWallet::consolidate_outputs`] does, storing nothing.
   Future<SelfSentTx> spendOutputsToSelf({
     required List<String> commitments,
+    required int outputs,
     required BigInt minimumConfirmations,
   });
 

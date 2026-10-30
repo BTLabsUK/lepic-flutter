@@ -1225,6 +1225,7 @@ void main() {
     await expectLater(
       alice.spendOutputsToSelf(
         commitments: const [],
+        outputs: 1,
         minimumConfirmations: BigInt.one,
       ),
       throwsWalletError(WalletErrorKind.invalidArgument),
@@ -1232,14 +1233,26 @@ void main() {
     await expectLater(
       alice.spendOutputsToSelf(
         commitments: ['08${'00' * 32}'],
+        outputs: 1,
         minimumConfirmations: BigInt.one,
       ),
       throwsWalletError(WalletErrorKind.invalidArgument),
     );
+    for (final outputs in [0, 11]) {
+      await expectLater(
+        alice.spendOutputsToSelf(
+          commitments: [unspent[0].commitment],
+          outputs: outputs,
+          minimumConfirmations: BigInt.one,
+        ),
+        throwsWalletError(WalletErrorKind.invalidArgument),
+      );
+    }
 
     final named = [unspent[0].commitment, unspent[1].commitment];
     final sent = await alice.spendOutputsToSelf(
       commitments: named,
+      outputs: 1,
       minimumConfirmations: BigInt.one,
     );
 
@@ -1251,6 +1264,14 @@ void main() {
     expect(statusOf(named[0]), OutputStatus.locked);
     expect(statusOf(named[1]), OutputStatus.locked);
     expect(statusOf(unspent[2].commitment), OutputStatus.unspent);
+
+    final back = await alice.spendOutputsToSelf(
+      commitments: [unspent[2].commitment],
+      outputs: 3,
+      minimumConfirmations: BigInt.one,
+    );
+    expect(back.inputCount, 1);
+    expect(back.outputCount, 3);
   });
 
   test('the node tip tells readiness and the tip time', () async {
