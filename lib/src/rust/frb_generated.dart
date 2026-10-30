@@ -740,6 +740,7 @@ abstract class RustLibApi extends BaseApi {
   Future<SelfSentTx> crateApiWalletEpicWalletSpendOutputsToSelf({
     required EpicWallet that,
     required List<String> commitments,
+    required int outputs,
     required BigInt minimumConfirmations,
   });
 
@@ -5621,6 +5622,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Future<SelfSentTx> crateApiWalletEpicWalletSpendOutputsToSelf({
     required EpicWallet that,
     required List<String> commitments,
+    required int outputs,
     required BigInt minimumConfirmations,
   }) {
     return handler.executeNormal(
@@ -5632,6 +5634,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             serializer,
           );
           sse_encode_list_String(commitments, serializer);
+          sse_encode_u_32(outputs, serializer);
           sse_encode_u_64(minimumConfirmations, serializer);
           pdeCallFfi(
             generalizedFrbRustBinding,
@@ -5645,7 +5648,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletSpendOutputsToSelfConstMeta,
-        argValues: [that, commitments, minimumConfirmations],
+        argValues: [that, commitments, outputs, minimumConfirmations],
         apiImpl: this,
       ),
     );
@@ -5654,7 +5657,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiWalletEpicWalletSpendOutputsToSelfConstMeta =>
       const TaskConstMeta(
         debugName: "EpicWallet_spend_outputs_to_self",
-        argNames: ["that", "commitments", "minimumConfirmations"],
+        argNames: ["that", "commitments", "outputs", "minimumConfirmations"],
       );
 
   @override
@@ -15973,22 +15976,28 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
       .api
       .crateApiWalletEpicWalletSignWithAddressKey(that: this, message: message);
 
-  /// Spends exactly the outputs `commitments` names, by `WalletOutput.commitment`, into one
-  /// output of this wallet, as [`EpicWallet::consolidate_outputs`] does, and locks nothing
-  /// else. Use it to make a cancelled payment final: once a payment is cancelled its inputs
+  /// Spends exactly the outputs `commitments` names, by `WalletOutput.commitment`, into
+  /// `outputs` outputs of this wallet, and locks nothing else. With `outputs` 1 it merges
+  /// them as [`EpicWallet::consolidate_outputs`] does; with 2 to 10 the value less the fee
+  /// is split into that many outputs of nearly equal value, the last one taking the
+  /// remainder, as [`EpicWallet::split_outputs`] does, so the wallet can keep its number of
+  /// coins. The fee grows with the outputs. Use it to make a cancelled payment final: once a payment is cancelled its inputs
   /// are spendable here, but the other wallet may still hold a signed copy that spends them,
   /// for example the issuer of an invoice that was paid, until they are spent elsewhere.
   ///
-  /// Fails with `InvalidArgument` when `commitments` is empty, or names an output that is
-  /// unknown, not unspent with `minimum_confirmations`, or named twice; with `NotEnoughFunds`
-  /// when the fee takes their whole value; and otherwise as
+  /// Fails with `InvalidArgument` when `outputs` is outside 1..=10, or `commitments` is empty,
+  /// or names an output that is unknown, not unspent with `minimum_confirmations`, or named
+  /// twice; with `NotEnoughFunds` when their value less the fee leaves less than one base
+  /// unit for each output; and otherwise as
   /// [`EpicWallet::consolidate_outputs`] does, storing nothing.
   Future<SelfSentTx> spendOutputsToSelf({
     required List<String> commitments,
+    required int outputs,
     required BigInt minimumConfirmations,
   }) => RustLib.instance.api.crateApiWalletEpicWalletSpendOutputsToSelf(
     that: this,
     commitments: commitments,
+    outputs: outputs,
     minimumConfirmations: minimumConfirmations,
   );
 
