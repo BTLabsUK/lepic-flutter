@@ -435,7 +435,10 @@ meaning. `message` is English for logs and bug reports and holds no secret; do n
 | 72 | `invalidPairingWords` | A word is not in the pairing words table, or there are not five. |
 | 73 | `contactRefusesInvoices` | The contact's wallet says it does not pay invoices. Nothing was sent. |
 | 75 | `invoiceNotForThisChain` | The invoice was made for another network, or its heights are wrong. Nothing was paid or stored. |
+| 76 | `inputsSpentElsewhere` | The node refused the transaction because coins of this wallet in it are already spent, and no transaction of this wallet spent them: another wallet on the same recovery phrase did. The transaction was cancelled and a refresh ran; that spend shows as a transaction of origin `otherWallet`. |
 | 78 | `offline` | The wallet was opened with `WalletConfig.offline`, so the call reached no node or relay, or found no confirmed tip to work offline from. Nothing was sent. |
+| 79 | `inputsSpentByOwnTransaction` | The node refused the transaction because another transaction of this wallet, which the chain holds, already spent its coins: a cancelled payment mined before the move of its coins back to the wallet, or that move mined first. The refused transaction was cancelled and stays watched, and a refresh ran, which shows the other one as confirmed. Nothing went to another wallet. |
+| 80 | `peerInputsSpent` | The node refused the transaction because the other party's coins in it are already spent: the payer cancelled and moved them, so the payment can never be mined. The transaction was cancelled and stays watched, so it still confirms if it is mined after all, and a refresh ran. |
 
 Kinds 22 to 24 used to arrive as `other`. Kinds 25 and 26 are new with `sealAppData` and
 `openAppData`, 27 and 28 with `releaseTransaction`, 29 to 31 with the invoice calls, 40 and
@@ -444,7 +447,8 @@ arrived as `invalidArgument`), 47 with `consolidateOutputs` (before, `notEnoughF
 consolidation of one output), 48 to 50 with the invoice refusals of U-23 (before, all three
 arrived as `invalidSlate`), 51 to 55 with the QR slate calls, 56 to 73 with the pairing calls, 75 with the time to live of
 invoices (before, an invoice made at a height above the chain's arrived as `invalidSlate`), 78
-with offline sessions. An
+with offline sessions, 79 and 80 with posts refused because the coins were spent (before, both
+arrived as `notPosted`, or 79 as `inputsSpentElsewhere`). An
 exhaustive `switch` over
 `WalletErrorKind` must handle them.
 

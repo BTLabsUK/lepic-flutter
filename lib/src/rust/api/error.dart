@@ -284,7 +284,22 @@ enum WalletErrorKind {
   /// The wallet was opened offline (`WalletConfig.offline`), so the call reached no node or
   /// relay, or found no confirmed tip to work offline from. Nothing was sent; what was
   /// stored stays.
-  offline;
+  offline,
+
+  /// The node refused the transaction because inputs of it are no longer unspent, and
+  /// another transaction of this wallet whose kernel the chain holds spent them: a cancelled
+  /// payment that was mined before the move of its coins back to the wallet, or that move
+  /// mined before the payment's late post. The refused transaction was cancelled and stays
+  /// watched, and a refresh ran; the other transaction shows as confirmed. Nothing was lost
+  /// to another wallet.
+  inputsSpentByOwnTransaction,
+
+  /// The node refused the transaction because inputs the other party added are no longer
+  /// unspent: the other party spent them elsewhere, as a payer does who cancelled an
+  /// invoice payment and moved its coins, so the payment can never be mined. The
+  /// transaction was cancelled and stays watched, so a refresh still confirms it if it is
+  /// mined after all, and a refresh ran.
+  peerInputsSpent;
 
   /// The stable number of this kind.
   Future<int> code() =>
