@@ -98,6 +98,7 @@ final wallet = await EpicWallet.create(
     epicboxPort: 443,
     onionRoutes: const [],
     tuning: appConfigTuning, // the [node], [epicbox], [http] and [tor] keys of app-config.toml
+    offline: false, // true opens a cold wallet: no node or relay call (doc/guide.md)
   ),
   store: store,
   password: password,
