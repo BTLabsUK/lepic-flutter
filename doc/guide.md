@@ -60,6 +60,7 @@ final wallet = await EpicWallet.create(
     epicboxPort: 443,
     onionRoutes: appConfig.onionRoutes, // [tor] onions of app-config.toml
     tuning: appConfig.tuning, // the tuning keys of app-config.toml
+    offline: false, // true for a cold wallet, see Offline sessions
   ),
   store: store,
   password: password,
@@ -434,6 +435,7 @@ meaning. `message` is English for logs and bug reports and holds no secret; do n
 | 72 | `invalidPairingWords` | A word is not in the pairing words table, or there are not five. |
 | 73 | `contactRefusesInvoices` | The contact's wallet says it does not pay invoices. Nothing was sent. |
 | 75 | `invoiceNotForThisChain` | The invoice was made for another network, or its heights are wrong. Nothing was paid or stored. |
+| 78 | `offline` | The wallet was opened with `WalletConfig.offline`, so the call reached no node or relay, or found no confirmed tip to work offline from. Nothing was sent. |
 
 Kinds 22 to 24 used to arrive as `other`. Kinds 25 and 26 are new with `sealAppData` and
 `openAppData`, 27 and 28 with `releaseTransaction`, 29 to 31 with the invoice calls, 40 and
@@ -441,7 +443,8 @@ Kinds 22 to 24 used to arrive as `other`. Kinds 25 and 26 are new with `sealAppD
 arrived as `invalidArgument`), 47 with `consolidateOutputs` (before, `notEnoughFunds` or a
 consolidation of one output), 48 to 50 with the invoice refusals of U-23 (before, all three
 arrived as `invalidSlate`), 51 to 55 with the QR slate calls, 56 to 73 with the pairing calls, 75 with the time to live of
-invoices (before, an invoice made at a height above the chain's arrived as `invalidSlate`). An
+invoices (before, an invoice made at a height above the chain's arrived as `invalidSlate`), 78
+with offline sessions. An
 exhaustive `switch` over
 `WalletErrorKind` must handle them.
 
@@ -509,7 +512,7 @@ run the binary: there `startTor` starts nothing, and its stream gets `failed` wi
 
 ```dart
 final onion = await wallet.onionAddress(); // known before tor runs
-wallet.startTor(torBinary: torPath, libDir: torLibDir).listen((event) {
+wallet.startTor(torBinary: torPath, libDir: torLibDir, publishOnion: true).listen((event) {
   switch (event.kind) {
     case TorEventKind.starting: // event.progress, 0 to 100
     case TorEventKind.bootstrapped: // sends work
@@ -818,6 +821,34 @@ whoever sees the screen can read the slate, as with a slate file. Both calls nee
 - Keep a scan only if the call with it succeeds: on `notUrCode` or `foreignUrCode` drop the new
   scan and keep scanning, on `mixedUrCodes` start over with the new scan alone, and on
   `invalidUrCode` or `urCodeTooLarge` stop and suggest a file.
+
+## Offline sessions
+
+A cold wallet opens with `WalletConfig.offline: true`. The flag is fixed for the session: to go
+online or offline, lock the wallet and open it again with the other value (`setServers` and
+`nodeTipFor` refuse another value with `invalidArgument`).
+
+- Every call to the node or the Epicbox relay fails at once with `offline`, before any name
+  lookup or connect: `summary(refresh: true)`, `refresh`, `scan`, the listener, `drainEpicbox`,
+  contact calls, `nodeTipFor`. An Epicbox send is stored as any undelivered send is, and its
+  delivery fails with `offline`: do not offer it. HTTP and Tor sends and listeners are not
+  gated: an offline app does not start them.
+- Payments by slate text, file or QR code work: `createSendSlate`, `sendFile`, `receiveSlate`,
+  `receiveFile`, `finalizeAndPost`, `finalizeFile`, and the invoice calls by text or file. They
+  use the highest chain tip the last online refresh confirmed; a wallet that never refreshed
+  fails with `offline`.
+- Finalizing stores the transaction `finalized` without posting it: `FinalizedTx.posted` is
+  false. `finishedPayment(txId)` returns its final slate (S3, or I3 for an invoice it issued) as
+  V3 slate JSON, which `epic-wallet post -i` reads; save it as a file or show it with
+  `encodeUrSlate`. `inspectSlate` reads it (stage `s3` or `i3`, amount, fee). The device that
+  posts it sends the transaction to its node; the cold wallet's next online refresh confirms it
+  once its kernel is on chain.
+
+`startTor(torBinary: …, libDir: …, publishOnion: false)` starts the wallet's tor without
+publishing its onion and without the listener behind it: tor then only carries the node, relay
+and Tor-send connections through its SOCKS port, and the stream stops at `bootstrapped`.
+`publishOnion: true` publishes the onion for Link receiving as before; the argument is
+required, as the binding has no defaults.
 
 ## Switching the app from its earlier binding
 
