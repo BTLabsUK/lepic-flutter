@@ -88,6 +88,7 @@ void main() {
     onionRoutes: const [],
     tuning: shippedTuning,
     offline: false,
+    torWanted: false,
   );
 
   List<WalletEvent> record(EpicWallet wallet) {

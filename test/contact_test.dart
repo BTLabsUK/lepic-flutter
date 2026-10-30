@@ -106,6 +106,7 @@ void main() {
         onionRoutes: const [],
         tuning: shippedTuning,
         offline: false,
+        torWanted: false,
       ),
       store: lepicSecretStore(MemoryStore()),
       mnemonic: mnemonic,

@@ -80,6 +80,7 @@ WalletConfig configFor(Directory dir) => WalletConfig(
   onionRoutes: const [],
   tuning: shippedTuning,
   offline: false,
+  torWanted: false,
 );
 
 /// The stable codes of README.md, which apps may store.
@@ -634,6 +635,7 @@ void main() {
         onionRoutes: const [],
         tuning: shippedTuning,
         offline: false,
+        torWanted: false,
       ),
       store: lepicSecretStore(MemoryStore()),
       password: password,
@@ -2022,6 +2024,7 @@ void main() {
           onionRoutes: const [],
           tuning: shippedTuning,
           offline: false,
+          torWanted: false,
         ),
         store: lepicSecretStore(MemoryStore()),
         seedFile: vector.file,
