@@ -609,9 +609,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PinWallet dco_decode_pin_wallet(dynamic raw);
 
   @protected
-  PushSignature dco_decode_push_signature(dynamic raw);
-
-  @protected
   ReceivedSlate dco_decode_received_slate(dynamic raw);
 
   @protected
@@ -1392,9 +1389,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PinWallet sse_decode_pin_wallet(SseDeserializer deserializer);
-
-  @protected
-  PushSignature sse_decode_push_signature(SseDeserializer deserializer);
 
   @protected
   ReceivedSlate sse_decode_received_slate(SseDeserializer deserializer);
@@ -2333,9 +2327,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_pin_wallet(PinWallet self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_push_signature(PushSignature self, SseSerializer serializer);
 
   @protected
   void sse_encode_received_slate(ReceivedSlate self, SseSerializer serializer);

@@ -156,10 +156,13 @@ keep the open wallet's. The HTTP listen port stays an argument of `startHttpList
   that is no `wallet.seed` `invalidArgument`. LEPIC keeps no copy of the file.
 - `LepicRuntime.openLogRing(dir, maxBytes)` keeps every record at the runtime's log level,
   redacted, in at most `maxBytes` (4 KiB to 16 MiB) of files in `dir`, which should hold nothing
-  else; `exportSupportBundle()` returns them as text for a feedback report. Only the values of
-  the log vocabulary fields that say nothing about keys, amounts or addresses are kept, every
-  other value becomes `[redacted]`. Messages are kept as they are, including the app's own lines
-  from `logMessage`, so redact those before logging them.
+  else, as `lepic.0.log` (newest) to `lepic.3.log` (oldest); the app packages those files into a
+  report itself. Only the values of the log vocabulary fields that say nothing about keys,
+  amounts, addresses or hosts are kept, every other value becomes `[redacted]`. Messages, the
+  app's own lines from `logMessage` included, and error texts are redacted as text: slates,
+  phrases, key-like values, amounts, URLs, IP addresses, hosts and ports are taken out, and
+  addresses keep only their first and last 4 characters (LEPIC's `docs/logging.md`). Still,
+  never log a secret.
 - `EpicWallet.lock()` locks a wallet at once, for example when the app goes to the background:
   it stops the listener and any scan, wipes the keys and ends the calls still running, which
   fail with `cancelled` (a store write under way is finished first); every later call on that
