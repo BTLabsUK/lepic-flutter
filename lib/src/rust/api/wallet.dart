@@ -237,6 +237,15 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required String newPin,
   });
 
+  /// Checks `pin` against `sealed_password` of a wallet from [`EpicWallet::create_with_pin`],
+  /// for an app that asks for the PIN again before an action. The attempt is counted and
+  /// delayed as in [`EpicWallet::open_with_pin`]; nothing else is stored, and the sealed text
+  /// and the PIN key stay as they are. The password it opens is dropped at once.
+  ///
+  /// A wrong PIN gives `WrongPassword`, damaged text `InvalidArgument`, a store without the
+  /// PIN key `SecretStore`, and a locked wallet `Locked`, before any attempt is counted.
+  Future<void> checkPin({required String pin, required String sealedPassword});
+
   /// Ends a PIN change of [`EpicWallet::change_pin`]: the old sealed text stops opening and
   /// only the new PIN with the new text opens the wallet. Call it once the app has stored the
   /// text `change_pin` returned, and pass the text it now holds as `sealed_password`. Text
