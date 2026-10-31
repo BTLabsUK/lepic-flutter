@@ -114,6 +114,12 @@ abstract class RustLibApi extends BaseApi {
     required String newPin,
   });
 
+  Future<void> crateApiWalletEpicWalletCheckPin({
+    required EpicWallet that,
+    required String pin,
+    required String sealedPassword,
+  });
+
   Future<void> crateApiWalletEpicWalletConfirmPinChange({
     required EpicWallet that,
     required String sealedPassword,
@@ -1220,6 +1226,46 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(
         debugName: "EpicWallet_change_pin",
         argNames: ["that", "sealedPassword", "oldPin", "newPin"],
+      );
+
+  @override
+  Future<void> crateApiWalletEpicWalletCheckPin({
+    required EpicWallet that,
+    required String pin,
+    required String sealedPassword,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerEpicWallet(
+            that,
+            serializer,
+          );
+          sse_encode_String(pin, serializer);
+          sse_encode_String(sealedPassword, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 169,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_wallet_error,
+        ),
+        constMeta: kCrateApiWalletEpicWalletCheckPinConstMeta,
+        argValues: [that, pin, sealedPassword],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiWalletEpicWalletCheckPinConstMeta =>
+      const TaskConstMeta(
+        debugName: "EpicWallet_check_pin",
+        argNames: ["that", "pin", "sealedPassword"],
       );
 
   @override
@@ -14586,6 +14632,20 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
     oldPin: oldPin,
     newPin: newPin,
   );
+
+  /// Checks `pin` against `sealed_password` of a wallet from [`EpicWallet::create_with_pin`],
+  /// for an app that asks for the PIN again before an action. The attempt is counted and
+  /// delayed as in [`EpicWallet::open_with_pin`]; nothing else is stored, and the sealed text
+  /// and the PIN key stay as they are. The password it opens is dropped at once.
+  ///
+  /// A wrong PIN gives `WrongPassword`, damaged text `InvalidArgument`, a store without the
+  /// PIN key `SecretStore`, and a locked wallet `Locked`, before any attempt is counted.
+  Future<void> checkPin({required String pin, required String sealedPassword}) =>
+      RustLib.instance.api.crateApiWalletEpicWalletCheckPin(
+        that: this,
+        pin: pin,
+        sealedPassword: sealedPassword,
+      );
 
   /// Ends a PIN change of [`EpicWallet::change_pin`]: the old sealed text stops opening and
   /// only the new PIN with the new text opens the wallet. Call it once the app has stored the
