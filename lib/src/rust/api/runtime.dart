@@ -15,9 +15,10 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<LepicRuntime>>
 abstract class LepicRuntime implements RustOpaqueInterface {
-  /// Logs one line from the app under the target `dart.<tag>`, through the same stream.
-  /// `tag` keeps only ASCII letters, digits and `_`, at most 32 of them, and `message` at
-  /// most its first 1024 bytes, cut at a character boundary. Never pass secrets.
+  /// Logs one line from the app under the target `dart`, with `tag` as its `tag` field,
+  /// through the same stream. `tag` keeps only ASCII letters, digits and `_`, at most 32 of
+  /// them, and `message` at most its first 1024 bytes, cut at a character boundary. Never
+  /// pass secrets.
   void logMessage({
     required LogLevel level,
     required String tag,

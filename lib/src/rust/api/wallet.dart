@@ -33,8 +33,8 @@ bool validateEpicboxAddress({required String address, required Chain chain}) =>
 /// True when `signature`, hex as [`EpicWallet::sign_with_address_key`] returns it, is that
 /// call's signature of `message` by the wallet whose Epicbox address has the key `public_key`.
 /// `public_key` is written as in the address, with or without `@<relay>`, on either chain. A
-/// signature made for a relay, a push registration or any other text never passes. False for
-/// anything malformed and for a `message` over 64 KiB.
+/// signature made for a relay or any other text never passes. False for anything malformed and
+/// for a `message` over 64 KiB.
 bool verifyAddressSignature({
   required String publicKey,
   required List<int> message,
@@ -236,6 +236,13 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required String oldPin,
     required String newPin,
   });
+
+  /// Whether `password` opens the stored vault, for an app that asks for the password again
+  /// before an action. The attempt is counted and delayed as in [`EpicWallet::open`]; a wrong
+  /// password gives `false`. Nothing else is stored, and the recovery phrase is not read.
+  ///
+  /// A locked wallet gives `Locked`, before any attempt is counted.
+  Future<bool> checkPassword({required String password});
 
   /// Checks `pin` against `sealed_password` of a wallet from [`EpicWallet::create_with_pin`],
   /// for an app that asks for the PIN again before an action. The attempt is counted and
@@ -1382,11 +1389,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// Moves the open wallet to the node and Epicbox relay `config` names, keeping it unlocked.
   /// Calls running when it starts end first, and calls made while it waits or runs start
-  /// after it; a running scan is waited for too, so cancel it first to switch at once. A
-  /// running listener moves to a new relay once the message in hand is settled and
-  /// acknowledged, at most 30 seconds later, and its stream goes on without `Stopped`. A new
-  /// relay changes the wallet's Epicbox address to `<key>@<new relay>`; answers sent to the
-  /// old address stay on the old relay.
+  /// after it. A running scan is cancelled and ends with `Cancelled`, so the switch never
+  /// waits minutes for it; scan again after the switch. A running listener moves to a new
+  /// relay once the message in hand is settled and acknowledged, at most 30 seconds later,
+  /// and its stream goes on without `Stopped`. A new relay changes the wallet's Epicbox
+  /// address to `<key>@<new relay>`; answers sent to the old address stay on the old relay.
   ///
   /// `config.data_dir` and `config.chain` must be those the wallet was opened with: another
   /// chain is another wallet. Fails with `InvalidArgument`, keeping the servers in use, for
