@@ -1079,18 +1079,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// [`EpicWallet::contact_remove`] or [`EpicWallet::contact_unpair`].
   Future<List<ContactView>> privatePairings();
 
-  /// Signs a push registration for this wallet's Epicbox address, so a push service can tie
-  /// the FCM `token` to it. LEPIC builds the text itself, `epic-push-v1`, `action`, the
-  /// address key, `token` and `timestamp` (unix seconds) on five lines, and signs nothing
-  /// else. `action` is `register` or `unregister`; `token` is 1 to 4096 characters of
-  /// `[A-Za-z0-9_:.-]`. Fails with `InvalidArgument` for any other, and with `Unsupported`
-  /// when the configuration names no relay.
-  Future<PushSignature> pushSignature({
-    required String action,
-    required String token,
-    required BigInt timestamp,
-  });
-
   /// [`EpicWallet::receive_slate`] for the slate file at `path`. The answer is also written to
   /// `<path>.response`, as `epic-wallet` names it, for a repeated slate too.
   Future<ReceivedSlate> receiveFile({required String path});
@@ -1410,7 +1398,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// hex. Another wallet that holds the same recovery phrase makes the same signature, and
   /// [`verify_address_signature`] checks it against the key in [`EpicWallet::epicbox_address`],
   /// so two devices can prove they hold one wallet. The digest is tagged so that no text the
-  /// key signs for a relay or a push registration can ever equal it. Needs no relay. Fails
+  /// key signs for a relay can ever equal it. Needs no relay. Fails
   /// with `InvalidArgument` for a `message` over 64 KiB.
   Future<String> signWithAddressKey({required List<int> message});
 

@@ -2002,7 +2002,7 @@ void main() {
   });
 
   test(
-    'the support bundle holds log lines but no address, amount or key',
+    'the log ring holds log lines but no address, amount or key',
     () async {
       final debugRuntime = chain.runtime(logLevel: LogLevel.debug);
       final live = <LogEntry>[];
@@ -2056,14 +2056,19 @@ void main() {
       await sender.wallet.finalizeAndPost(slateJson: s2.json);
       final sent = (await sender.wallet.summary(refresh: true)).total;
 
-      final bundle = await debugRuntime.exportSupportBundle();
       debugRuntime.stopLogs();
       await subscription.cancel();
+      // The ring's segments, oldest (highest index) first.
+      final bundle = [
+        for (var index = 3; index >= 0; index--)
+          File('${root.path}/logs/lepic.$index.log'),
+      ]
+          .where((file) => file.existsSync())
+          .map((file) => file.readAsStringSync())
+          .join();
 
-      expect(bundle, startsWith('lepic support bundle\n'));
       expect(bundle, contains('wallet imported'));
       expect(bundle, contains('slate finalized'));
-      expect(bundle, contains('redacted: values of fields other than'));
       expect(live, isNotEmpty);
       final key = address.split('@').first;
       for (final secret in [
