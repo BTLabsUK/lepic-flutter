@@ -8,8 +8,11 @@ pubspec.lock
 # Built by `tool/lepic.sh test`.
 /test_native/
 
-# Local tool settings
+# Local tool settings and notes: not tracked
 /.kiro/
 /.claude/
 /AGENTS.md
 /CLAUDE.md
+/GEMINI.md
+HANDOFF*
+RESUME*
