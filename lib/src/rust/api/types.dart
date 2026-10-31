@@ -1990,26 +1990,15 @@ class SendOptions {
   /// output this wallet does not hold is ignored.
   final List<String> excludeOutputs;
 
-  /// The receiver's payment proof address, 64 hex characters (the ed25519 key of its onion
-  /// address, as `epic-wallet` derives it). The receiver is asked to sign a payment proof,
-  /// and its answer is finalized only when that proof verifies for this address, so a
-  /// wallet holding another key cannot complete the payment. The slate then needs the V3
-  /// shape. `None` asks for no proof. Not a valid address: `InvalidArgument`.
-  final String? paymentProofRecipient;
-
   const SendOptions({
     required this.strategy,
     required this.changeOutputs,
     required this.excludeOutputs,
-    this.paymentProofRecipient,
   });
 
   @override
   int get hashCode =>
-      strategy.hashCode ^
-      changeOutputs.hashCode ^
-      excludeOutputs.hashCode ^
-      paymentProofRecipient.hashCode;
+      strategy.hashCode ^ changeOutputs.hashCode ^ excludeOutputs.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2018,8 +2007,7 @@ class SendOptions {
           runtimeType == other.runtimeType &&
           strategy == other.strategy &&
           changeOutputs == other.changeOutputs &&
-          excludeOutputs == other.excludeOutputs &&
-          paymentProofRecipient == other.paymentProofRecipient;
+          excludeOutputs == other.excludeOutputs;
 }
 
 /// A send that was stored and handed to its transport.

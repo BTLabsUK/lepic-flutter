@@ -9359,13 +9359,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   SendOptions dco_decode_send_options(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
     return SendOptions(
       strategy: dco_decode_selection_strategy(arr[0]),
       changeOutputs: dco_decode_u_32(arr[1]),
       excludeOutputs: dco_decode_list_String(arr[2]),
-      paymentProofRecipient: dco_decode_opt_String(arr[3]),
     );
   }
 
@@ -11772,12 +11771,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_strategy = sse_decode_selection_strategy(deserializer);
     var var_changeOutputs = sse_decode_u_32(deserializer);
     var var_excludeOutputs = sse_decode_list_String(deserializer);
-    var var_paymentProofRecipient = sse_decode_opt_String(deserializer);
     return SendOptions(
       strategy: var_strategy,
       changeOutputs: var_changeOutputs,
       excludeOutputs: var_excludeOutputs,
-      paymentProofRecipient: var_paymentProofRecipient,
     );
   }
 
@@ -14122,7 +14119,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_selection_strategy(self.strategy, serializer);
     sse_encode_u_32(self.changeOutputs, serializer);
     sse_encode_list_String(self.excludeOutputs, serializer);
-    sse_encode_opt_String(self.paymentProofRecipient, serializer);
   }
 
   @protected
