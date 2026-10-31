@@ -14,7 +14,8 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 class LogEntry {
   final LogLevel level;
 
-  /// The Rust module, or `dart.<tag>` for lines from `LepicRuntime::log_message`.
+  /// The Rust module, or `dart` for lines from `LepicRuntime::log_message`, whose tag is
+  /// the `tag` field.
   final String target;
   final String message;
 
