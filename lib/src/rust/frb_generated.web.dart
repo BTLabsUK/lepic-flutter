@@ -605,6 +605,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PairingState dco_decode_pairing_state(dynamic raw);
 
   @protected
+  PeerCompat dco_decode_peer_compat(dynamic raw);
+
+  @protected
   PendingPairingView dco_decode_pending_pairing_view(dynamic raw);
 
   @protected
@@ -1383,6 +1386,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PairingState sse_decode_pairing_state(SseDeserializer deserializer);
+
+  @protected
+  PeerCompat sse_decode_peer_compat(SseDeserializer deserializer);
 
   @protected
   PendingPairingView sse_decode_pending_pairing_view(
@@ -2320,6 +2326,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_pairing_state(PairingState self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_peer_compat(PeerCompat self, SseSerializer serializer);
 
   @protected
   void sse_encode_pending_pairing_view(
