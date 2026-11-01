@@ -694,6 +694,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// or one that is not `finalized`, `posted` or `confirmed`.
   Future<String> finishedPayment({required int txId});
 
+  /// Deletes what this wallet learned about every Epicbox key it has not heard from for
+  /// `older_than_days` days, and returns how many keys it forgot. A forgotten key gets no
+  /// notices until it is heard from again. Hosts call it on open with 180.
+  Future<int> forgetPeers({required int olderThanDays});
+
   /// The running HTTP listener, or `None`.
   HttpListenerInfo? httpListenerStatus();
 
@@ -1079,6 +1084,12 @@ abstract class EpicWallet implements RustOpaqueInterface {
     String? message,
     SendOptions? options,
   });
+
+  /// What this wallet learned about the software at the Epicbox address `address` (its key
+  /// alone counts) from that key's own messages, and what follows from it now. Reads only the
+  /// store. Fails with `InvalidArgument` for an address that does not parse or is on the other
+  /// network.
+  Future<PeerCompat> peerCompat({required String address});
 
   /// The private pairings (two wallets of one owner), oldest first, in progress or paired;
   /// `state` tells which. They are never listed by [`EpicWallet::contacts`] or
