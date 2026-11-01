@@ -80,6 +80,7 @@ WalletConfig configFor(Directory dir) => WalletConfig(
   onionRoutes: const [],
   tuning: shippedTuning,
   offline: false,
+  hostFeatures: 0,
   torWanted: false,
 );
 
@@ -635,6 +636,7 @@ void main() {
         onionRoutes: const [],
         tuning: shippedTuning,
         offline: false,
+        hostFeatures: 0,
         torWanted: false,
       ),
       store: lepicSecretStore(MemoryStore()),
@@ -2024,6 +2026,7 @@ void main() {
           onionRoutes: const [],
           tuning: shippedTuning,
           offline: false,
+          hostFeatures: 0,
           torWanted: false,
         ),
         store: lepicSecretStore(MemoryStore()),

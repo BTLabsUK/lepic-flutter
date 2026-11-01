@@ -106,6 +106,7 @@ void main() {
         onionRoutes: const [],
         tuning: shippedTuning,
         offline: false,
+        hostFeatures: 0,
         torWanted: false,
       ),
       store: lepicSecretStore(MemoryStore()),
@@ -394,42 +395,32 @@ void main() {
     expect((await phone.contactPayloads()).single.payload, [4]);
   });
 
-  test('two installs of one wallet prove it with the address key', () async {
+  test('two installs of one wallet prove it with the device-link key', () async {
     final phone = await wallet();
     final desk = await wallet(
       mnemonic: await phone.mnemonic(password: password),
     );
     final other = await wallet();
-    final key = (await desk.epicboxAddress()).split('@').first;
-    final message = 'epiccash/device-link/hello/v1'.codeUnits;
-    final signature = await phone.signWithAddressKey(message: message);
-    expect(await desk.signWithAddressKey(message: message), signature);
+    final transcript = 'device link hello'.codeUnits;
+    final signature = await phone.deviceLinkSign(transcript: transcript);
+    expect(await desk.deviceLinkSign(transcript: transcript), signature);
     expect(
-      verifyAddressSignature(
-        publicKey: key,
-        message: message,
-        signature: signature,
-      ),
+      await desk.deviceLinkVerify(transcript: transcript, signature: signature),
       isTrue,
     );
     expect(
-      verifyAddressSignature(
-        publicKey: key,
-        message: [...message, 0],
+      await desk.deviceLinkVerify(
+        transcript: [...transcript, 0],
         signature: signature,
       ),
       isFalse,
     );
     expect(
-      verifyAddressSignature(
-        publicKey: key,
-        message: message,
-        signature: await other.signWithAddressKey(message: message),
-      ),
+      await other.deviceLinkVerify(transcript: transcript, signature: signature),
       isFalse,
     );
     await expectLater(
-      phone.signWithAddressKey(message: List.filled(64 * 1024 + 1, 7)),
+      phone.deviceLinkSign(transcript: List.filled(64 * 1024 + 1, 7)),
       throwsWalletError(WalletErrorKind.invalidArgument),
     );
   });
