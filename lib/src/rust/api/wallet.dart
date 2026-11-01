@@ -4,6 +4,7 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+import 'at_rest.dart';
 import 'error.dart';
 import 'http.dart';
 
@@ -30,17 +31,19 @@ bool validateEpicboxAddress({required String address, required Chain chain}) =>
       chain: chain,
     );
 
-/// True when `signature`, hex as [`EpicWallet::sign_with_address_key`] returns it, is that
-/// call's signature of `message` by the wallet whose Epicbox address has the key `public_key`.
-/// `public_key` is written as in the address, with or without `@<relay>`, on either chain. A
-/// signature made for a relay or any other text never passes. False for anything malformed and
-/// for a `message` over 64 KiB.
-bool verifyAddressSignature({
+/// True when `signature`, DER hex as [`EpicWallet::sign_with_address_key_at`] returns it, is
+/// that call's signature of `message` for `domain` by the listing address whose key is
+/// `public_key`, written as in an Epicbox address, with or without `@<relay>`, on either chain.
+/// A signature for another domain, by another key, or made for a relay or any other use never
+/// passes. Needs no wallet. False for anything malformed and for a `message` over 64 KiB.
+bool verifyAddressSignatureAt({
   required String publicKey,
+  required String domain,
   required List<int> message,
   required String signature,
-}) => RustLib.instance.api.crateApiWalletVerifyAddressSignature(
+}) => RustLib.instance.api.crateApiWalletVerifyAddressSignatureAt(
   publicKey: publicKey,
+  domain: domain,
   message: message,
   signature: signature,
 );
@@ -280,9 +283,16 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Attaches a pairing to the app's address-book entry `app_contact`, an id the app
   /// chooses, or detaches it with `None`. Attaching a new pairing to an entry that has one
   /// already is when to offer [`EpicWallet::contact_key_check`]. The id is at most 256 bytes
-  /// with no control characters. Fails with `InvalidContactName` for another id and with
-  /// `ContactNotFound`.
-  Future<void> contactAttach({required String contactId, String? appContact});
+  /// with no control characters. `app_address` is the entry's Epicbox address, if it has
+  /// one; addresses are compared by key. Fails with `InvalidContactName` for another id, with
+  /// `InvalidArgument` for an address not of the wallet's network, with `OtherAddress` when
+  /// the pairing proves another address and `AddressProofMissing` when it proves none
+  /// (nothing changes in either case), and with `ContactNotFound`.
+  Future<void> contactAttach({
+    required String contactId,
+    String? appContact,
+    String? appAddress,
+  });
 
   /// Declines the waiting contact invoice `slate_id`: it is never paid, and a `declined` is
   /// queued for the contact. Fails with `InvoiceNotFound` when no contact invoice with that
@@ -540,6 +550,12 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required ContactRelayMode relayMode,
   });
 
+  /// Gives every contact pairing that has not ended this wallet's card again, naming it
+  /// `name`, as a contact update the next collect posts; private pairings are left alone.
+  /// Returns how many were queued. Call it with `pairing_standing_invite(name)` when the
+  /// user changes the name contacts see. Fails with `InvalidContactName`.
+  Future<int> contactsSetOwnName({required String name});
+
   /// Creates a wallet in `config.data_dir` with its vault in `store`. With `mnemonic` it
   /// restores that seed (call [`EpicWallet::scan`] next); without it a fresh seed is
   /// generated, whose phrase [`EpicWallet::mnemonic`] returns for the backup screen. Returns
@@ -602,14 +618,51 @@ abstract class EpicWallet implements RustOpaqueInterface {
     pin: pin,
   );
 
+  /// Signs a device-link `transcript` with this wallet's device-link key, an Ed25519 key of
+  /// the phrase made for nothing else, under the tag `lepic/device-link/v1`, and returns the
+  /// 64-byte signature. Every install of the phrase holds the same key, so
+  /// [`EpicWallet::device_link_verify`] on the other device takes it. Needs no relay. Fails
+  /// with `InvalidArgument` for a `transcript` over 64 KiB.
+  Future<Uint8List> deviceLinkSign({required List<int> transcript});
+
+  /// Whether `signature` is [`EpicWallet::device_link_sign`] of `transcript` by a wallet of
+  /// this wallet's phrase. False for anything malformed and a `transcript` over 64 KiB.
+  Future<bool> deviceLinkVerify({
+    required List<int> transcript,
+    required List<int> signature,
+  });
+
   /// Connects to the relay once, handles every pending message and disconnects: the call for
   /// background work. While the listener runs it does nothing and reports nothing handled,
   /// as the listener receives the same messages.
   Future<InboxReport> drainEpicbox();
 
+  /// Takes what waits at the listing address of [`EpicWallet::epicbox_address_at`], on its
+  /// own relay connection, as [`EpicWallet::drain_epicbox`] does for the payments address,
+  /// which stays undisturbed. A payment is received, answered from the listing address, and
+  /// its transaction names the listing (`TransactionDetails.receive_listing`). One that asks
+  /// for a payment proof is refused (`ForeignProofAddress` in the log) and nothing is signed
+  /// for it. Later notices about such a payment go from nowhere else. Fails as
+  /// `epicbox_address_at` and `drain_epicbox` do.
+  Future<InboxReport> drainEpicboxAt({
+    required String dkey,
+    required int generation,
+  });
+
   /// The wallet's Epicbox address, `<key>@<domain>[:port]`. Fails with `Unsupported` when
   /// the configuration names no relay.
   Future<String> epicboxAddress();
+
+  /// The Epicbox address `<key>@<relay>[:port]` of this wallet's listing with the directory
+  /// whose key is `dkey` (a compressed secp256k1 key, 66 hex digits), generation
+  /// `generation`, on the wallet's relay. Its key comes from the phrase alone, so every
+  /// install of the phrase and a restore give the same address; raise `generation` after a
+  /// leave for a new one. Needs no relay. Fails with `InvalidArgument` for another `dkey`
+  /// and with `Unsupported` when the configuration names no relay.
+  Future<String> epicboxAddressAt({
+    required String dkey,
+    required int generation,
+  });
 
   /// Whether Epicbox over Tor is on, as [`EpicWallet::set_epicbox_over_tor`] set it.
   bool epicboxOverTor();
@@ -840,6 +893,20 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// for a URL that is not one of a node, and `Locked` on a locked wallet.
   Future<NodeTip> nodeTipFor({required WalletConfig config});
 
+  /// Applies a notice another install of this wallet received for a slate it does not hold,
+  /// passed on from its `NoticeUnmatched` event with its `sender` and `notice`. It is taken
+  /// under the rules of a notice received here: only from the recorded counterparty of its
+  /// slate, `posted` only with the kernel the payment implies, and once; it raises the same
+  /// events. Returns whether it was accepted; one for a slate this wallet does not hold
+  /// either is dropped and raises nothing.
+  ///
+  /// Fails with `InvalidArgument` for a `sender` that is not an Epicbox address of this
+  /// network or a `notice` that is not one.
+  Future<bool> noticeApplyForwarded({
+    required String sender,
+    required String notice,
+  });
+
   /// The wallet's onion address, `<56 characters>.onion`: its payment-proof address in onion
   /// form, which `epic-wallet address` prints too. It is known without tor running and stays
   /// the same after a restore from the phrase.
@@ -913,14 +980,22 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `pairing_class` is the class the user means to answer, from the preview: an invite of the
   /// other class is refused with `WrongPairingClass` before anything is stored.
   ///
+  /// With `expect_address` set, from a pairing request's `from_address`, the confirmation
+  /// must prove that address, and the request is marked answered. If this wallet's own
+  /// request to the same wallet is out, the wallet with the lower key keeps its invite: when
+  /// ours wins this fails `PairingCrossed`, otherwise our request is withdrawn.
+  ///
   /// Fails as [`EpicWallet::pairing_preview`] does, with `AlreadyPaired` for an invite this
-  /// wallet made or answered already, and `InvalidContactName`.
+  /// wallet made or answered already or a live pairing with that address, `PairingInProgress`,
+  /// `PairingCrossed`, `InviteDismissed` for a request dismissed here, and
+  /// `InvalidContactName`.
   Future<PairingAnswer> pairingAccept({
     required String link,
     required String name,
     required bool byHand,
     required ContactRelayMode relayMode,
     required PairingClass pairingClass,
+    String? expectAddress,
   });
 
   /// Cancels a pairing in progress: an invite stops working, a reply is forgotten. The other
@@ -982,9 +1057,15 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// ([`PairingClass`]): its invite must travel by QR or paste, so `offer_words` is refused
   /// with `WrongPairingClass`.
   ///
-  /// Fails with `InvalidArgument` for a meeting or home relay that is not `domain[:port]` or
-  /// for more than 16 meeting relays, with `InvalidContactName` for a `name` a card cannot
-  /// carry, and with `Io` when 64 pairings are pending.
+  /// With `expect_address` set, the reply must prove that Epicbox address, compared by key:
+  /// a reply without the proof fails `AddressProofMissing`, one proving another key
+  /// `OtherAddress`, with nothing stored, as `PairingFailed` in the collect or as the error
+  /// of `pairing_enter_link`. A reply that proves it completes the pairing Verified.
+  ///
+  /// Fails with `InvalidArgument` for a meeting or home relay that is not `domain[:port]`,
+  /// for more than 16 meeting relays or an `expect_address` that is not an Epicbox address of
+  /// this network, with `InvalidContactName` for a `name` a card cannot carry, and with `Io`
+  /// when 64 pairings are pending.
   Future<PairingInvite> pairingInvite({
     required String name,
     required ContactKind kind,
@@ -994,6 +1075,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required List<String> meetingRelays,
     String? homeRelay,
     required PairingClass pairingClass,
+    String? expectAddress,
   });
 
   /// Reads an invite link for the "Pair with Anna?" sheet. Nothing is stored or sent.
@@ -1001,6 +1083,31 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Fails with `InvalidPairingText` for text that is not an invite on the wallet's network,
   /// and `InviteExpired` for one past its expiry.
   Future<InvitePreview> pairingPreview({required String link});
+
+  /// Hides a request. Its invite id is remembered until the invite expires, so a copy of it
+  /// is dropped; a newer request from the same wallet shows again. Fails with
+  /// `PairingNotFound` for no live request with that id.
+  Future<void> pairingRequestDismiss({required String requestId});
+
+  /// Asks the wallet at `to_address` to pair: a new invite of its own, good for seven days,
+  /// which only that wallet can answer, posted to its payments address. The invite is kept
+  /// only when the post went through; answered, the pairing completes Verified.
+  ///
+  /// Fails with `PeerNotProven` unless that key ran LEPIC lately, answered nothing unmarked
+  /// since and claimed pair requests; `AlreadyPaired` for a live pairing with it;
+  /// `PairingInProgress` for a pairing in progress or waiting with it, or a live request from
+  /// it; `ContactsOffline`, `EpicboxOff`; `TransportFailed` when the post failed, with
+  /// nothing kept; and `InvalidArgument` for an address of another network.
+  Future<PendingPairingView> pairingRequestSend({
+    required String toAddress,
+    required String name,
+    required ContactRelayMode relayMode,
+  });
+
+  /// The live pairing requests other wallets sent, oldest first: not dismissed, answered or
+  /// expired. Answer one with [`EpicWallet::pairing_accept`], its `invite_link` and
+  /// `from_address` as `expect_address`.
+  Future<List<PairRequestView>> pairingRequests();
 
   /// Records the words check: `Match` makes the contact verified, `Mismatch` removes the
   /// pairing on this side and, when this wallet made the invite, tells the other side when
@@ -1038,6 +1145,15 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required ContactRelayMode relayMode,
     String? homeRelay,
   });
+
+  /// The standing invite (one per wallet, seven days, the wallet's own relay), made anew when
+  /// there is none, when it was answered, when less than a day is left, when its relay is not
+  /// the wallet's relay now, or when `name` differs from the name it carries; on a name change
+  /// the old one is withdrawn. Sends nothing, so it works offline. The link is returned again
+  /// on every call; never store it.
+  ///
+  /// Fails with `InvalidContactName`, and `Io` when 64 pairings are pending.
+  Future<PairingInvite> pairingStandingInvite({required String name});
 
   /// The paired contacts attached to the address-book entry `app_contact` with
   /// [`EpicWallet::contact_attach`], oldest first: usually one, two while a key check
@@ -1090,6 +1206,16 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// store. Fails with `InvalidArgument` for an address that does not parse or is on the other
   /// network.
   Future<PeerCompat> peerCompat({required String address});
+
+  /// Reports what the app learned of one of its own features with the wallet at `address`:
+  /// `bit` is one host bit (16, device forwarding, or 32, the directory); `worked` says
+  /// whether it worked. A bit the key never claimed does not start working. Sends nothing.
+  /// Fails with `InvalidArgument` for another bit or an address that does not parse.
+  Future<void> peerFeatureResult({
+    required String address,
+    required int bit,
+    required bool worked,
+  });
 
   /// The private pairings (two wallets of one owner), oldest first, in progress or paired;
   /// `state` tells which. They are never listed by [`EpicWallet::contacts`] or
@@ -1184,6 +1310,15 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// the change of a send and invoices fail with `RestoreScanRequired`. A [`EpicWallet::scan`]
   /// without a start height starts at genesis while it is, and ends it when it completes.
   Future<bool> restoreScanRequired();
+
+  /// Deletes the plain copies of the database kept in the data directory after the move to
+  /// encryption: the `wallet.sqlite3.pre-encryption` file the encrypted database was copied
+  /// from, which it records, and every `wallet.sqlite3.after-rollback-<unix>` file older than
+  /// `older_than_days`, each with its log files. A `.pre-encryption` file it does not record
+  /// is kept and listed in `kept`. Nothing else. For the release after the one that encrypts; the app decides
+  /// when. Deletes nothing while the session runs on the plain database. Fails with `Locked`
+  /// and `Io`.
+  Future<RetiredPlainStore> retirePlainStore({required int olderThanDays});
 
   /// Scans the chain for this wallet's outputs from `start_height`, or, by default, from
   /// shortly before the last completed scan, streaming progress until an event with
@@ -1412,13 +1547,19 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `config` turns Epicbox on or off; with `Locked` on a locked wallet.
   Future<void> setServers({required WalletConfig config});
 
-  /// Signs `message` with this wallet's Epicbox address key and returns the DER signature in
-  /// hex. Another wallet that holds the same recovery phrase makes the same signature, and
-  /// [`verify_address_signature`] checks it against the key in [`EpicWallet::epicbox_address`],
-  /// so two devices can prove they hold one wallet. The digest is tagged so that no text the
-  /// key signs for a relay can ever equal it. Needs no relay. Fails
-  /// with `InvalidArgument` for a `message` over 64 KiB.
-  Future<String> signWithAddressKey({required List<int> message});
+  /// Signs `message` for the app's `domain` with the key of the listing address of
+  /// [`EpicWallet::epicbox_address_at`], and returns the DER signature in hex, which
+  /// [`verify_address_signature_at`] checks. `domain` is lowercase `name/version`, such as
+  /// `epic-listing/1`, at most 64 bytes; domains starting with `lepic`, in any case, are
+  /// refused. The digest is tagged so that no other signature of the wallet can equal it.
+  /// Needs no relay. Fails with `InvalidArgument` for another `dkey` or `domain` and for a
+  /// `message` over 64 KiB.
+  Future<String> signWithAddressKeyAt({
+    required String dkey,
+    required int generation,
+    required String domain,
+    required List<int> message,
+  });
 
   /// Spends exactly the outputs `commitments` names, by `WalletOutput.commitment`, into
   /// `outputs` outputs of this wallet, and locks nothing else. With `outputs` 1 it merges
@@ -1516,6 +1657,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Stops the wallet's tor, then its listener. The stream of `start_tor` ends with
   /// `Stopped` once both are down. Sends over Tor in progress fail.
   void stopTor();
+
+  /// How the wallet's database was found on disk when it was unlocked. Fails with `Locked`.
+  Future<StoreAtRest> storeAtRest();
 
   /// The default account's balance. With `refresh` it first updates outputs and
   /// transactions from the node. Without, it answers from what the wallet stored at its last

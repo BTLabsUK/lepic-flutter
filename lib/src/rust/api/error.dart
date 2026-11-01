@@ -114,8 +114,8 @@ enum WalletErrorKind {
   /// kernel at `TransactionDetails.releasable_from` or above. The message says which.
   notReleasable,
 
-  /// No invoice with that slate id waits on the invoice address to be paid or declined: it
-  /// was paid, declined, deleted by a sweep, or never arrived.
+  /// No invoice with that slate id waits to be paid or declined: it was paid, declined,
+  /// deleted by a sweep, or never arrived.
   invoiceNotFound,
 
   /// The invoice asks for another amount than the one the user typed. Nothing was paid.
@@ -299,7 +299,45 @@ enum WalletErrorKind {
   /// invoice payment and moved its coins, so the payment can never be mined. The
   /// transaction was cancelled and stays watched, so a refresh still confirms it if it is
   /// mined after all, and a refresh ran.
-  peerInputsSpent;
+  peerInputsSpent,
+
+  /// The pairing proves another payments address than the one given. Nothing changed.
+  otherAddress,
+
+  /// A payments address was given, and the pairing proves none. Nothing changed; try again
+  /// after the contact's card with a proof arrives.
+  addressProofMissing,
+
+  /// `pairing_request_send` to a key that did not run LEPIC lately, answered unmarked since,
+  /// or never claimed pair requests. Nothing was sent; offer the invite instead.
+  peerNotProven,
+
+  /// A request or answer toward a wallet that already has a pairing in progress here, one
+  /// waiting for it, or a live request from it. Show that pairing or request.
+  pairingInProgress,
+
+  /// This wallet's own pairing with the same wallet wins under the lower-key rule: keep
+  /// waiting for its answer. Nothing changed.
+  pairingCrossed,
+
+  /// The invite of a request this wallet dismissed. Ask for a new one.
+  inviteDismissed,
+
+  /// The pairing ended: nothing new goes through it. Offer to remove it.
+  pairingEnded,
+
+  /// The contact's wallet has not been heard in this pairing yet: no sealed send or invoice.
+  pairingWaiting,
+
+  /// A payment asked for a payment proof that this wallet does not sign: one for another
+  /// key than its own, or any proof for a payment to a listing address. Nothing was signed
+  /// or stored.
+  foreignProofAddress,
+
+  /// The wallet's encrypted database does not open with the key its recovery phrase gives:
+  /// its key check refuses it. Nothing was changed or moved. Recover with the phrase only
+  /// if it is this wallet's; the database is kept.
+  wrongKey;
 
   /// The stable number of this kind.
   Future<int> code() =>

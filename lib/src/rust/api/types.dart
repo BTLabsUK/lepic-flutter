@@ -10,7 +10,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'tor.dart';
 
 // These functions are ignored because they are not marked as `pub`: `network`, `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Which Epic chain the wallet talks to.
 enum Chain { mainnet, floonet }
@@ -47,6 +47,24 @@ enum CollectTrigger {
   push,
 }
 
+/// What changed, for `ContactUpdated`.
+enum ContactChange {
+  /// Newer details, same keys.
+  card,
+
+  /// `payments_address` was set or changed.
+  address,
+
+  /// The contact's wallet was heard for the first time ("Paired with Anna").
+  heard,
+
+  /// The contact's match verdict was accepted ("Anna confirmed too").
+  peerVerified,
+
+  /// The pairing ended; `ended_reason` says why.
+  ended,
+}
+
 /// What one `EpicWallet::contacts_collect` did.
 class ContactCollectReport {
   final int mailboxes;
@@ -65,6 +83,9 @@ class ContactCollectReport {
   /// `domain:port` of the relays that did not answer; collecting from them backs off.
   final List<String> unreachable;
 
+  /// Pairings that ended in this cycle; their records are kept.
+  final List<EndedPairing> ended;
+
   const ContactCollectReport({
     required this.mailboxes,
     required this.messages,
@@ -72,6 +93,7 @@ class ContactCollectReport {
     required this.failed,
     required this.delivered,
     required this.unreachable,
+    required this.ended,
   });
 
   @override
@@ -81,7 +103,8 @@ class ContactCollectReport {
       paired.hashCode ^
       failed.hashCode ^
       delivered.hashCode ^
-      unreachable.hashCode;
+      unreachable.hashCode ^
+      ended.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -93,7 +116,8 @@ class ContactCollectReport {
           paired == other.paired &&
           failed == other.failed &&
           delivered == other.delivered &&
-          unreachable == other.unreachable;
+          unreachable == other.unreachable &&
+          ended == other.ended;
 }
 
 /// What `EpicWallet::contacts_import` restored.
@@ -277,7 +301,28 @@ class ContactView {
   /// The contact removed this pairing on its side and said so: nothing sent through it
   /// arrives any more. Offer to remove it here too.
   final bool removedByPeer;
+
+  /// The contact's payments address, `key@relay`, only when an address proof of this
+  /// pairing verified over a card naming it. A later proof that fails keeps it; `None` for a
+  /// contact that proved none.
+  final String? paymentsAddress;
   final PlatformInt64 createdAtMs;
+
+  /// Where the pairing stands, derived: Ended, then KeysChanged, then Waiting until the
+  /// contact's wallet was heard, then Verified or Paired.
+  final PairingStatus status;
+
+  /// When the contact's wallet was first heard in this pairing ("Paired with Anna").
+  final PlatformInt64? peerHeardAtMs;
+
+  /// "Anna confirmed too": set while the contact's accepted match verdict is for this
+  /// pairing's words.
+  final PlatformInt64? peerVerifiedAtMs;
+
+  /// The feature bits the contact claimed in this pairing; 0 when none came.
+  final int peerFeatures;
+  final PairingEndReason? endedReason;
+  final PlatformInt64? endedAtMs;
 
   const ContactView({
     required this.contactId,
@@ -295,7 +340,14 @@ class ContactView {
     required this.lapsed,
     this.lastSealedInMs,
     required this.removedByPeer,
+    this.paymentsAddress,
     required this.createdAtMs,
+    required this.status,
+    this.peerHeardAtMs,
+    this.peerVerifiedAtMs,
+    required this.peerFeatures,
+    this.endedReason,
+    this.endedAtMs,
   });
 
   @override
@@ -315,7 +367,14 @@ class ContactView {
       lapsed.hashCode ^
       lastSealedInMs.hashCode ^
       removedByPeer.hashCode ^
-      createdAtMs.hashCode;
+      paymentsAddress.hashCode ^
+      createdAtMs.hashCode ^
+      status.hashCode ^
+      peerHeardAtMs.hashCode ^
+      peerVerifiedAtMs.hashCode ^
+      peerFeatures.hashCode ^
+      endedReason.hashCode ^
+      endedAtMs.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -337,7 +396,33 @@ class ContactView {
           lapsed == other.lapsed &&
           lastSealedInMs == other.lastSealedInMs &&
           removedByPeer == other.removedByPeer &&
-          createdAtMs == other.createdAtMs;
+          paymentsAddress == other.paymentsAddress &&
+          createdAtMs == other.createdAtMs &&
+          status == other.status &&
+          peerHeardAtMs == other.peerHeardAtMs &&
+          peerVerifiedAtMs == other.peerVerifiedAtMs &&
+          peerFeatures == other.peerFeatures &&
+          endedReason == other.endedReason &&
+          endedAtMs == other.endedAtMs;
+}
+
+/// A pairing that ended in a collecting cycle; its record is kept.
+class EndedPairing {
+  final String contactId;
+  final PairingEndReason reason;
+
+  const EndedPairing({required this.contactId, required this.reason});
+
+  @override
+  int get hashCode => contactId.hashCode ^ reason.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EndedPairing &&
+          runtimeType == other.runtimeType &&
+          contactId == other.contactId &&
+          reason == other.reason;
 }
 
 /// The Epicbox relay connection.
@@ -1006,6 +1091,26 @@ enum ListenerEventKind {
   invoiceBounced,
 }
 
+/// A listing of this wallet with a directory: the directory's compressed secp256k1 key in hex
+/// (66 digits) and the listing's generation, raised after each leave.
+class ListingRef {
+  final String dkey;
+  final int generation;
+
+  const ListingRef({required this.dkey, required this.generation});
+
+  @override
+  int get hashCode => dkey.hashCode ^ generation.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ListingRef &&
+          runtimeType == other.runtimeType &&
+          dkey == other.dkey &&
+          generation == other.generation;
+}
+
 /// The app configuration's `[node]`, `[epicbox]`, `[http]` and `[tor]` tuning keys. Every
 /// field is required: LEPIC has no defaults of its own.
 class NetTuning {
@@ -1322,6 +1427,58 @@ class PaidInvoiceSlate {
           json == other.json;
 }
 
+/// A pairing request another wallet sent, from `EpicWallet::pairing_requests`. `invite_link`
+/// pairs with it; `Debug` leaves it out.
+class PairRequestView {
+  /// 16 lowercase hex characters: the request's invite id.
+  final String requestId;
+
+  /// `key@relay` as the relay authenticated the sender.
+  final String fromAddress;
+
+  /// The name the invite gives its maker, unverified.
+  final String claimedName;
+  final ContactKind kind;
+  final PlatformInt64 receivedAtMs;
+  final PlatformInt64 expiresAtMs;
+
+  /// `epiccash://pair/1/...`, for `pairing_accept` and for passing to a linked device.
+  final String inviteLink;
+
+  const PairRequestView({
+    required this.requestId,
+    required this.fromAddress,
+    required this.claimedName,
+    required this.kind,
+    required this.receivedAtMs,
+    required this.expiresAtMs,
+    required this.inviteLink,
+  });
+
+  @override
+  int get hashCode =>
+      requestId.hashCode ^
+      fromAddress.hashCode ^
+      claimedName.hashCode ^
+      kind.hashCode ^
+      receivedAtMs.hashCode ^
+      expiresAtMs.hashCode ^
+      inviteLink.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PairRequestView &&
+          runtimeType == other.runtimeType &&
+          requestId == other.requestId &&
+          fromAddress == other.fromAddress &&
+          claimedName == other.claimedName &&
+          kind == other.kind &&
+          receivedAtMs == other.receivedAtMs &&
+          expiresAtMs == other.expiresAtMs &&
+          inviteLink == other.inviteLink;
+}
+
 /// An answered invite, from `EpicWallet::pairing_accept`.
 class PairingAnswer {
   final String contactId;
@@ -1385,6 +1542,21 @@ enum PairingClass {
   private,
 }
 
+/// Why a pairing ended.
+enum PairingEndReason {
+  /// This side's words check did not match.
+  mismatch,
+
+  /// The contact reported that the words did not match.
+  peerMismatch,
+
+  /// The contact removed the pairing.
+  unpaired,
+
+  /// The contact's wallet was never heard during seven days of collecting.
+  neverFinished,
+}
+
 /// Why a pairing in progress ended, for `PairingFailed`.
 enum PairingFailureReason {
   /// Something changed the invite on the way. Nothing was stored; pair again.
@@ -1400,6 +1572,16 @@ enum PairingFailureReason {
 
   /// The inviter refused the reply: the invite was used, expired or cancelled.
   refused,
+
+  /// The answer came from another wallet than the one the request went to, or from the
+  /// request's sender: nothing was stored.
+  otherAddress,
+
+  /// The answer to a request carried no address proof: nothing was stored.
+  addressProofMissing,
+
+  /// Another pairing with the same wallet was in progress and won.
+  crossed,
 }
 
 /// A new invite, from `EpicWallet::pairing_invite`. `link` lets anyone who sees it pair as
@@ -1497,6 +1679,20 @@ enum PairingState {
   keysChanged,
 }
 
+/// Where a pairing stands; derived from its record, never stored.
+enum PairingStatus {
+  /// Stored, but the contact's wallet has not been heard in it yet ("Waiting for Anna's
+  /// wallet"). No sealed send or invoice.
+  waiting,
+  paired,
+  verified,
+  keysChanged,
+
+  /// Ended: nothing new goes through; slates in flight settle unless it ended by this
+  /// side's mismatch. Remove deletes it.
+  ended,
+}
+
 /// What this wallet learned about the software behind an Epicbox key from that key's own
 /// messages, from `EpicWallet::peer_compat`, with what follows from it now. Times are
 /// milliseconds since the Unix epoch. Everything is `None`, 0 or false for a key nothing is
@@ -1586,6 +1782,9 @@ class PendingPairingView {
   /// names it.
   final String homeRelay;
 
+  /// Inviter: where the pairing request went. Invitee: the request's sender.
+  final String? expectAddress;
+
   const PendingPairingView({
     required this.contactId,
     required this.inviter,
@@ -1594,6 +1793,7 @@ class PendingPairingView {
     required this.expiresAtMs,
     required this.createdAtMs,
     required this.homeRelay,
+    this.expectAddress,
   });
 
   @override
@@ -1604,7 +1804,8 @@ class PendingPairingView {
       label.hashCode ^
       expiresAtMs.hashCode ^
       createdAtMs.hashCode ^
-      homeRelay.hashCode;
+      homeRelay.hashCode ^
+      expectAddress.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1617,7 +1818,8 @@ class PendingPairingView {
           label == other.label &&
           expiresAtMs == other.expiresAtMs &&
           createdAtMs == other.createdAtMs &&
-          homeRelay == other.homeRelay;
+          homeRelay == other.homeRelay &&
+          expectAddress == other.expectAddress;
 }
 
 /// The answer to a received slate, from `EpicWallet::receive_slate` and
@@ -2300,6 +2502,10 @@ class TransactionDetails {
   /// for files, slates passed in as text and restored outputs.
   final String? counterparty;
 
+  /// For a payment received at a listing address (`EpicWallet::drain_epicbox_at`), that
+  /// listing. `None` for every other transaction.
+  final ListingRef? receiveListing;
+
   /// The height from which the slate may no longer be completed. `None` when it sets none.
   final BigInt? ttlCutoffHeight;
 
@@ -2381,6 +2587,7 @@ class TransactionDetails {
     this.confirmedHeight,
     this.kernelExcess,
     this.counterparty,
+    this.receiveListing,
     this.ttlCutoffHeight,
     this.releasableFrom,
     required this.releasable,
@@ -2412,6 +2619,7 @@ class TransactionDetails {
       confirmedHeight.hashCode ^
       kernelExcess.hashCode ^
       counterparty.hashCode ^
+      receiveListing.hashCode ^
       ttlCutoffHeight.hashCode ^
       releasableFrom.hashCode ^
       releasable.hashCode ^
@@ -2445,6 +2653,7 @@ class TransactionDetails {
           confirmedHeight == other.confirmedHeight &&
           kernelExcess == other.kernelExcess &&
           counterparty == other.counterparty &&
+          receiveListing == other.receiveListing &&
           ttlCutoffHeight == other.ttlCutoffHeight &&
           releasableFrom == other.releasableFrom &&
           releasable == other.releasable &&
@@ -2469,9 +2678,6 @@ enum TransportConnection {
 
   /// A one-time drain of the payments address.
   paymentsDrain,
-
-  /// Retired with the invoice address; never reported.
-  invoicesDrain,
 }
 
 enum TransportState { connecting, connected, disconnected, stopped }
@@ -2622,6 +2828,12 @@ class WalletConfig {
   /// wallet is created, restored or opened. Ignored on iOS and in a build without tor.
   final bool torWanted;
 
+  /// The feature bits the app claims to other LEPIC wallets: one constant of the app's
+  /// build, the same for every user, never a setting. LEPIC keeps only the host bits, 4
+  /// (linked-device forwarding) and 5 (directory), and ignores the rest. Read when a wallet
+  /// is created, restored or opened.
+  final int hostFeatures;
+
   const WalletConfig({
     required this.dataDir,
     required this.chain,
@@ -2633,6 +2845,7 @@ class WalletConfig {
     required this.tuning,
     required this.offline,
     required this.torWanted,
+    required this.hostFeatures,
   });
 
   @override
@@ -2646,7 +2859,8 @@ class WalletConfig {
       onionRoutes.hashCode ^
       tuning.hashCode ^
       offline.hashCode ^
-      torWanted.hashCode;
+      torWanted.hashCode ^
+      hostFeatures.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2662,7 +2876,8 @@ class WalletConfig {
           onionRoutes == other.onionRoutes &&
           tuning == other.tuning &&
           offline == other.offline &&
-          torWanted == other.torWanted;
+          torWanted == other.torWanted &&
+          hostFeatures == other.hostFeatures;
 }
 
 /// What the wallet reports while it runs, from `EpicWallet::events`. Only the fields its
@@ -2712,6 +2927,21 @@ class WalletEvent {
   /// For `InvoiceFromContact`, the issuer's message as `ContactInvoiceView.message` gives it.
   final String? message;
 
+  /// For `NoticeUnmatched`: what the notice says.
+  final String? noticeKind;
+
+  /// For `NoticeUnmatched`: the notice, to pass on as it is.
+  final String? notice;
+
+  /// For `PairingRequested`.
+  final String? requestId;
+
+  /// For `ContactUpdated`: what changed.
+  final ContactChange? contactChange;
+
+  /// For `ContactUpdated` with `Ended`.
+  final PairingEndReason? endedReason;
+
   const WalletEvent({
     required this.kind,
     this.session,
@@ -2738,6 +2968,11 @@ class WalletEvent {
     this.reference,
     this.expires,
     this.message,
+    this.noticeKind,
+    this.notice,
+    this.requestId,
+    this.contactChange,
+    this.endedReason,
   });
 
   @override
@@ -2766,7 +3001,12 @@ class WalletEvent {
       purpose.hashCode ^
       reference.hashCode ^
       expires.hashCode ^
-      message.hashCode;
+      message.hashCode ^
+      noticeKind.hashCode ^
+      notice.hashCode ^
+      requestId.hashCode ^
+      contactChange.hashCode ^
+      endedReason.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2797,7 +3037,12 @@ class WalletEvent {
           purpose == other.purpose &&
           reference == other.reference &&
           expires == other.expires &&
-          message == other.message;
+          message == other.message &&
+          noticeKind == other.noticeKind &&
+          notice == other.notice &&
+          requestId == other.requestId &&
+          contactChange == other.contactChange &&
+          endedReason == other.endedReason;
 }
 
 enum WalletEventKind {
@@ -2961,6 +3206,19 @@ enum WalletEventKind {
   /// `sender_reported_cancelled_at_ms` is set from now on; whether to cancel it here is the
   /// app's choice, and `EpicWallet::cancel` keeps its own checks.
   paymentCancelled,
+
+  /// A notice arrived over Epicbox for a slate this wallet holds no transaction or invoice
+  /// of: `slate_id`, `notice_kind` (`posted`, `cancelled`, `declined` or `withdrawn`),
+  /// `sender` and `notice` are set. Another install on the same recovery phrase may hold
+  /// it: pass `sender` and `notice` over the device link to the other device, which calls
+  /// `EpicWallet::notice_apply_forwarded`. Nothing changed here, and nothing verified the
+  /// notice: never show it or act on it.
+  noticeUnmatched,
+
+  /// Another wallet asked to pair through this wallet's payments address: `request_id` and
+  /// `sender` are set. Read it with `EpicWallet::pairing_requests`; dismiss a request from
+  /// anyone not in the address book with `EpicWallet::pairing_request_dismiss`.
+  pairingRequested,
 }
 
 /// An output of the wallet, from `EpicWallet::outputs`.
