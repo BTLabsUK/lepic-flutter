@@ -247,6 +247,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ImportedTx dco_decode_box_autoadd_imported_tx(dynamic raw);
 
   @protected
+  KernelLocation dco_decode_box_autoadd_kernel_location(dynamic raw);
+
+  @protected
   ListingRef dco_decode_box_autoadd_listing_ref(dynamic raw);
 
   @protected
@@ -414,6 +417,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   IssuedInvoice dco_decode_issued_invoice(dynamic raw);
 
   @protected
+  KernelLocation dco_decode_kernel_location(dynamic raw);
+
+  @protected
   KeyCheckStart dco_decode_key_check_start(dynamic raw);
 
   @protected
@@ -535,6 +541,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImportedTx? dco_decode_opt_box_autoadd_imported_tx(dynamic raw);
+
+  @protected
+  KernelLocation? dco_decode_opt_box_autoadd_kernel_location(dynamic raw);
 
   @protected
   ListingRef? dco_decode_opt_box_autoadd_listing_ref(dynamic raw);
@@ -1013,6 +1022,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ImportedTx sse_decode_box_autoadd_imported_tx(SseDeserializer deserializer);
 
   @protected
+  KernelLocation sse_decode_box_autoadd_kernel_location(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ListingRef sse_decode_box_autoadd_listing_ref(SseDeserializer deserializer);
 
   @protected
@@ -1210,6 +1224,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   IssuedInvoice sse_decode_issued_invoice(SseDeserializer deserializer);
 
   @protected
+  KernelLocation sse_decode_kernel_location(SseDeserializer deserializer);
+
+  @protected
   KeyCheckStart sse_decode_key_check_start(SseDeserializer deserializer);
 
   @protected
@@ -1365,6 +1382,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImportedTx? sse_decode_opt_box_autoadd_imported_tx(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  KernelLocation? sse_decode_opt_box_autoadd_kernel_location(
     SseDeserializer deserializer,
   );
 
@@ -1942,6 +1964,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_kernel_location(
+    KernelLocation self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_listing_ref(
     ListingRef self,
     SseSerializer serializer,
@@ -2182,6 +2210,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_issued_invoice(IssuedInvoice self, SseSerializer serializer);
 
   @protected
+  void sse_encode_kernel_location(
+    KernelLocation self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_key_check_start(KeyCheckStart self, SseSerializer serializer);
 
   @protected
@@ -2370,6 +2404,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_imported_tx(
     ImportedTx? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_kernel_location(
+    KernelLocation? self,
     SseSerializer serializer,
   );
 

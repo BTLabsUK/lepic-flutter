@@ -845,6 +845,18 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// tip cannot be read; nothing is stored then.
   Future<Slate> issueInvoiceSlate({required BigInt amount, String? message});
 
+  /// Where the chain holds the kernel with `excess`, the 33-byte commitment in hex as
+  /// `TransactionDetails::kernel_excess` gives it, or `None` when the node knows none at or
+  /// above `min_height` (any height when `None`). Asks the node and changes nothing in the
+  /// wallet.
+  ///
+  /// Fails with `InvalidArgument` when `excess` is not a commitment, `Offline` in an offline
+  /// session, and `NodeUnreachable` or another node kind when the node cannot be asked.
+  Future<KernelLocation?> kernelOnChain({
+    required String excess,
+    BigInt? minHeight,
+  });
+
   bool listenerRunning();
 
   /// Locks the wallet now, for example when the app goes to the background: stops the
