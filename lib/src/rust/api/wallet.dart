@@ -755,6 +755,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// The running HTTP listener, or `None`.
   HttpListenerInfo? httpListenerStatus();
 
+  /// Whether HTTP sends over Tor are on, as [`EpicWallet::set_http_over_tor`] set it.
+  bool httpOverTor();
+
   /// Imports the transaction history of an epic-wallet wallet (the GUI's or the CLI's) whose
   /// folder is `source_dir`: the folder holding `wallet_data`, or `wallet_data` itself. The
   /// wallet must have been made from the same recovery phrase, for example by
@@ -1451,7 +1454,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// user agreed that the slate travels unencrypted.
   ///
   /// While the wallet's tor runs or is expected (`WalletConfig::tor_wanted`,
-  /// [`EpicWallet::expect_tor`]), the connection goes through tor, which resolves the host,
+  /// [`EpicWallet::expect_tor`]) and HTTP sends over Tor are on
+  /// ([`EpicWallet::set_http_over_tor`]), the connection goes through tor, which resolves the host,
   /// and waits for a tor that is still starting within the request timeout; a host on this
   /// device stays direct. A tor that fails fails the send: it never goes directly instead.
   /// Otherwise the wallet is reached directly.
@@ -1509,6 +1513,14 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// on it are acknowledged, within 30 seconds; messages not acknowledged by then stay with
   /// the relay and come again. A send in progress finishes on its own connection.
   void setEpicboxOverTor({required bool enabled});
+
+  /// Turns HTTP sends over Tor on or off; it is on when the wallet opens. While it is on and
+  /// the wallet's tor runs or is expected, [`EpicWallet::send_http`] and
+  /// [`EpicWallet::resend_http`] go through tor, as they describe. Off, they reach the other
+  /// wallet directly even while tor runs, for an app that runs tor only to be paid at its
+  /// onion and to send to onions. Sends to onions ([`EpicWallet::send_tor`]) always go
+  /// through tor. A send in progress finishes on its own connection.
+  void setHttpOverTor({required bool enabled});
 
   /// Sets the wallet's minimum confirmations, 1 to 30 (anything else fails with
   /// `InvalidArgument`), and re-splits the balance at once without the node: the next
