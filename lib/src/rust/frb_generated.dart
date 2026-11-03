@@ -9465,8 +9465,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   InvitePreview dco_decode_invite_preview(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 6)
-      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
     return InvitePreview(
       claimedName: dco_decode_String(arr[0]),
       kind: dco_decode_contact_kind(arr[1]),
@@ -9474,6 +9474,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       homeRelay: dco_decode_String(arr[3]),
       service: dco_decode_bool(arr[4]),
       pairingClass: dco_decode_pairing_class(arr[5]),
+      own: dco_decode_bool(arr[6]),
     );
   }
 
@@ -11802,6 +11803,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_homeRelay = sse_decode_String(deserializer);
     var var_service = sse_decode_bool(deserializer);
     var var_pairingClass = sse_decode_pairing_class(deserializer);
+    var var_own = sse_decode_bool(deserializer);
     return InvitePreview(
       claimedName: var_claimedName,
       kind: var_kind,
@@ -11809,6 +11811,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       homeRelay: var_homeRelay,
       service: var_service,
       pairingClass: var_pairingClass,
+      own: var_own,
     );
   }
 
@@ -14634,6 +14637,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.homeRelay, serializer);
     sse_encode_bool(self.service, serializer);
     sse_encode_pairing_class(self.pairingClass, serializer);
+    sse_encode_bool(self.own, serializer);
   }
 
   @protected

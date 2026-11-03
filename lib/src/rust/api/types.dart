@@ -817,6 +817,10 @@ class InvitePreview {
   /// Answer it with this class in `EpicWallet::pairing_accept`.
   final PairingClass pairingClass;
 
+  /// This wallet made the invite: standing, waiting or cancelled. `EpicWallet::pairing_accept`
+  /// refuses it with `AlreadyPaired`.
+  final bool own;
+
   const InvitePreview({
     required this.claimedName,
     required this.kind,
@@ -824,6 +828,7 @@ class InvitePreview {
     required this.homeRelay,
     required this.service,
     required this.pairingClass,
+    required this.own,
   });
 
   @override
@@ -833,7 +838,8 @@ class InvitePreview {
       expiresAtMs.hashCode ^
       homeRelay.hashCode ^
       service.hashCode ^
-      pairingClass.hashCode;
+      pairingClass.hashCode ^
+      own.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -845,7 +851,8 @@ class InvitePreview {
           expiresAtMs == other.expiresAtMs &&
           homeRelay == other.homeRelay &&
           service == other.service &&
-          pairingClass == other.pairingClass;
+          pairingClass == other.pairingClass &&
+          own == other.own;
 }
 
 /// What one `EpicWallet::sweep_invoices` did.
