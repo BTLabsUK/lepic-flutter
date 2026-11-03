@@ -150,6 +150,13 @@ keep the open wallet's. The HTTP listen port stays an argument of `startHttpList
   `secretStore` means the store failed or did not give back what was written; the old password
   then still opens (or, if the store failed while replacing `lepic.vault`, either does until
   the next `open`). Forget any password the app remembered for the wallet after a change.
+- `EpicWallet.create` and `EpicWallet.createWithPin` with a `mnemonic` restore the wallet; then
+  `scan()` without a start, to the end, before it can receive or make change.
+  `restoreFromHeight` starts that scan at a block height instead of genesis (LEPIC ADR 0035):
+  outputs below it are not found, and a later `scan(startHeight: 0)` finds them. The app picks
+  the height; `null` or 0 scans from genesis, and a height without a `mnemonic` gives
+  `invalidArgument` before anything is written. `restoreScanRequired()` stays true until a scan
+  from that height or below reaches the tip.
 - `EpicWallet.importWalletSeed` and `EpicWallet.importWalletSeedWithPin` restore from the text of
   an `epic-wallet` `wallet.seed` (at most 4096 bytes) and its password, then work as `create` and
   `createWithPin` with a phrase: scan next. A wrong file password gives `wrongPassword`, text
@@ -398,7 +405,7 @@ meaning. `message` is English for logs and bug reports and holds no secret; do n
 | 19 | `cancelled` | The operation was cancelled, for example `cancelScan`. |
 | 20 | `unsupported` | Not available in this build or configuration, for example Epicbox without a relay. |
 | 21 | `panic` | A defect inside LEPIC. The operation was abandoned. |
-| 22 | `restoreScanRequired` | The wallet was restored from its phrase and no full scan has completed since, so it cannot receive or make change yet. Run `scan` to the end first. |
+| 22 | `restoreScanRequired` | The wallet was restored from its phrase and its restore scan, from genesis or from `restoreFromHeight`, has not completed since, so it cannot receive or make change yet. Run `scan` without a start to the end first. |
 | 23 | `changedDuringCancel` | Another operation, such as the listener finalizing it, changed the transaction while it was being cancelled. Nothing was cancelled; cancel again to decide from the new state. |
 | 24 | `onChain` | The node already holds the transaction's kernel, so it cannot be cancelled or released. The next refresh confirms it. |
 | 25 | `foreignAppData` | The app data file is intact but belongs to a wallet with another seed. |
@@ -879,7 +886,7 @@ the secret store, which the earlier binding kept in process-wide state.
 | `validate_epicbox_address(address)` | `validate_epicbox_address(address, chain)` | Chain is explicit, and the `@<relay>` part is required: a bare key is refused. |
 | `delete_wallet(config)` | `delete_wallet(runtime, config, store)` | Fails with `walletBusy` at once instead of waiting 20 s. Also deletes the vault. |
 | `node_tip(config)` | `node_tip(runtime, config)` | Same result. |
-| `EpicWallet::create(config, mnemonic, password)` | `EpicWallet::create(runtime, config, store, mnemonic, password)`, or `EpicWallet::create_with_pin(runtime, config, store, mnemonic, pin) -> PinWallet` | Same semantics. The PIN form returns the wallet and `sealed_password`. |
+| `EpicWallet::create(config, mnemonic, password)` | `EpicWallet::create(runtime, config, store, mnemonic, restore_from_height, password)`, or `EpicWallet::create_with_pin(runtime, config, store, mnemonic, restore_from_height, pin) -> PinWallet` | Same semantics. The PIN form returns the wallet and `sealed_password`. New: `restore_from_height` starts a restore's scan at that height. |
 | `EpicWallet::open(config, password)` | `EpicWallet::open(runtime, config, store, password)`, or `EpicWallet::open_with_pin(runtime, config, store, pin, sealed_password)` | Same. |
 | `mnemonic(password)` | `mnemonic(password)`, or `mnemonic_with_pin(pin, sealed_password)` | Same check against the stored vault. |
 | `summary(refresh, minimum_confirmations)` | `summary(refresh)` | Balances count an output spendable after 3 confirmations, as the Epic GUI wallet does (`epic-wallet info` counts 10); `WalletSummary.minimumConfirmations` carries the number, so sends and estimates can pass it. `refresh: false` answers from the store without the node, also on a handle that never refreshed. |

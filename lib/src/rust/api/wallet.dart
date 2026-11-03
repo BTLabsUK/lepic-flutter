@@ -561,8 +561,14 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// generated, whose phrase [`EpicWallet::mnemonic`] returns for the backup screen. Returns
   /// the open wallet.
   ///
-  /// Fails with `InvalidArgument` when `password` has fewer than eight characters, before
-  /// anything is written, `WalletAlreadyExists` when `store` holds a vault, `InvalidMnemonic`,
+  /// `restore_from_height` is the height the restore scan starts from: a scan from it or below
+  /// completes the restore, and outputs below the height that the chain still holds are not
+  /// found by it. `None` and 0 start from genesis. Pass a height only when the phrase was
+  /// first used above it.
+  ///
+  /// Fails with `InvalidArgument` when `password` has fewer than eight characters or
+  /// `restore_from_height` comes without `mnemonic`, before anything is written,
+  /// `WalletAlreadyExists` when `store` holds a vault, `InvalidMnemonic`,
   /// `ForeignWallet` when the directory holds another wallet's database, `WalletBusy` when a
   /// wallet on the directory is open, and `SecretStore` when the vault could not be written.
   static Future<EpicWallet> create({
@@ -570,12 +576,14 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required WalletConfig config,
     required AppSecretStore store,
     String? mnemonic,
+    BigInt? restoreFromHeight,
     required String password,
   }) => RustLib.instance.api.crateApiWalletEpicWalletCreate(
     runtime: runtime,
     config: config,
     store: store,
     mnemonic: mnemonic,
+    restoreFromHeight: restoreFromHeight,
     password: password,
   );
 
@@ -602,19 +610,21 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// app stops before storing it, the wallet cannot be opened by PIN; delete it with
   /// [`delete_wallet`] and create it again (a restored wallet from its phrase).
   ///
-  /// Fails with `InvalidArgument` when `pin` has fewer than six characters, and otherwise
-  /// as `create` does.
+  /// `restore_from_height` is as in `create`. Fails with `InvalidArgument` when `pin` has
+  /// fewer than six characters, and otherwise as `create` does.
   static Future<PinWallet> createWithPin({
     required LepicRuntime runtime,
     required WalletConfig config,
     required AppSecretStore store,
     String? mnemonic,
+    BigInt? restoreFromHeight,
     required String pin,
   }) => RustLib.instance.api.crateApiWalletEpicWalletCreateWithPin(
     runtime: runtime,
     config: config,
     store: store,
     mnemonic: mnemonic,
+    restoreFromHeight: restoreFromHeight,
     pin: pin,
   );
 
@@ -1320,10 +1330,12 @@ abstract class EpicWallet implements RustOpaqueInterface {
   Future<HttpResentTx> resendTor({required int txId, required String onion});
 
   /// Whether the wallet's database was rebuilt from its seed, by a restore from the phrase or
-  /// a `wallet.seed`, or by an open after a damaged or missing database, and no scan from
-  /// genesis has completed since. While it is, the wallet refuses every new output: receiving,
+  /// a `wallet.seed`, or by an open after a damaged or missing database, and no restore scan
+  /// has completed since: one from genesis, or for a restore with `restore_from_height` one
+  /// from that height or below. While it is, the wallet refuses every new output: receiving,
   /// the change of a send and invoices fail with `RestoreScanRequired`. A [`EpicWallet::scan`]
-  /// without a start height starts at genesis while it is, and ends it when it completes.
+  /// without a start height starts where the restore scan does while it is, and ends it when
+  /// it completes.
   Future<bool> restoreScanRequired();
 
   /// Deletes the plain copies of the database kept in the data directory after the move to
@@ -1341,11 +1353,13 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// [`WalletError`] as the stream's error; a cancelled scan ends it with `Cancelled`.
   ///
   /// While [`EpicWallet::restore_scan_required`] is true, a scan without `start_height`
-  /// starts at genesis, so it resumes a restore scan that stopped, and once it completes the
-  /// wallet creates outputs again. `Some(0)` scans from genesis too and ends the restore scan
-  /// the same way. A scan from a higher `start_height` finds the outputs above it, for a
-  /// balance soon after a restore from a known height, but leaves the restore scan pending:
-  /// run one without `start_height` after it. A `start_height` above the chain tip scans
+  /// starts where the restore scan does, at genesis or at the `restore_from_height` the
+  /// wallet was created with, so it resumes a restore scan that stopped, and once it
+  /// completes the wallet creates outputs again. `Some(0)` scans from genesis and ends any
+  /// restore scan the same way, and so does a `start_height` at or below the restore's start.
+  /// A scan from a higher `start_height` finds the outputs above it but leaves the restore
+  /// scan pending: run one without `start_height` after it. A `start_height` above the chain
+  /// tip scans
   /// nothing: the last event's message says the scan was skipped, and its `result` has a
   /// `start_height` above its `end_height`.
   ///
