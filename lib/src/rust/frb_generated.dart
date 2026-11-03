@@ -318,6 +318,7 @@ abstract class RustLibApi extends BaseApi {
     required WalletConfig config,
     required AppSecretStore store,
     String? mnemonic,
+    BigInt? restoreFromHeight,
     required String password,
   });
 
@@ -334,6 +335,7 @@ abstract class RustLibApi extends BaseApi {
     required WalletConfig config,
     required AppSecretStore store,
     String? mnemonic,
+    BigInt? restoreFromHeight,
     required String pin,
   });
 
@@ -2704,6 +2706,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     required WalletConfig config,
     required AppSecretStore store,
     String? mnemonic,
+    BigInt? restoreFromHeight,
     required String password,
   }) {
     return handler.executeNormal(
@@ -2720,6 +2723,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             serializer,
           );
           sse_encode_opt_String(mnemonic, serializer);
+          sse_encode_opt_box_autoadd_u_64(restoreFromHeight, serializer);
           sse_encode_String(password, serializer);
           pdeCallFfi(
             generalizedFrbRustBinding,
@@ -2734,7 +2738,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletCreateConstMeta,
-        argValues: [runtime, config, store, mnemonic, password],
+        argValues: [
+          runtime,
+          config,
+          store,
+          mnemonic,
+          restoreFromHeight,
+          password,
+        ],
         apiImpl: this,
       ),
     );
@@ -2743,7 +2754,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiWalletEpicWalletCreateConstMeta =>
       const TaskConstMeta(
         debugName: "EpicWallet_create",
-        argNames: ["runtime", "config", "store", "mnemonic", "password"],
+        argNames: [
+          "runtime",
+          "config",
+          "store",
+          "mnemonic",
+          "restoreFromHeight",
+          "password",
+        ],
       );
 
   @override
@@ -2802,6 +2820,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     required WalletConfig config,
     required AppSecretStore store,
     String? mnemonic,
+    BigInt? restoreFromHeight,
     required String pin,
   }) {
     return handler.executeNormal(
@@ -2818,6 +2837,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             serializer,
           );
           sse_encode_opt_String(mnemonic, serializer);
+          sse_encode_opt_box_autoadd_u_64(restoreFromHeight, serializer);
           sse_encode_String(pin, serializer);
           pdeCallFfi(
             generalizedFrbRustBinding,
@@ -2831,7 +2851,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletCreateWithPinConstMeta,
-        argValues: [runtime, config, store, mnemonic, pin],
+        argValues: [runtime, config, store, mnemonic, restoreFromHeight, pin],
         apiImpl: this,
       ),
     );
@@ -2840,7 +2860,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiWalletEpicWalletCreateWithPinConstMeta =>
       const TaskConstMeta(
         debugName: "EpicWallet_create_with_pin",
-        argNames: ["runtime", "config", "store", "mnemonic", "pin"],
+        argNames: [
+          "runtime",
+          "config",
+          "store",
+          "mnemonic",
+          "restoreFromHeight",
+          "pin",
+        ],
       );
 
   @override
@@ -17516,10 +17543,12 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
       );
 
   /// Whether the wallet's database was rebuilt from its seed, by a restore from the phrase or
-  /// a `wallet.seed`, or by an open after a damaged or missing database, and no scan from
-  /// genesis has completed since. While it is, the wallet refuses every new output: receiving,
+  /// a `wallet.seed`, or by an open after a damaged or missing database, and no restore scan
+  /// has completed since: one from genesis, or for a restore with `restore_from_height` one
+  /// from that height or below. While it is, the wallet refuses every new output: receiving,
   /// the change of a send and invoices fail with `RestoreScanRequired`. A [`EpicWallet::scan`]
-  /// without a start height starts at genesis while it is, and ends it when it completes.
+  /// without a start height starts where the restore scan does while it is, and ends it when
+  /// it completes.
   Future<bool> restoreScanRequired() => RustLib.instance.api
       .crateApiWalletEpicWalletRestoreScanRequired(that: this);
 
@@ -17542,11 +17571,13 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// [`WalletError`] as the stream's error; a cancelled scan ends it with `Cancelled`.
   ///
   /// While [`EpicWallet::restore_scan_required`] is true, a scan without `start_height`
-  /// starts at genesis, so it resumes a restore scan that stopped, and once it completes the
-  /// wallet creates outputs again. `Some(0)` scans from genesis too and ends the restore scan
-  /// the same way. A scan from a higher `start_height` finds the outputs above it, for a
-  /// balance soon after a restore from a known height, but leaves the restore scan pending:
-  /// run one without `start_height` after it. A `start_height` above the chain tip scans
+  /// starts where the restore scan does, at genesis or at the `restore_from_height` the
+  /// wallet was created with, so it resumes a restore scan that stopped, and once it
+  /// completes the wallet creates outputs again. `Some(0)` scans from genesis and ends any
+  /// restore scan the same way, and so does a `start_height` at or below the restore's start.
+  /// A scan from a higher `start_height` finds the outputs above it but leaves the restore
+  /// scan pending: run one without `start_height` after it. A `start_height` above the chain
+  /// tip scans
   /// nothing: the last event's message says the scan was skipped, and its `result` has a
   /// `start_height` above its `end_height`.
   ///
