@@ -11,6 +11,7 @@ export 'src/rust/api/at_rest.dart';
 export 'src/rust/api/diagnostics.dart';
 export 'src/rust/api/error.dart';
 export 'src/rust/api/http.dart';
+export 'src/rust/api/policy.dart';
 export 'src/rust/api/runtime.dart';
 export 'src/rust/api/secret_store.dart';
 export 'src/rust/api/tor.dart';
