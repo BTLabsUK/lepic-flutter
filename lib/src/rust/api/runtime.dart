@@ -12,7 +12,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 import 'policy.dart';
 
-// These functions are ignored because they are not marked as `pub`: `app_log_message`, `busy`, `claim`, `database_closed`, `lock_dir`, `log_ring_error`, `new`, `new`, `new`, `randomize_crypto_context`, `release_when_closed`, `start`, `try_claim`
+// These functions are ignored because they are not marked as `pub`: `app_log_message`, `busy`, `claim`, `database_closed`, `lock_error`, `log_ring_error`, `new`, `new`, `new`, `randomize_crypto_context`, `release_when_closed`, `start`, `try_claim`
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `ClaimHolder`, `ClaimedStore`, `ClaimedStores`, `DirClaim`, `ReportsClosed`, `RuntimeInner`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `drop`, `drop`, `drop`, `open_existing`, `open_reporting`, `open`, `read`, `write`
 
