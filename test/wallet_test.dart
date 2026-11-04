@@ -6,7 +6,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -84,6 +83,7 @@ WalletConfig configFor(Directory dir) => WalletConfig(
   offline: false,
   hostFeatures: 0,
   torWanted: false,
+  policy: const HostPolicy(),
 );
 
 /// The stable codes of README.md, which apps may store.
@@ -640,6 +640,7 @@ void main() {
         offline: false,
         hostFeatures: 0,
         torWanted: false,
+        policy: const HostPolicy(),
       ),
       store: lepicSecretStore(MemoryStore()),
       password: password,
@@ -2085,6 +2086,7 @@ void main() {
         offline: false,
         hostFeatures: 0,
         torWanted: false,
+        policy: const HostPolicy(),
       ),
       store: lepicSecretStore(MemoryStore()),
       seedFile: vector.file,

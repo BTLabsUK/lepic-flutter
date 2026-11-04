@@ -42,6 +42,7 @@ WalletConfig configFor(Directory dir) => WalletConfig(
   offline: false,
   hostFeatures: 0,
   torWanted: false,
+  policy: const HostPolicy(),
 );
 
 Future<void> scanToEnd(EpicWallet wallet) async {
