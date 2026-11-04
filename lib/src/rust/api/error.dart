@@ -349,7 +349,12 @@ enum WalletErrorKind {
 
   /// The inviter's card names another contact kind than its invite did. Nothing was stored;
   /// pair again.
-  pairingKindDiffers;
+  pairingKindDiffers,
+
+  /// The relay given to `EpicWallet::contact_apply_relay_move` is not the one the contact
+  /// asked to move to (`ContactView::requested_relay`), or the contact asked for no move.
+  /// Nothing changed.
+  relayMoveNotRequested;
 
   /// The stable number of this kind.
   Future<int> code() =>

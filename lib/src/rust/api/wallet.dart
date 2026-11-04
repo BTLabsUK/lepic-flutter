@@ -280,6 +280,20 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// One paired contact. Fails with `ContactNotFound`.
   Future<ContactView> contact({required String contactId});
 
+  /// Follows the contact `contact_id` to the relay it asked to move to, `relay` as
+  /// `ContactRelayMoveRequested` and `ContactView::requested_relay` give it (`domain:port`):
+  /// messages go to its mailbox there, this wallet's mailbox for the contact moves to that
+  /// relay and the contact is told at the next collect, and the old mailbox is still
+  /// collected for seven days. Which relays to follow is the app's choice; nothing here
+  /// judges `relay`.
+  ///
+  /// Fails with `RelayMoveNotRequested` unless `relay` is the contact's `requested_relay`,
+  /// `ContactNotFound` for an unknown contact, and `PairingEnded` for a pairing that ended.
+  Future<void> contactApplyRelayMove({
+    required String contactId,
+    required String relay,
+  });
+
   /// Attaches a pairing to the app's address-book entry `app_contact`, an id the app
   /// chooses, or detaches it with `None`. Attaching a new pairing to an entry that has one
   /// already is when to offer [`EpicWallet::contact_key_check`]. The id is at most 256 bytes
