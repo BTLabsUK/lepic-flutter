@@ -7,6 +7,7 @@ import 'api/at_rest.dart';
 import 'api/diagnostics.dart';
 import 'api/error.dart';
 import 'api/http.dart';
+import 'api/policy.dart';
 import 'api/runtime.dart';
 import 'api/secret_store.dart';
 import 'api/testing.dart';
@@ -265,10 +266,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  PinSettings dco_decode_box_autoadd_pin_settings(dynamic raw);
+
+  @protected
   ScanFound dco_decode_box_autoadd_scan_found(dynamic raw);
 
   @protected
   ScanResult dco_decode_box_autoadd_scan_result(dynamic raw);
+
+  @protected
+  SelectionStrategy dco_decode_box_autoadd_selection_strategy(dynamic raw);
 
   @protected
   SelfSendRequest dco_decode_box_autoadd_self_send_request(dynamic raw);
@@ -365,6 +372,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   FoundInvite dco_decode_found_invite(dynamic raw);
+
+  @protected
+  HostPolicy dco_decode_host_policy(dynamic raw);
 
   @protected
   HttpExposure dco_decode_http_exposure(dynamic raw);
@@ -576,6 +586,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ScanResult? dco_decode_opt_box_autoadd_scan_result(dynamic raw);
 
   @protected
+  SelectionStrategy? dco_decode_opt_box_autoadd_selection_strategy(dynamic raw);
+
+  @protected
   SendOptions? dco_decode_opt_box_autoadd_send_options(dynamic raw);
 
   @protected
@@ -675,6 +688,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PendingPairingView dco_decode_pending_pairing_view(dynamic raw);
+
+  @protected
+  PinSettings dco_decode_pin_settings(dynamic raw);
 
   @protected
   PinWallet dco_decode_pin_wallet(dynamic raw);
@@ -1067,10 +1083,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  PinSettings sse_decode_box_autoadd_pin_settings(SseDeserializer deserializer);
+
+  @protected
   ScanFound sse_decode_box_autoadd_scan_found(SseDeserializer deserializer);
 
   @protected
   ScanResult sse_decode_box_autoadd_scan_result(SseDeserializer deserializer);
+
+  @protected
+  SelectionStrategy sse_decode_box_autoadd_selection_strategy(
+    SseDeserializer deserializer,
+  );
 
   @protected
   SelfSendRequest sse_decode_box_autoadd_self_send_request(
@@ -1191,6 +1215,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   FoundInvite sse_decode_found_invite(SseDeserializer deserializer);
+
+  @protected
+  HostPolicy sse_decode_host_policy(SseDeserializer deserializer);
 
   @protected
   HttpExposure sse_decode_http_exposure(SseDeserializer deserializer);
@@ -1454,6 +1481,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  SelectionStrategy? sse_decode_opt_box_autoadd_selection_strategy(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   SendOptions? sse_decode_opt_box_autoadd_send_options(
     SseDeserializer deserializer,
   );
@@ -1573,6 +1605,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PendingPairingView sse_decode_pending_pairing_view(
     SseDeserializer deserializer,
   );
+
+  @protected
+  PinSettings sse_decode_pin_settings(SseDeserializer deserializer);
 
   @protected
   PinWallet sse_decode_pin_wallet(SseDeserializer deserializer);
@@ -2042,6 +2077,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_pin_settings(
+    PinSettings self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_scan_found(
     ScanFound self,
     SseSerializer serializer,
@@ -2050,6 +2091,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_scan_result(
     ScanResult self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_selection_strategy(
+    SelectionStrategy self,
     SseSerializer serializer,
   );
 
@@ -2196,6 +2243,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_found_invite(FoundInvite self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_host_policy(HostPolicy self, SseSerializer serializer);
 
   @protected
   void sse_encode_http_exposure(HttpExposure self, SseSerializer serializer);
@@ -2513,6 +2563,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_opt_box_autoadd_selection_strategy(
+    SelectionStrategy? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_send_options(
     SendOptions? self,
     SseSerializer serializer,
@@ -2661,6 +2717,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     PendingPairingView self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_pin_settings(PinSettings self, SseSerializer serializer);
 
   @protected
   void sse_encode_pin_wallet(PinWallet self, SseSerializer serializer);

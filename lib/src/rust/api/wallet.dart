@@ -10,12 +10,13 @@ import 'http.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
+import 'policy.dart';
 import 'runtime.dart';
 import 'secret_store.dart';
 import 'tor.dart';
 import 'types.dart';
 
-// These functions are ignored because they are not marked as `pub`: `boundary`, `create_pin_wallet`, `new_password`, `run_until_stopped`, `run`
+// These functions are ignored because they are not marked as `pub`: `boundary`, `create_pin_wallet`, `run_until_stopped`, `run`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `drop`
 
 /// True when every word is in the English wordlist and the checksum matches. Case and extra
@@ -125,8 +126,7 @@ Future<void> deleteWallet({
 /// password or the new one opens the wallet, without the PIN, and calling this again finishes
 /// the reset.
 ///
-/// Fails, with nothing changed, with `InvalidArgument` when `new_password` has fewer than eight
-/// characters, `InvalidMnemonic`, `PhraseMismatch` when the database belongs to another seed,
+/// Fails, with nothing changed, with `InvalidMnemonic`, `PhraseMismatch` when the database belongs to another seed,
 /// `ForeignWallet` when it belongs to another chain, `WalletNotFound` when the directory holds
 /// no database a wallet has used, or one that holds nothing to prove the phrase by (delete the
 /// wallet with [`delete_wallet`] and restore it), `WalletBusy` while a wallet on the directory
@@ -209,8 +209,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// with the password that works drops or finishes the change. Use a store whose `write`
   /// has stored the value durably when it completes.
   ///
-  /// Fails with `InvalidArgument` when `new_password` has fewer than eight characters, and
-  /// `Unsupported` for a wallet from [`EpicWallet::create_with_pin`] (change its PIN with
+  /// Fails with `Unsupported` for a wallet from [`EpicWallet::create_with_pin`] (change its PIN with
   /// [`EpicWallet::change_pin`]), both before any attempt is counted; with `WrongPassword`
   /// when `current_password` does not open the vault, `Locked` on a locked wallet, and
   /// `SecretStore` when the store fails or does not give back what was written: the old
@@ -238,7 +237,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// the old text stops opening. While a change is pending a wrong PIN costs two key
   /// derivations, and still counts as one failure.
   ///
-  /// Fails with `InvalidArgument` when `new_pin` has fewer than six characters, before any
+  /// Fails with `InvalidArgument` when `new_pin` has fewer than `PinSettings.min_len` characters (6 by default), before any
   /// attempt is counted, and otherwise as [`EpicWallet::mnemonic_with_pin`] does.
   Future<String> changePin({
     required String sealedPassword,
@@ -580,7 +579,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// found by it. `None` and 0 start from genesis. Pass a height only when the phrase was
   /// first used above it.
   ///
-  /// Fails with `InvalidArgument` when `password` has fewer than eight characters or
+  /// Fails with `InvalidArgument` when
   /// `restore_from_height` comes without `mnemonic`, before anything is written,
   /// `WalletAlreadyExists` when `store` holds a vault, `InvalidMnemonic`,
   /// `ForeignWallet` when the directory holds another wallet's database, `WalletBusy` when a
@@ -625,7 +624,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// [`delete_wallet`] and create it again (a restored wallet from its phrase).
   ///
   /// `restore_from_height` is as in `create`. Fails with `InvalidArgument` when `pin` has
-  /// fewer than six characters, and otherwise as `create` does.
+  /// fewer than `PinSettings.min_len` characters (6 by default), and otherwise as `create` does.
   static Future<PinWallet> createWithPin({
     required LepicRuntime runtime,
     required WalletConfig config,

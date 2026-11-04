@@ -7,6 +7,7 @@ import '../frb_generated.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
+import 'policy.dart';
 import 'tor.dart';
 
 // These functions are ignored because they are not marked as `pub`: `network`, `of`
@@ -2961,6 +2962,11 @@ class WalletConfig {
   /// is created, restored or opened.
   final int hostFeatures;
 
+  /// Limits and presets that are the app's to choose. [`HostPolicy::default`], every field
+  /// `None`, is what LEPIC did before they were fields. Read when a wallet is created,
+  /// restored or opened.
+  final HostPolicy policy;
+
   const WalletConfig({
     required this.dataDir,
     required this.chain,
@@ -2973,6 +2979,7 @@ class WalletConfig {
     required this.offline,
     required this.torWanted,
     required this.hostFeatures,
+    required this.policy,
   });
 
   @override
@@ -2987,7 +2994,8 @@ class WalletConfig {
       tuning.hashCode ^
       offline.hashCode ^
       torWanted.hashCode ^
-      hostFeatures.hashCode;
+      hostFeatures.hashCode ^
+      policy.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -3004,7 +3012,8 @@ class WalletConfig {
           tuning == other.tuning &&
           offline == other.offline &&
           torWanted == other.torWanted &&
-          hostFeatures == other.hostFeatures;
+          hostFeatures == other.hostFeatures &&
+          policy == other.policy;
 }
 
 /// What the wallet reports while it runs, from `EpicWallet::events`. Only the fields its
