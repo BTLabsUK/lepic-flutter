@@ -307,6 +307,17 @@ abstract class EpicWallet implements RustOpaqueInterface {
     String? appAddress,
   });
 
+  /// Asks the paired contact `contact_id` to answer with its current card. The answer is
+  /// collected as a contact update: it sets `peer_heard_at`, refreshes the card, and raises
+  /// `ContactRelayMoveRequested` when the contact moved its relay. A contact answers at most
+  /// as often as its host's policy allows (by default once an hour and three times a day);
+  /// a wallet too old to know the check drops it unanswered. Which contacts to check, and
+  /// how long to wait, are the app's.
+  ///
+  /// Fails with `ContactNotFound` for no such contact or one not paired, `PairingEnded` for
+  /// an ended pairing, and `WrongPairingClass` for a private pairing.
+  Future<void> contactCheck({required String contactId});
+
   /// Declines the waiting contact invoice `slate_id`: it is never paid, and a `declined` is
   /// queued for the contact. Fails with `InvoiceNotFound` when no contact invoice with that
   /// id waits.
@@ -553,6 +564,19 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// imported then. A pairing whose keys this wallet's seed does not derive is skipped as a
   /// conflict.
   Future<ContactImportSummary> contactsImport({required String document});
+
+  /// Moves this wallet's home relay for its contacts to `relay` (`domain[:port]`): every
+  /// paired contact that has not ended gets this wallet's card naming its mailbox there,
+  /// once, as a contact update, and this wallet reads only the new mailbox from then on.
+  /// Returns how many contacts were told. The old mailboxes are not read again: a contact
+  /// that takes the update sees `ContactRelayMoveRequested` and follows once the app on its
+  /// side applies it; one that never takes it stops reaching this wallet and has to pair
+  /// again, which `contact_check` shows as no answer. Private pairings and pairings in
+  /// progress keep their relay. Switch the wallet's Epicbox relay to `relay` too, so new
+  /// invites name it.
+  ///
+  /// Fails with `InvalidArgument` for a host that is not a relay's name.
+  Future<int> contactsMoveHome({required String relay});
 
   /// Posts every outbox entry that is due, raising `OutboxDelivered` for each that reached
   /// its relay and `OutboxStuck` for one undelivered for a day, which stops retrying. A relay
