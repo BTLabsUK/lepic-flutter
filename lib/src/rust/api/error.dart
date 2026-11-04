@@ -7,7 +7,7 @@ import '../frb_generated.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `engine_kind`, `from_inner`, `new`, `refused_offline`
+// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `engine_kind`, `from_inner`, `from_send`, `new`, `refused_offline`, `with_tx`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// The error of every fallible call. `message` is English for logs and bug reports; it never
@@ -19,14 +19,21 @@ class WalletError implements FrbException {
   final int code;
   final String message;
 
+  /// The transaction a failed call stored and left behind with its inputs locked, when a
+  /// later step failed or the call's own clean-up cancel failed: cancel it with
+  /// `cancel_transaction`, or try its step again. `None` when nothing was left behind.
+  final int? txId;
+
   const WalletError({
     required this.kind,
     required this.code,
     required this.message,
+    this.txId,
   });
 
   @override
-  int get hashCode => kind.hashCode ^ code.hashCode ^ message.hashCode;
+  int get hashCode =>
+      kind.hashCode ^ code.hashCode ^ message.hashCode ^ txId.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -35,7 +42,8 @@ class WalletError implements FrbException {
           runtimeType == other.runtimeType &&
           kind == other.kind &&
           code == other.code &&
-          message == other.message;
+          message == other.message &&
+          txId == other.txId;
 }
 
 /// What went wrong, in terms the app can act on. The numbers in [`WalletErrorKind::code`] are
@@ -161,7 +169,7 @@ enum WalletErrorKind {
   /// hold. Nothing was stored; send a smaller amount, or consolidate first.
   tooHeavy,
 
-  /// `consolidate_outputs` found fewer than two spendable outputs, so there is nothing to
+  /// `send_to_self` found fewer than two spendable outputs, so there is nothing to
   /// merge. Nothing was stored.
   nothingToConsolidate,
 
@@ -337,7 +345,11 @@ enum WalletErrorKind {
   /// The wallet's encrypted database does not open with the key its recovery phrase gives:
   /// its key check refuses it. Nothing was changed or moved. Recover with the phrase only
   /// if it is this wallet's; the database is kept.
-  wrongKey;
+  wrongKey,
+
+  /// The inviter's card names another contact kind than its invite did. Nothing was stored;
+  /// pair again.
+  pairingKindDiffers;
 
   /// The stable number of this kind.
   Future<int> code() =>

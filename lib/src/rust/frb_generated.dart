@@ -10687,12 +10687,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   WalletError dco_decode_wallet_error(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 3)
-      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
     return WalletError(
       kind: dco_decode_wallet_error_kind(arr[0]),
       code: dco_decode_u_32(arr[1]),
       message: dco_decode_String(arr[2]),
+      txId: dco_decode_opt_box_autoadd_u_32(arr[3]),
     );
   }
 
@@ -13508,7 +13509,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_kind = sse_decode_wallet_error_kind(deserializer);
     var var_code = sse_decode_u_32(deserializer);
     var var_message = sse_decode_String(deserializer);
-    return WalletError(kind: var_kind, code: var_code, message: var_message);
+    var var_txId = sse_decode_opt_box_autoadd_u_32(deserializer);
+    return WalletError(
+      kind: var_kind,
+      code: var_code,
+      message: var_message,
+      txId: var_txId,
+    );
   }
 
   @protected
@@ -16087,6 +16094,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_wallet_error_kind(self.kind, serializer);
     sse_encode_u_32(self.code, serializer);
     sse_encode_String(self.message, serializer);
+    sse_encode_opt_box_autoadd_u_32(self.txId, serializer);
   }
 
   @protected

@@ -1610,6 +1610,9 @@ enum PairingFailureReason {
   /// Something changed the invite on the way. Nothing was stored; pair again.
   changedOnTheWay,
 
+  /// The inviter's card named another kind than its invite did: nothing was stored.
+  kindDiffers,
+
   /// The invite expired before a reply came.
   expired,
 
@@ -3040,7 +3043,8 @@ class WalletEvent {
   /// Unix seconds; advisory.
   final BigInt? expires;
 
-  /// For `InvoiceFromContact`, the issuer's message as `ContactInvoiceView.message` gives it.
+  /// For `InvoiceFromContact`, the issuer's message as `ContactInvoiceView.message` gives it;
+  /// for `NotPosted`, why the node did not take the transaction.
   final String? message;
 
   /// For `NoticeUnmatched`: what the notice says.
@@ -3335,6 +3339,11 @@ enum WalletEventKind {
   /// `sender` are set. Read it with `EpicWallet::pairing_requests`; dismiss a request from
   /// anyone not in the address book with `EpicWallet::pairing_request_dismiss`.
   pairingRequested,
+
+  /// The node did not take a finalized transaction: `tx_id`, `slate_id` and `message` (why)
+  /// are set. The transaction stays finalized, its inputs locked; nothing is retried. Call
+  /// `EpicWallet::repost_transaction` when the connection is back, or cancel it.
+  notPosted,
 }
 
 /// An output of the wallet, from `EpicWallet::outputs`.
