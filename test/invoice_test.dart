@@ -91,6 +91,7 @@ void main() {
     offline: false,
     hostFeatures: 0,
     torWanted: false,
+    policy: const HostPolicy(),
   );
 
   List<WalletEvent> record(EpicWallet wallet) {

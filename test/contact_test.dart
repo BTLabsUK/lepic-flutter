@@ -109,6 +109,7 @@ void main() {
         offline: false,
         hostFeatures: 0,
         torWanted: false,
+        policy: const HostPolicy(),
       ),
       store: lepicSecretStore(MemoryStore()),
       mnemonic: mnemonic,

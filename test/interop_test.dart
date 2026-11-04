@@ -126,6 +126,7 @@ Future<void> fundOverEpicboxAndSendBackByFile() async {
       offline: false,
       hostFeatures: 0,
       torWanted: false,
+      policy: const HostPolicy(),
     ),
     store: lepicSecretStore(MemoryStore()),
     password: password,
