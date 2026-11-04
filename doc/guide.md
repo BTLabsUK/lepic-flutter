@@ -80,7 +80,9 @@ mirror that file's sections, with the unit in each field name:
 | `tor` (`TorTuning`) | `[tor] bootstrap_timeout_s`, `cold_bootstrap_timeout_s`, `stall_timeout_s`, `cold_stall_timeout_s`, `publish_timeout_s`, `connect_timeout_s`, `request_timeout_s` |
 
 A zero, or a minimum above its maximum, fails the call with `invalidArgument`. The tuning is read
-when a wallet is created, restored or opened, and by `nodeTip`; `setServers` and `nodeTipFor`
+when a wallet is created, restored or opened, and by `nodeTip`, which takes a `NodeRoute`:
+`NodeRoute()` goes directly, `NodeRoute(socks: '127.0.0.1:9050')` through the host's SOCKS5
+proxy and never directly, and LEPIC opens no tor of its own for it; `setServers` and `nodeTipFor`
 keep the open wallet's. The HTTP listen port stays an argument of `startHttpListener`.
 
 - A password set by `EpicWallet.create` or `EpicWallet.importWalletSeed` has at least eight
@@ -190,8 +192,8 @@ keep the open wallet's. The HTTP listen port stays an argument of `startHttpList
   lock on `.lepic.lock` in it while a wallet is open.
 - `EpicWallet.events()` streams session, balance, transaction, sync and transport changes, and
   the invoice events `invoiceReceived`, `invoiceFinalized`, `invoiceExpired`, `invoicePosted`,
-  `invoiceDeclined`, `invoiceWithdrawn` and `invoiceBounced`, which set `slateId`. A split,
-  consolidation or `spendOutputsToSelf` raises `selfSend` with the `txId` of its outgoing transaction, `account` and
+  `invoiceDeclined`, `invoiceWithdrawn` and `invoiceBounced`, which set `slateId`. A
+  `sendToSelf` raises `selfSend` with the `txId` of its outgoing transaction, `account` and
   `amount`, never a `transaction` event with `to` `received`: nothing was received from
   anyone, and the listener stream reports nothing for it.
   An answer that arrives over Epicbox for a slate this wallet does not know, an `S2` for a
@@ -209,19 +211,29 @@ keep the open wallet's. The HTTP listen port stays an argument of `startHttpList
   `TransactionDetails` has the required fields `flow` and `origin` (and `imported`, nullable)
   and `ListenerEvent` the required field `slateId`; code that builds them, such as a fake
   wallet, must pass them.
-- `spendOutputsToSelf(commitments, outputs, minimumConfirmations)` spends exactly the
-  outputs named by `WalletOutput.commitment` into `outputs` outputs of this wallet, with the
-  usual fee, and locks nothing else; it returns a `SelfSentTx` as `consolidateOutputs` does.
-  `outputs` is 1 to 10: 1 merges them into one, as before; 2 to 10 splits their value less the
-  fee into that many outputs of nearly equal value, the last taking the remainder, so passing
-  the number of coins spent keeps the number of coins. The fee is `4 * outputs + 1 - inputs`
-  base fees, so each output adds four. Use it to make a cancelled payment final: the other wallet, for example the issuer of a paid invoice, may still hold a
-  signed copy spending those inputs until they are spent elsewhere. It fails with
-  `invalidArgument` when `outputs` is outside 1 to 10, or `commitments` is empty or names an
-  output that is unknown, not unspent with `minimumConfirmations`, or named twice, and with
-  `notEnoughFunds` when their value less the fee leaves less than one base unit for each
-  output; nothing is stored then. The `outputs` argument is required: a call without it no
-  longer compiles.
+- `sendToSelf(request, minimumConfirmations)` sends to this wallet itself, and
+  `estimateSendToSelf` gives its fee: the same fee the send pays at the same tip. They
+  replace `estimateSplit`, `splitOutputs`, `estimateConsolidate`, `consolidateOutputs` and
+  `spendOutputsToSelf`. A `SelfSendRequest` has the kinds `inputs` and `outputs` and their
+  data beside them; a field the kind does not use is empty or 0:
+  - `SelfInputs.all` spends every spendable output, `SelfInputs.smallest` the fewest smallest
+    that pay the amounts and the fee (only with `SelfOutputs.amounts`), and
+    `SelfInputs.named` exactly the outputs in `named`, by `WalletOutput.commitment`, locking
+    nothing else.
+  - `SelfOutputs.count` spreads the inputs less the fee over `count` outputs of nearly equal
+    value; `SelfOutputs.amounts` makes one output per entry of `amounts`, in base units, and
+    the rest, when above zero, as one more output.
+  - A send makes 1 to 10 outputs, the rest included. The fee is `4 * outputs + 1 - inputs`
+    base fees, at least one.
+  A split is `all` with `count` 2 to 10, a merge `all` with `count` 1. Moving coins back to
+  make a cancelled payment final is `named` with those coins and as many outputs: the other
+  wallet, for example the issuer of a paid invoice, may still hold a signed copy spending
+  those inputs until they are spent elsewhere. It fails, storing nothing, with
+  `invalidArgument` for outputs outside 1 to 10, an amount of 0, `smallest` with `count`, a
+  field the kind does not use, or `named` that is empty or names an output that is unknown,
+  not unspent with `minimumConfirmations`, or named twice; with `nothingToConsolidate` when
+  `all` or `smallest` would spend one output into one; and with `notEnoughFunds` when the
+  inputs cannot pay the fee, the amounts and one base unit into each other output.
 - `importLegacyHistory(sourceDir)` brings across the transaction history of the epic-wallet
   wallet (GUI or CLI) that a wallet was just made from, for example with `importWalletSeed`
   from that folder's `wallet.seed`. Call it once after the import, before or after the restore
@@ -423,7 +435,7 @@ meaning. `message` is English for logs and bug reports and holds no secret; do n
 | 44 | `onionUnreachable` | The other wallet is not online with Tor on, or was not reached in time. The send is stored as `sent` with its inputs locked: resend it later or cancel it. |
 | 45 | `changeTooSmall` | The change has fewer base units than the change outputs asked for in `SendOptions`. Nothing was stored; ask for fewer change outputs. |
 | 46 | `tooHeavy` | The send would spend more inputs or make more outputs than a transaction may hold. Nothing was stored; send less, or consolidate first. |
-| 47 | `nothingToConsolidate` | `consolidateOutputs` found fewer than two spendable outputs, so there is nothing to merge. Nothing was stored. |
+| 47 | `nothingToConsolidate` | `sendToSelf` with `all` or `smallest` would spend one output into one, which only pays a fee, or found fewer than two spendable outputs to merge. Nothing was stored. |
 | 48 | `invoiceAlreadyPaid` | `payInvoice` or the issuer's finalize found the invoice already paid: this wallet holds its payment, or finalized it with another answer. Nothing was signed or posted again. |
 | 49 | `invoiceLockedAboveTip` | The invoice's lock height is above the chain tip, so its transaction cannot be mined yet. Nothing was signed. |
 | 50 | `invoiceChanged` | The payer's answer changed a field the issuer set (amount, lock height, offset, outputs or the issuer's key). Nothing was finalized or posted. |
@@ -459,7 +471,7 @@ meaning. `message` is English for logs and bug reports and holds no secret; do n
 Kinds 22 to 24 used to arrive as `other`. Kinds 25 and 26 are new with `sealAppData` and
 `openAppData`, 27 and 28 with `releaseTransaction`, 29 to 31 with the invoice calls, 40 and
 41 with the HTTP calls, 42 to 44 with the Tor calls, 45 and 46 with `SendOptions` (before, both
-arrived as `invalidArgument`), 47 with `consolidateOutputs` (before, `notEnoughFunds` or a
+arrived as `invalidArgument`), 47 with `consolidateOutputs`, now `sendToSelf` (before, `notEnoughFunds` or a
 consolidation of one output), 48 to 50 with the invoice refusals of U-23 (before, all three
 arrived as `invalidSlate`), 51 to 55 with the QR slate calls, 56 to 73 with the pairing calls, 75 with the time to live of
 invoices (before, an invoice made at a height above the chain's arrived as `invalidSlate`), 78

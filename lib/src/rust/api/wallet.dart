@@ -15,7 +15,7 @@ import 'secret_store.dart';
 import 'tor.dart';
 import 'types.dart';
 
-// These functions are ignored because they are not marked as `pub`: `boundary`, `create_pin_wallet`, `new_password`, `run_until_stopped`, `run`, `spend_back_shape`, `split_shape`
+// These functions are ignored because they are not marked as `pub`: `boundary`, `create_pin_wallet`, `new_password`, `run_until_stopped`, `run`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `drop`
 
 /// True when every word is in the English wordlist and the checksum matches. Case and extra
@@ -166,14 +166,20 @@ String walletFingerprint({required String mnemonic, required Chain chain}) =>
 /// wallet. Fails with `NodeUnreachable` when the tip or version cannot be had; readiness and
 /// the block time are `None` when only they fail.
 ///
-/// No wallet is open, so the request always goes directly, never through tor. While a wallet
-/// is open, use [`EpicWallet::node_tip_for`], which follows the wallet's tor.
+/// The request goes by `route`, which the host states every time: directly, or through the
+/// SOCKS5 proxy the host runs, such as its own tor, and then never directly. It opens no tor of
+/// its own. A loopback node is reached directly either way. A SOCKS address that is not a
+/// loopback `ip:port` fails with `InvalidArgument`, and so does plain `http` to a node other
+/// than an onion through the proxy; a build without Tor fails a SOCKS route with
+/// `Unsupported`. While a wallet is open, [`EpicWallet::node_tip_for`] follows the wallet's tor.
 Future<NodeTip> nodeTip({
   required LepicRuntime runtime,
   required WalletConfig config,
+  required NodeRoute route,
 }) => RustLib.instance.api.crateApiWalletNodeTip(
   runtime: runtime,
   config: config,
+  route: route,
 );
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<EpicWallet>>
@@ -270,12 +276,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// store cannot be read or written or holds a damaged pending key; the change then stays
   /// pending.
   Future<void> confirmPinChange({required String sealedPassword});
-
-  /// Merges every output with `minimum_confirmations` into one, as
-  /// [`EpicWallet::split_outputs`] does with one output: with more than 500 spendable
-  /// outputs it merges the 500 smallest, and a later call merges the rest. Fails as that
-  /// call does, and with `NothingToConsolidate` when fewer than two outputs are spendable.
-  Future<SelfSentTx> consolidateOutputs({required BigInt minimumConfirmations});
 
   /// One paired contact. Fails with `ContactNotFound`.
   Future<ContactView> contact({required String contactId});
@@ -677,12 +677,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Whether Epicbox over Tor is on, as [`EpicWallet::set_epicbox_over_tor`] set it.
   bool epicboxOverTor();
 
-  /// The fee and inputs of [`EpicWallet::consolidate_outputs`] now, with nothing locked.
-  /// Fails as that call does.
-  Future<FeeEstimate> estimateConsolidate({
-    required BigInt minimumConfirmations,
-  });
-
   /// The fee and inputs a send of `amount` with `minimum_confirmations` would take, chosen
   /// as [`EpicWallet::create_send_slate`], [`EpicWallet::send_file`] and
   /// [`EpicWallet::send_epicbox`] choose them, with nothing locked. Such a send at the same
@@ -712,10 +706,12 @@ abstract class EpicWallet implements RustOpaqueInterface {
     SendOptions? options,
   });
 
-  /// The fee and inputs of [`EpicWallet::split_outputs`] into `outputs` outputs now, with
-  /// nothing locked. Fails as that call does.
-  Future<FeeEstimate> estimateSplit({
-    required int outputs,
+  /// The inputs, outputs and fee of [`EpicWallet::send_to_self`] with `request` now, with
+  /// nothing locked: `amount` is the first output and `change` the others. A send to self of
+  /// the same request at the same chain tip, with no outputs changed in between, charges this
+  /// fee. Fails as that call does before it stores anything.
+  Future<FeeEstimate> estimateSendToSelf({
+    required SelfSendRequest request,
     required BigInt minimumConfirmations,
   });
 
@@ -1491,6 +1487,32 @@ abstract class EpicWallet implements RustOpaqueInterface {
     SendOptions? options,
   });
 
+  /// Spends the outputs `request.inputs` chooses among those with `minimum_confirmations`
+  /// into the outputs `request.outputs` asks for: a normal network transaction to the wallet
+  /// itself, confirmed as any send, never through its Epicbox address. The inputs are locked
+  /// until it confirms. It shows as two transactions over transport `self`, a send holding
+  /// the outputs after the first and a receive holding the first; the fee is that of
+  /// [`EpicWallet::estimate_send_to_self`] at the same tip. With `Named` it locks nothing
+  /// else: use it to make a cancelled payment final, since the other wallet may still hold a
+  /// signed copy that spends its inputs, for example the issuer of an invoice that was paid,
+  /// until they are spent elsewhere.
+  ///
+  /// Fails, storing nothing, with `InvalidArgument` when the outputs, the remainder of
+  /// `Amounts` included, are not 1 to 10, an amount is 0, `Smallest` comes with `Count`,
+  /// `named` is set without `Named`, `count` with `Amounts` or `amounts` with `Count`, or
+  /// `Named` names no output, or one that is unknown, not unspent with
+  /// `minimum_confirmations`, or named twice; with `NothingToConsolidate` when `All` or
+  /// `Smallest` would spend one output into one, or `All` with `Count` 1 finds fewer than two
+  /// outputs to merge; with `NotEnoughFunds` when the inputs cannot pay the fee, the amounts
+  /// and one base unit into each other output; and otherwise as
+  /// [`EpicWallet::estimate_fee`]. Fails with `NotPosted` when it was stored but the node
+  /// did not take it: post the send again with [`EpicWallet::repost_transaction`] or cancel
+  /// it with [`EpicWallet::cancel_transaction`].
+  Future<SelfSentTx> sendToSelf({
+    required SelfSendRequest request,
+    required BigInt minimumConfirmations,
+  });
+
   /// Sends `amount` to the wallet at `onion` over the wallet's tor, then finalizes its
   /// answer and posts the transaction, as [`EpicWallet::send_http`] does. `onion` is read as
   /// [`validate_onion_address`] reads it; the other wallet is always reached at port 80.
@@ -1597,46 +1619,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required int generation,
     required String domain,
     required List<int> message,
-  });
-
-  /// Spends exactly the outputs `commitments` names, by `WalletOutput.commitment`, into
-  /// `outputs` outputs of this wallet, and locks nothing else. With `outputs` 1 it merges
-  /// them as [`EpicWallet::consolidate_outputs`] does; with 2 to 10 the value less the fee
-  /// is split into that many outputs of nearly equal value, the last one taking the
-  /// remainder, as [`EpicWallet::split_outputs`] does, so the wallet can keep its number of
-  /// coins. The fee grows with the outputs. Use it to make a cancelled payment final: once a payment is cancelled its inputs
-  /// are spendable here, but the other wallet may still hold a signed copy that spends them,
-  /// for example the issuer of an invoice that was paid, until they are spent elsewhere.
-  ///
-  /// Fails with `InvalidArgument` when `outputs` is outside 1..=10, or `commitments` is empty,
-  /// or names an output that is unknown, not unspent with `minimum_confirmations`, or named
-  /// twice; with `NotEnoughFunds` when their value less the fee leaves less than one base
-  /// unit for each output; and otherwise as
-  /// [`EpicWallet::consolidate_outputs`] does, storing nothing.
-  Future<SelfSentTx> spendOutputsToSelf({
-    required List<String> commitments,
-    required int outputs,
-    required BigInt minimumConfirmations,
-  });
-
-  /// Splits the wallet's funds into `outputs` outputs of nearly equal value, from 2 to 10, so
-  /// that several sends can follow without waiting for each other's change: a normal network
-  /// transaction to the wallet itself, confirmed as any send, never through its Epicbox
-  /// address. It spends every output with `minimum_confirmations`, so the whole balance is
-  /// locked until it confirms; a wallet with more than 500 spendable outputs spends the 500
-  /// smallest and keeps the rest spendable. It shows as two transactions over transport
-  /// `self`, a send holding the change outputs and a receive holding one output; the fee is
-  /// that of [`EpicWallet::estimate_split`] at the same tip.
-  ///
-  /// Fails with `InvalidArgument` for a count outside 2..=10, with `NotEnoughFunds` when the
-  /// spendable outputs cannot pay the fee and one base unit into each output, and otherwise
-  /// as [`EpicWallet::estimate_fee`], storing nothing. Fails with `NotPosted` when it was
-  /// stored but the node did not take it: post the send again with
-  /// [`EpicWallet::repost_transaction`] or cancel it with
-  /// [`EpicWallet::cancel_transaction`].
-  Future<SelfSentTx> splitOutputs({
-    required int outputs,
-    required BigInt minimumConfirmations,
   });
 
   /// Starts the HTTP listener on `port` and streams what it does until

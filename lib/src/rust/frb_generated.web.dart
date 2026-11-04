@@ -253,6 +253,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ListingRef dco_decode_box_autoadd_listing_ref(dynamic raw);
 
   @protected
+  NodeRoute dco_decode_box_autoadd_node_route(dynamic raw);
+
+  @protected
   OutputCategory dco_decode_box_autoadd_output_category(dynamic raw);
 
   @protected
@@ -268,6 +271,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ScanResult dco_decode_box_autoadd_scan_result(dynamic raw);
+
+  @protected
+  SelfSendRequest dco_decode_box_autoadd_self_send_request(dynamic raw);
 
   @protected
   SendOptions dco_decode_box_autoadd_send_options(dynamic raw);
@@ -468,6 +474,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint32List dco_decode_list_prim_u_32_strict(dynamic raw);
 
   @protected
+  Uint64List dco_decode_list_prim_u_64_strict(dynamic raw);
+
+  @protected
   List<int> dco_decode_list_prim_u_8_loose(dynamic raw);
 
   @protected
@@ -505,6 +514,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   NetTuning dco_decode_net_tuning(dynamic raw);
+
+  @protected
+  NodeRoute dco_decode_node_route(dynamic raw);
 
   @protected
   NodeTip dco_decode_node_tip(dynamic raw);
@@ -707,6 +719,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SelectionStrategy dco_decode_selection_strategy(dynamic raw);
+
+  @protected
+  SelfInputs dco_decode_self_inputs(dynamic raw);
+
+  @protected
+  SelfOutputs dco_decode_self_outputs(dynamic raw);
+
+  @protected
+  SelfSendRequest dco_decode_self_send_request(dynamic raw);
 
   @protected
   SelfSentTx dco_decode_self_sent_tx(dynamic raw);
@@ -1030,6 +1051,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ListingRef sse_decode_box_autoadd_listing_ref(SseDeserializer deserializer);
 
   @protected
+  NodeRoute sse_decode_box_autoadd_node_route(SseDeserializer deserializer);
+
+  @protected
   OutputCategory sse_decode_box_autoadd_output_category(
     SseDeserializer deserializer,
   );
@@ -1049,6 +1073,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ScanResult sse_decode_box_autoadd_scan_result(SseDeserializer deserializer);
+
+  @protected
+  SelfSendRequest sse_decode_box_autoadd_self_send_request(
+    SseDeserializer deserializer,
+  );
 
   @protected
   SendOptions sse_decode_box_autoadd_send_options(SseDeserializer deserializer);
@@ -1291,6 +1320,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint32List sse_decode_list_prim_u_32_strict(SseDeserializer deserializer);
 
   @protected
+  Uint64List sse_decode_list_prim_u_64_strict(SseDeserializer deserializer);
+
+  @protected
   List<int> sse_decode_list_prim_u_8_loose(SseDeserializer deserializer);
 
   @protected
@@ -1336,6 +1368,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   NetTuning sse_decode_net_tuning(SseDeserializer deserializer);
+
+  @protected
+  NodeRoute sse_decode_node_route(SseDeserializer deserializer);
 
   @protected
   NodeTip sse_decode_node_tip(SseDeserializer deserializer);
@@ -1584,6 +1619,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SelectionStrategy sse_decode_selection_strategy(SseDeserializer deserializer);
+
+  @protected
+  SelfInputs sse_decode_self_inputs(SseDeserializer deserializer);
+
+  @protected
+  SelfOutputs sse_decode_self_outputs(SseDeserializer deserializer);
+
+  @protected
+  SelfSendRequest sse_decode_self_send_request(SseDeserializer deserializer);
 
   @protected
   SelfSentTx sse_decode_self_sent_tx(SseDeserializer deserializer);
@@ -1976,6 +2020,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_node_route(
+    NodeRoute self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_output_category(
     OutputCategory self,
     SseSerializer serializer,
@@ -2002,6 +2052,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_scan_result(
     ScanResult self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_self_send_request(
+    SelfSendRequest self,
     SseSerializer serializer,
   );
 
@@ -2297,6 +2353,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_prim_u_64_strict(
+    Uint64List self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_prim_u_8_loose(List<int> self, SseSerializer serializer);
 
   @protected
@@ -2349,6 +2411,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_net_tuning(NetTuning self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_node_route(NodeRoute self, SseSerializer serializer);
 
   @protected
   void sse_encode_node_tip(NodeTip self, SseSerializer serializer);
@@ -2650,6 +2715,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_selection_strategy(
     SelectionStrategy self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_self_inputs(SelfInputs self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_self_outputs(SelfOutputs self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_self_send_request(
+    SelfSendRequest self,
     SseSerializer serializer,
   );
 
