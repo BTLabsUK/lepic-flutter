@@ -11,6 +11,7 @@ import 'dart:typed_data';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lepic/lepic.dart';
+import 'package:lepic/testing.dart';
 
 import 'shipped_tuning.dart';
 
