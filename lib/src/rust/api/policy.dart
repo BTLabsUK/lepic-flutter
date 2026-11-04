@@ -56,6 +56,22 @@ class HostPolicy {
   /// the chain has makes nothing spendable, and the app decides how deep it lets users ask.
   final BigInt? defaultMinimumConfirmations;
 
+  /// Contact checks one contact gets answered in an hour; a further one is dropped without
+  /// an answer. At least 1, at most `contact_check_answers_per_day`. Default 1.
+  final int? contactCheckAnswersPerHour;
+
+  /// Contact checks one contact gets answered in a day. From 1 to 24. Default 3.
+  final int? contactCheckAnswersPerDay;
+
+  /// Times a contact mailbox message that fails for a lasting reason is kept for the next
+  /// collect before it is dropped. A failure that passes (node, relay or store not
+  /// answering, wallet locked) keeps it without counting. From 1 to 10. Default 3.
+  final int? contactHoldAttempts;
+
+  /// How long such a message is kept after it was first kept, in seconds. From 1 to 86,400.
+  /// Default 180.
+  final BigInt? contactHoldPatienceS;
+
   const HostPolicy({
     this.defaultStrategy,
     this.sendTtlBlocks,
@@ -68,6 +84,10 @@ class HostPolicy {
     this.maxOpenReceiptsPerSender,
     this.maxOpenReceipts,
     this.defaultMinimumConfirmations,
+    this.contactCheckAnswersPerHour,
+    this.contactCheckAnswersPerDay,
+    this.contactHoldAttempts,
+    this.contactHoldPatienceS,
   });
 
   static Future<HostPolicy> default_() =>
@@ -85,7 +105,11 @@ class HostPolicy {
       maxInvoiceTtlLeadBlocks.hashCode ^
       maxOpenReceiptsPerSender.hashCode ^
       maxOpenReceipts.hashCode ^
-      defaultMinimumConfirmations.hashCode;
+      defaultMinimumConfirmations.hashCode ^
+      contactCheckAnswersPerHour.hashCode ^
+      contactCheckAnswersPerDay.hashCode ^
+      contactHoldAttempts.hashCode ^
+      contactHoldPatienceS.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -102,7 +126,11 @@ class HostPolicy {
           maxInvoiceTtlLeadBlocks == other.maxInvoiceTtlLeadBlocks &&
           maxOpenReceiptsPerSender == other.maxOpenReceiptsPerSender &&
           maxOpenReceipts == other.maxOpenReceipts &&
-          defaultMinimumConfirmations == other.defaultMinimumConfirmations;
+          defaultMinimumConfirmations == other.defaultMinimumConfirmations &&
+          contactCheckAnswersPerHour == other.contactCheckAnswersPerHour &&
+          contactCheckAnswersPerDay == other.contactCheckAnswersPerDay &&
+          contactHoldAttempts == other.contactHoldAttempts &&
+          contactHoldPatienceS == other.contactHoldPatienceS;
 }
 
 /// How a runtime treats PINs, chosen when the app creates it with
