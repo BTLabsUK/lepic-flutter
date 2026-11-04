@@ -285,8 +285,8 @@ enum WalletErrorKind {
   inputsSpentElsewhere,
 
   /// The invite, contact or call is of the other pairing class: a private invite answered as
-  /// a contact or the other way round, words asked for a private pairing, a slate or invoice
-  /// for a private pairing, or a payload for a contact. Nothing was stored or sent.
+  /// a contact or the other way round, words asked for a private pairing, or a slate or
+  /// invoice for a private pairing. Nothing was stored or sent.
   wrongPairingClass,
 
   /// The wallet was opened offline (`WalletConfig.offline`), so the call reached no node or
