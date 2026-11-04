@@ -6,6 +6,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1179,20 +1180,36 @@ void main() {
     },
   );
 
+  SelfSendRequest split(int count) => SelfSendRequest(
+    inputs: SelfInputs.all,
+    named: const [],
+    outputs: SelfOutputs.count,
+    count: count,
+    amounts: Uint64List(0),
+  );
+
+  SelfSendRequest named(List<String> commitments, int count) => SelfSendRequest(
+    inputs: SelfInputs.named,
+    named: commitments,
+    outputs: SelfOutputs.count,
+    count: count,
+    amounts: Uint64List(0),
+  );
+
   test('a split is mined into that many spendable outputs', () async {
     final (alice, _, _) = await fundedPair('split');
-    final estimate = await alice.estimateSplit(
-      outputs: 3,
+    final estimate = await alice.estimateSendToSelf(
+      request: split(3),
       minimumConfirmations: BigInt.one,
     );
     expect(estimate.changeOutputs, 2);
     await expectLater(
-      alice.splitOutputs(outputs: 11, minimumConfirmations: BigInt.one),
+      alice.sendToSelf(request: split(11), minimumConfirmations: BigInt.one),
       throwsWalletError(WalletErrorKind.invalidArgument),
     );
 
-    final sent = await alice.splitOutputs(
-      outputs: 3,
+    final sent = await alice.sendToSelf(
+      request: split(3),
       minimumConfirmations: BigInt.one,
     );
 
@@ -1209,16 +1226,54 @@ void main() {
       unspent.fold(BigInt.zero, (sum, output) => sum + output.value),
       BigInt.from(10 * epic) - sent.fee,
     );
-    final consolidate = await alice.estimateConsolidate(
+    final consolidate = await alice.estimateSendToSelf(
+      request: split(1),
       minimumConfirmations: BigInt.one,
     );
     expect(consolidate.inputCount, 3);
     expect(consolidate.changeOutputs, 0);
   });
 
+  test('a send to self pays out the amounts asked for and the rest', () async {
+    final (alice, _, _) = await fundedPair('to-self-amounts');
+    final request = SelfSendRequest(
+      inputs: SelfInputs.smallest,
+      named: const [],
+      outputs: SelfOutputs.amounts,
+      count: 0,
+      amounts: Uint64List.fromList([epic, 2 * epic]),
+    );
+    final estimate = await alice.estimateSendToSelf(
+      request: request,
+      minimumConfirmations: BigInt.one,
+    );
+    await expectLater(
+      alice.sendToSelf(
+        request: SelfSendRequest(
+          inputs: SelfInputs.smallest,
+          named: const [],
+          outputs: SelfOutputs.count,
+          count: 2,
+          amounts: Uint64List(0),
+        ),
+        minimumConfirmations: BigInt.one,
+      ),
+      throwsWalletError(WalletErrorKind.invalidArgument),
+    );
+
+    final sent = await alice.sendToSelf(
+      request: request,
+      minimumConfirmations: BigInt.one,
+    );
+
+    expect(sent.fee, estimate.fee);
+    expect(sent.inputCount, 1);
+    expect(sent.outputCount, 3);
+  });
+
   test('named outputs are spent to the wallet itself, nothing else', () async {
     final (alice, _, _) = await fundedPair('spend-named');
-    await alice.splitOutputs(outputs: 3, minimumConfirmations: BigInt.one);
+    await alice.sendToSelf(request: split(3), minimumConfirmations: BigInt.one);
     chain.minePushed();
     chain.setHeight(height: chain.height() + BigInt.from(10));
     await alice.summary(refresh: true);
@@ -1227,36 +1282,32 @@ void main() {
         .toList();
     expect(unspent, hasLength(3));
     await expectLater(
-      alice.spendOutputsToSelf(
-        commitments: const [],
-        outputs: 1,
+      alice.sendToSelf(
+        request: named(const [], 1),
         minimumConfirmations: BigInt.one,
       ),
       throwsWalletError(WalletErrorKind.invalidArgument),
     );
     await expectLater(
-      alice.spendOutputsToSelf(
-        commitments: ['08${'00' * 32}'],
-        outputs: 1,
+      alice.sendToSelf(
+        request: named(['08${'00' * 32}'], 1),
         minimumConfirmations: BigInt.one,
       ),
       throwsWalletError(WalletErrorKind.invalidArgument),
     );
     for (final outputs in [0, 11]) {
       await expectLater(
-        alice.spendOutputsToSelf(
-          commitments: [unspent[0].commitment],
-          outputs: outputs,
+        alice.sendToSelf(
+          request: named([unspent[0].commitment], outputs),
           minimumConfirmations: BigInt.one,
         ),
         throwsWalletError(WalletErrorKind.invalidArgument),
       );
     }
 
-    final named = [unspent[0].commitment, unspent[1].commitment];
-    final sent = await alice.spendOutputsToSelf(
-      commitments: named,
-      outputs: 1,
+    final spent = [unspent[0].commitment, unspent[1].commitment];
+    final sent = await alice.sendToSelf(
+      request: named(spent, 1),
       minimumConfirmations: BigInt.one,
     );
 
@@ -1265,13 +1316,12 @@ void main() {
     final after = await alice.outputs();
     OutputStatus statusOf(String commitment) =>
         after.singleWhere((output) => output.commitment == commitment).status;
-    expect(statusOf(named[0]), OutputStatus.locked);
-    expect(statusOf(named[1]), OutputStatus.locked);
+    expect(statusOf(spent[0]), OutputStatus.locked);
+    expect(statusOf(spent[1]), OutputStatus.locked);
     expect(statusOf(unspent[2].commitment), OutputStatus.unspent);
 
-    final back = await alice.spendOutputsToSelf(
-      commitments: [unspent[2].commitment],
-      outputs: 3,
+    final back = await alice.sendToSelf(
+      request: named([unspent[2].commitment], 3),
       minimumConfirmations: BigInt.one,
     );
     expect(back.inputCount, 1);
@@ -1280,12 +1330,20 @@ void main() {
 
   test('the node tip tells readiness and the tip time', () async {
     final config = configFor(walletDir('node-tip'));
-    final old = await nodeTip(runtime: runtime, config: config);
+    final old = await nodeTip(
+      runtime: runtime,
+      config: config,
+      route: const NodeRoute(),
+    );
     expect(old.readyForTxs, isNull);
     expect(old.tipTimeMs, isNotNull);
     chain.setNodeReadyForTxs(ready: true);
     try {
-      final ready = await nodeTip(runtime: runtime, config: config);
+      final ready = await nodeTip(
+        runtime: runtime,
+        config: config,
+        route: const NodeRoute(),
+      );
       expect(ready.readyForTxs, isTrue);
       expect(ready.height, chain.height());
     } finally {
@@ -2003,92 +2061,90 @@ void main() {
     expect(store.values['lepic.pin-failures'], '4');
   });
 
-  test(
-    'the log ring holds log lines but no address, amount or key',
-    () async {
-      final debugRuntime = chain.runtime(logLevel: LogLevel.debug);
-      final live = <LogEntry>[];
-      final subscription = debugRuntime.logs().listen(live.add);
-      await debugRuntime.openLogRing(
-        dir: '${root.path}/logs',
-        maxBytes: BigInt.from(256 * 1024),
-      );
+  test('the log ring holds log lines but no address, amount or key', () async {
+    final debugRuntime = chain.runtime(logLevel: LogLevel.debug);
+    final live = <LogEntry>[];
+    final subscription = debugRuntime.logs().listen(live.add);
+    await debugRuntime.openLogRing(
+      dir: '${root.path}/logs',
+      maxBytes: BigInt.from(256 * 1024),
+    );
 
-      final vector = walletSeedVector();
-      final sender = await EpicWallet.importWalletSeedWithPin(
-        runtime: debugRuntime,
-        config: WalletConfig(
-          dataDir: walletDir('bundle-sender').path,
-          chain: Chain.floonet,
-          nodeUrl: 'http://127.0.0.1:1',
-          epicboxDomain: 'epicbox.example',
-          epicboxPort: 443,
-          onionRoutes: const [],
-          tuning: shippedTuning,
-          offline: false,
-          hostFeatures: 0,
-          torWanted: false,
-        ),
-        store: lepicSecretStore(MemoryStore()),
-        seedFile: vector.file,
-        seedPassword: vector.password,
-        pin: '123456',
-      );
-      final address = await sender.wallet.epicboxAddress();
-      chain.fund(
-        mnemonic: vector.phrase,
+    final vector = walletSeedVector();
+    final sender = await EpicWallet.importWalletSeedWithPin(
+      runtime: debugRuntime,
+      config: WalletConfig(
+        dataDir: walletDir('bundle-sender').path,
         chain: Chain.floonet,
-        amount: BigInt.from(7 * epic),
-        child: 0,
-      );
-      chain.setHeight(height: BigInt.from(20));
-      await scanToEnd(sender.wallet);
-      final receiver = await EpicWallet.create(
-        runtime: debugRuntime,
-        config: configFor(walletDir('bundle-receiver')),
-        store: lepicSecretStore(MemoryStore()),
-        mnemonic: bobPhrase,
-        password: password,
-      );
-      await scanToEnd(receiver);
-      final s1 = await sender.wallet.createSendSlate(
-        amount: BigInt.from(3 * epic),
-        minimumConfirmations: BigInt.one,
-      );
-      final s2 = await receiver.receiveSlate(slateJson: s1.json);
-      await sender.wallet.finalizeAndPost(slateJson: s2.json);
-      final sent = (await sender.wallet.summary(refresh: true)).total;
+        nodeUrl: 'http://127.0.0.1:1',
+        epicboxDomain: 'epicbox.example',
+        epicboxPort: 443,
+        onionRoutes: const [],
+        tuning: shippedTuning,
+        offline: false,
+        hostFeatures: 0,
+        torWanted: false,
+      ),
+      store: lepicSecretStore(MemoryStore()),
+      seedFile: vector.file,
+      seedPassword: vector.password,
+      pin: '123456',
+    );
+    final address = await sender.wallet.epicboxAddress();
+    chain.fund(
+      mnemonic: vector.phrase,
+      chain: Chain.floonet,
+      amount: BigInt.from(7 * epic),
+      child: 0,
+    );
+    chain.setHeight(height: BigInt.from(20));
+    await scanToEnd(sender.wallet);
+    final receiver = await EpicWallet.create(
+      runtime: debugRuntime,
+      config: configFor(walletDir('bundle-receiver')),
+      store: lepicSecretStore(MemoryStore()),
+      mnemonic: bobPhrase,
+      password: password,
+    );
+    await scanToEnd(receiver);
+    final s1 = await sender.wallet.createSendSlate(
+      amount: BigInt.from(3 * epic),
+      minimumConfirmations: BigInt.one,
+    );
+    final s2 = await receiver.receiveSlate(slateJson: s1.json);
+    await sender.wallet.finalizeAndPost(slateJson: s2.json);
+    final sent = (await sender.wallet.summary(refresh: true)).total;
 
-      debugRuntime.stopLogs();
-      await subscription.cancel();
-      // The ring's segments, oldest (highest index) first.
-      final bundle = [
-        for (var index = 3; index >= 0; index--)
-          File('${root.path}/logs/lepic.$index.log'),
-      ]
-          .where((file) => file.existsSync())
-          .map((file) => file.readAsStringSync())
-          .join();
+    debugRuntime.stopLogs();
+    await subscription.cancel();
+    // The ring's segments, oldest (highest index) first.
+    final bundle =
+        [
+              for (var index = 3; index >= 0; index--)
+                File('${root.path}/logs/lepic.$index.log'),
+            ]
+            .where((file) => file.existsSync())
+            .map((file) => file.readAsStringSync())
+            .join();
 
-      expect(bundle, contains('wallet imported'));
-      expect(bundle, contains('slate finalized'));
-      expect(live, isNotEmpty);
-      final key = address.split('@').first;
-      for (final secret in [
-        key,
-        vector.phrase,
-        vector.password,
-        password,
-        bobPhrase,
-        '${3 * epic}',
-        '${7 * epic}',
-        '$sent',
-        s1.json,
-      ]) {
-        expect(bundle, isNot(contains(secret)));
-      }
-    },
-  );
+    expect(bundle, contains('wallet imported'));
+    expect(bundle, contains('slate finalized'));
+    expect(live, isNotEmpty);
+    final key = address.split('@').first;
+    for (final secret in [
+      key,
+      vector.phrase,
+      vector.password,
+      password,
+      bobPhrase,
+      '${3 * epic}',
+      '${7 * epic}',
+      '$sent',
+      s1.json,
+    ]) {
+      expect(bundle, isNot(contains(secret)));
+    }
+  });
 
   /// A send Bob answered and the node took, posted at height 20, and the height from which a
   /// refresh that misses its kernel makes it releasable.
