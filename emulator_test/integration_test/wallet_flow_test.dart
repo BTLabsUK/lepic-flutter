@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:lepic/lepic.dart';
+import 'package:lepic/testing.dart';
 
 const password = 'correct horse battery staple';
 

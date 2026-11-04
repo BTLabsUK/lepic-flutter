@@ -967,7 +967,8 @@ LEPIC, writes it to `test_native/`, which this package's `pubspec.yaml` names as
 and runs `flutter test` here. The build hook bundles the library from there, as it would for a
 Linux app, and the tests open the copy it installed. The tests read LEPIC's golden vectors from
 the same checkout. After a Rust change, run the command again; for Dart changes alone
-`LEPIC_DIR=… flutter test` is enough. `MockChain` works only in a `mock` build; in any other
+`LEPIC_DIR=… flutter test` is enough. `MockChain`, `MockRelay` and `MockStockPeer` come from
+`package:lepic/testing.dart`, which `package:lepic/lepic.dart` does not export. `MockChain` works only in a `mock` build; in any other
 build it fails with `unsupported`. So does `MockRelay`: with
 `MockChain.runtimeWithRelay(logLevel, relay)` every Epicbox connection of the runtime's wallets
 goes to it, whatever relay they are configured with. `MockStockPeer` is a peer on that relay
