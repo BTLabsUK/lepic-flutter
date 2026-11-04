@@ -161,6 +161,18 @@ const errorCodes = {
   WalletErrorKind.offline: 78,
   WalletErrorKind.inputsSpentByOwnTransaction: 79,
   WalletErrorKind.peerInputsSpent: 80,
+  WalletErrorKind.otherAddress: 81,
+  WalletErrorKind.addressProofMissing: 82,
+  WalletErrorKind.peerNotProven: 83,
+  WalletErrorKind.pairingInProgress: 84,
+  WalletErrorKind.pairingCrossed: 85,
+  WalletErrorKind.inviteDismissed: 86,
+  WalletErrorKind.pairingEnded: 87,
+  WalletErrorKind.pairingWaiting: 88,
+  WalletErrorKind.foreignProofAddress: 89,
+  WalletErrorKind.wrongKey: 90,
+  WalletErrorKind.pairingKindDiffers: 91,
+  WalletErrorKind.relayMoveNotRequested: 92,
 };
 
 Matcher throwsWalletError(WalletErrorKind kind) => throwsA(
@@ -1553,12 +1565,13 @@ void main() {
         ),
         throwsWalletError(WalletErrorKind.wrongPassword),
       );
-      await expectLater(
-        wallet.changePassword(currentPassword: password, newPassword: 'short'),
-        throwsWalletError(WalletErrorKind.invalidArgument),
-      );
+      // Core sets no length: the host keeps its own bounds.
       await wallet.changePassword(
         currentPassword: password,
+        newPassword: 'short',
+      );
+      await wallet.changePassword(
+        currentPassword: 'short',
         newPassword: newPassword,
       );
       expect(store.values.keys.toSet(), {'lepic.vault'});

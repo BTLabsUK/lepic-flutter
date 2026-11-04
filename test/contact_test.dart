@@ -64,6 +64,12 @@ Future<({String annaSide, String benSide})> pairContacts(
     )).paired,
     1,
   );
+  // Ben says it finished as its confirm arrives; Anna hears Ben by that notice.
+  await anna.contactsCollect(trigger: CollectTrigger.open, relayMode: online);
+  expect(
+    (await anna.contact(contactId: invite.contactId)).status,
+    PairingStatus.paired,
+  );
   return (annaSide: invite.contactId, benSide: answer.contactId);
 }
 
@@ -204,10 +210,10 @@ void main() {
         decision: SasDecision.mismatch,
         relayMode: online,
       );
-      await expectLater(
-        ben.contact(contactId: answer.contactId),
-        throwsWalletError(WalletErrorKind.contactNotFound),
-      );
+      // A mismatch ends the pairing and keeps the record until it is removed.
+      final ended = await ben.contact(contactId: answer.contactId);
+      expect(ended.status, PairingStatus.ended);
+      expect(ended.endedReason, PairingEndReason.mismatch);
     },
   );
 
