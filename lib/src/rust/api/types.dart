@@ -1127,23 +1127,23 @@ enum ListenerEventKind {
   invoiceBounced,
 }
 
-/// A listing of this wallet with a directory: the directory's compressed secp256k1 key in hex
+/// A listing of this wallet with a name service: the service's compressed secp256k1 key in hex
 /// (66 digits) and the listing's generation, raised after each leave.
 class ListingRef {
-  final String dkey;
+  final String serviceKey;
   final int generation;
 
-  const ListingRef({required this.dkey, required this.generation});
+  const ListingRef({required this.serviceKey, required this.generation});
 
   @override
-  int get hashCode => dkey.hashCode ^ generation.hashCode;
+  int get hashCode => serviceKey.hashCode ^ generation.hashCode;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ListingRef &&
           runtimeType == other.runtimeType &&
-          dkey == other.dkey &&
+          serviceKey == other.serviceKey &&
           generation == other.generation;
 }
 
@@ -2959,7 +2959,7 @@ class WalletConfig {
 
   /// The feature bits the app claims to other LEPIC wallets: one constant of the app's
   /// build, the same for every user, never a setting. LEPIC keeps only the host bits, 4
-  /// (linked-device forwarding) and 5 (directory), and ignores the rest. Read when a wallet
+  /// (linked-device forwarding) and 5 (name service), and ignores the rest. Read when a wallet
   /// is created, restored or opened.
   final int hostFeatures;
 
@@ -3369,6 +3369,11 @@ enum WalletEventKind {
   /// `EpicWallet::contact_apply_relay_move`. Raised once per newer card; after a restart,
   /// `ContactView::requested_relay` still shows the request.
   contactRelayMoveRequested,
+
+  /// Payloads from the pairing `contact_id` were left on the relay because the payloads kept
+  /// and not acknowledged fill its cap. Raised at most once per pairing in a collect. They
+  /// arrive after `EpicWallet::contact_payloads_ack` makes room.
+  contactPayloadsParked,
 }
 
 /// An output of the wallet, from `EpicWallet::outputs`.
