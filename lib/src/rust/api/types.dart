@@ -327,6 +327,10 @@ class ContactView {
 
   /// The feature bits the contact claimed in this pairing; 0 when none came.
   final int peerFeatures;
+
+  /// The profile the contact sent, `peer_features` from bit 16 up moved down; 0 when none
+  /// came. LEPIC reads no bit of it.
+  final int peerProfile;
   final PairingEndReason? endedReason;
   final PlatformInt64? endedAtMs;
 
@@ -353,6 +357,7 @@ class ContactView {
     this.peerHeardAtMs,
     this.peerVerifiedAtMs,
     required this.peerFeatures,
+    required this.peerProfile,
     this.endedReason,
     this.endedAtMs,
   });
@@ -381,6 +386,7 @@ class ContactView {
       peerHeardAtMs.hashCode ^
       peerVerifiedAtMs.hashCode ^
       peerFeatures.hashCode ^
+      peerProfile.hashCode ^
       endedReason.hashCode ^
       endedAtMs.hashCode;
 
@@ -411,6 +417,7 @@ class ContactView {
           peerHeardAtMs == other.peerHeardAtMs &&
           peerVerifiedAtMs == other.peerVerifiedAtMs &&
           peerFeatures == other.peerFeatures &&
+          peerProfile == other.peerProfile &&
           endedReason == other.endedReason &&
           endedAtMs == other.endedAtMs;
 }
@@ -2963,6 +2970,11 @@ class WalletConfig {
   /// is created, restored or opened.
   final int hostFeatures;
 
+  /// The app's profile of its owner, sent to paired contacts in bits 16 to 31 of the pairing
+  /// features and never in a marker; LEPIC does not read a bit. 0 for none. Read when a
+  /// wallet is created, restored or opened.
+  final int profile;
+
   /// Limits and presets that are the app's to choose. [`HostPolicy::default`], every field
   /// `None`, is what LEPIC did before they were fields. Read when a wallet is created,
   /// restored or opened.
@@ -2980,6 +2992,7 @@ class WalletConfig {
     required this.offline,
     required this.torWanted,
     required this.hostFeatures,
+    required this.profile,
     required this.policy,
   });
 
@@ -2996,6 +3009,7 @@ class WalletConfig {
       offline.hashCode ^
       torWanted.hashCode ^
       hostFeatures.hashCode ^
+      profile.hashCode ^
       policy.hashCode;
 
   @override
@@ -3014,6 +3028,7 @@ class WalletConfig {
           offline == other.offline &&
           torWanted == other.torWanted &&
           hostFeatures == other.hostFeatures &&
+          profile == other.profile &&
           policy == other.policy;
 }
 

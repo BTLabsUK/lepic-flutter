@@ -125,6 +125,7 @@ Future<void> fundOverEpicboxAndSendBackByFile() async {
       tuning: shippedTuning,
       offline: false,
       hostFeatures: 0,
+      profile: 0,
       torWanted: false,
       policy: const HostPolicy(),
     ),
