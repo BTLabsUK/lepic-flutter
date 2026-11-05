@@ -81,13 +81,12 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   @override
   int get rustContentHash => 896780669;
 
-  static const kDefaultExternalLibraryLoaderConfig =
-      ExternalLibraryLoaderConfig(
-        stem: 'lepic_ffi',
-        ioDirectory: null,
-        webPrefix: 'pkg/',
-        wasmBindgenName: 'wasm_bindgen',
-      );
+  static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
+    stem: 'lepic_ffi',
+    ioDirectory: null,
+    webPrefix: 'pkg/',
+    wasmBindgenName: 'wasm_bindgen',
+  );
 }
 
 abstract class RustLibApi extends BaseApi {
@@ -9341,8 +9340,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ContactView dco_decode_contact_view(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 24)
-      throw Exception('unexpected arr length: expect 24 but see ${arr.length}');
+    if (arr.length != 25)
+      throw Exception('unexpected arr length: expect 25 but see ${arr.length}');
     return ContactView(
       contactId: dco_decode_String(arr[0]),
       label: dco_decode_String(arr[1]),
@@ -9366,8 +9365,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       peerHeardAtMs: dco_decode_opt_box_autoadd_i_64(arr[19]),
       peerVerifiedAtMs: dco_decode_opt_box_autoadd_i_64(arr[20]),
       peerFeatures: dco_decode_u_32(arr[21]),
-      endedReason: dco_decode_opt_box_autoadd_pairing_end_reason(arr[22]),
-      endedAtMs: dco_decode_opt_box_autoadd_i_64(arr[23]),
+      peerProfile: dco_decode_u_32(arr[22]),
+      endedReason: dco_decode_opt_box_autoadd_pairing_end_reason(arr[23]),
+      endedAtMs: dco_decode_opt_box_autoadd_i_64(arr[24]),
     );
   }
 
@@ -10957,8 +10957,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   WalletConfig dco_decode_wallet_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 12)
-      throw Exception('unexpected arr length: expect 12 but see ${arr.length}');
+    if (arr.length != 13)
+      throw Exception('unexpected arr length: expect 13 but see ${arr.length}');
     return WalletConfig(
       dataDir: dco_decode_String(arr[0]),
       chain: dco_decode_chain(arr[1]),
@@ -10971,7 +10971,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       offline: dco_decode_bool(arr[8]),
       torWanted: dco_decode_bool(arr[9]),
       hostFeatures: dco_decode_u_32(arr[10]),
-      policy: dco_decode_host_policy(arr[11]),
+      profile: dco_decode_u_16(arr[11]),
+      policy: dco_decode_host_policy(arr[12]),
     );
   }
 
@@ -11772,6 +11773,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_peerHeardAtMs = sse_decode_opt_box_autoadd_i_64(deserializer);
     var var_peerVerifiedAtMs = sse_decode_opt_box_autoadd_i_64(deserializer);
     var var_peerFeatures = sse_decode_u_32(deserializer);
+    var var_peerProfile = sse_decode_u_32(deserializer);
     var var_endedReason = sse_decode_opt_box_autoadd_pairing_end_reason(
       deserializer,
     );
@@ -11799,6 +11801,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       peerHeardAtMs: var_peerHeardAtMs,
       peerVerifiedAtMs: var_peerVerifiedAtMs,
       peerFeatures: var_peerFeatures,
+      peerProfile: var_peerProfile,
       endedReason: var_endedReason,
       endedAtMs: var_endedAtMs,
     );
@@ -13879,6 +13882,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_offline = sse_decode_bool(deserializer);
     var var_torWanted = sse_decode_bool(deserializer);
     var var_hostFeatures = sse_decode_u_32(deserializer);
+    var var_profile = sse_decode_u_16(deserializer);
     var var_policy = sse_decode_host_policy(deserializer);
     return WalletConfig(
       dataDir: var_dataDir,
@@ -13892,6 +13896,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       offline: var_offline,
       torWanted: var_torWanted,
       hostFeatures: var_hostFeatures,
+      profile: var_profile,
       policy: var_policy,
     );
   }
@@ -14881,6 +14886,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_i_64(self.peerHeardAtMs, serializer);
     sse_encode_opt_box_autoadd_i_64(self.peerVerifiedAtMs, serializer);
     sse_encode_u_32(self.peerFeatures, serializer);
+    sse_encode_u_32(self.peerProfile, serializer);
     sse_encode_opt_box_autoadd_pairing_end_reason(self.endedReason, serializer);
     sse_encode_opt_box_autoadd_i_64(self.endedAtMs, serializer);
   }
@@ -16549,6 +16555,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self.offline, serializer);
     sse_encode_bool(self.torWanted, serializer);
     sse_encode_u_32(self.hostFeatures, serializer);
+    sse_encode_u_16(self.profile, serializer);
     sse_encode_host_policy(self.policy, serializer);
   }
 

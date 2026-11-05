@@ -114,6 +114,7 @@ void main() {
         tuning: shippedTuning,
         offline: false,
         hostFeatures: 0,
+        profile: 0,
         torWanted: false,
         policy: const HostPolicy(),
       ),
@@ -186,6 +187,8 @@ void main() {
       final annaView = await anna.contact(contactId: invite.contactId);
       final benView = await ben.contact(contactId: answer.contactId);
       expect(annaView.state, PairingState.paired);
+      expect(annaView.peerProfile, 0);
+      expect(benView.peerProfile, 0);
       expect(annaView.claimedName, 'Ben');
       expect(benView.kind, ContactKind.shop);
       expect(annaView.sas, hasLength(4));

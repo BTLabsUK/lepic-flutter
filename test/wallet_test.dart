@@ -82,6 +82,7 @@ WalletConfig configFor(Directory dir) => WalletConfig(
   tuning: shippedTuning,
   offline: false,
   hostFeatures: 0,
+  profile: 0,
   torWanted: false,
   policy: const HostPolicy(),
 );
@@ -651,6 +652,7 @@ void main() {
         tuning: shippedTuning,
         offline: false,
         hostFeatures: 0,
+        profile: 0,
         torWanted: false,
         policy: const HostPolicy(),
       ),
@@ -2098,6 +2100,7 @@ void main() {
         tuning: shippedTuning,
         offline: false,
         hostFeatures: 0,
+        profile: 0,
         torWanted: false,
         policy: const HostPolicy(),
       ),
