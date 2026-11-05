@@ -369,7 +369,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<InboxReport> crateApiWalletEpicWalletDrainEpicboxAt({
     required EpicWallet that,
-    required String dkey,
+    required String serviceKey,
     required int generation,
   });
 
@@ -379,7 +379,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<String> crateApiWalletEpicWalletEpicboxAddressAt({
     required EpicWallet that,
-    required String dkey,
+    required String serviceKey,
     required int generation,
   });
 
@@ -847,7 +847,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<String> crateApiWalletEpicWalletSignWithAddressKeyAt({
     required EpicWallet that,
-    required String dkey,
+    required String serviceKey,
     required int generation,
     required String domain,
     required List<int> message,
@@ -3076,7 +3076,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @override
   Future<InboxReport> crateApiWalletEpicWalletDrainEpicboxAt({
     required EpicWallet that,
-    required String dkey,
+    required String serviceKey,
     required int generation,
   }) {
     return handler.executeNormal(
@@ -3087,7 +3087,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             that,
             serializer,
           );
-          sse_encode_String(dkey, serializer);
+          sse_encode_String(serviceKey, serializer);
           sse_encode_u_32(generation, serializer);
           pdeCallFfi(
             generalizedFrbRustBinding,
@@ -3101,7 +3101,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletDrainEpicboxAtConstMeta,
-        argValues: [that, dkey, generation],
+        argValues: [that, serviceKey, generation],
         apiImpl: this,
       ),
     );
@@ -3110,7 +3110,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiWalletEpicWalletDrainEpicboxAtConstMeta =>
       const TaskConstMeta(
         debugName: "EpicWallet_drain_epicbox_at",
-        argNames: ["that", "dkey", "generation"],
+        argNames: ["that", "serviceKey", "generation"],
       );
 
   @override
@@ -3152,7 +3152,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @override
   Future<String> crateApiWalletEpicWalletEpicboxAddressAt({
     required EpicWallet that,
-    required String dkey,
+    required String serviceKey,
     required int generation,
   }) {
     return handler.executeNormal(
@@ -3163,7 +3163,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             that,
             serializer,
           );
-          sse_encode_String(dkey, serializer);
+          sse_encode_String(serviceKey, serializer);
           sse_encode_u_32(generation, serializer);
           pdeCallFfi(
             generalizedFrbRustBinding,
@@ -3177,7 +3177,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletEpicboxAddressAtConstMeta,
-        argValues: [that, dkey, generation],
+        argValues: [that, serviceKey, generation],
         apiImpl: this,
       ),
     );
@@ -3186,7 +3186,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiWalletEpicWalletEpicboxAddressAtConstMeta =>
       const TaskConstMeta(
         debugName: "EpicWallet_epicbox_address_at",
-        argNames: ["that", "dkey", "generation"],
+        argNames: ["that", "serviceKey", "generation"],
       );
 
   @override
@@ -6512,7 +6512,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @override
   Future<String> crateApiWalletEpicWalletSignWithAddressKeyAt({
     required EpicWallet that,
-    required String dkey,
+    required String serviceKey,
     required int generation,
     required String domain,
     required List<int> message,
@@ -6525,7 +6525,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             that,
             serializer,
           );
-          sse_encode_String(dkey, serializer);
+          sse_encode_String(serviceKey, serializer);
           sse_encode_u_32(generation, serializer);
           sse_encode_String(domain, serializer);
           sse_encode_list_prim_u_8_loose(message, serializer);
@@ -6541,7 +6541,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletSignWithAddressKeyAtConstMeta,
-        argValues: [that, dkey, generation, domain, message],
+        argValues: [that, serviceKey, generation, domain, message],
         apiImpl: this,
       ),
     );
@@ -6550,7 +6550,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiWalletEpicWalletSignWithAddressKeyAtConstMeta =>
       const TaskConstMeta(
         debugName: "EpicWallet_sign_with_address_key_at",
-        argNames: ["that", "dkey", "generation", "domain", "message"],
+        argNames: ["that", "serviceKey", "generation", "domain", "message"],
       );
 
   @override
@@ -9878,7 +9878,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     if (arr.length != 2)
       throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
     return ListingRef(
-      dkey: dco_decode_String(arr[0]),
+      serviceKey: dco_decode_String(arr[0]),
       generation: dco_decode_u_32(arr[1]),
     );
   }
@@ -12488,9 +12488,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   ListingRef sse_decode_listing_ref(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_dkey = sse_decode_String(deserializer);
+    var var_serviceKey = sse_decode_String(deserializer);
     var var_generation = sse_decode_u_32(deserializer);
-    return ListingRef(dkey: var_dkey, generation: var_generation);
+    return ListingRef(serviceKey: var_serviceKey, generation: var_generation);
   }
 
   @protected
@@ -15426,7 +15426,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_listing_ref(ListingRef self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_String(self.dkey, serializer);
+    sse_encode_String(self.serviceKey, serializer);
     sse_encode_u_32(self.generation, serializer);
   }
 
@@ -17309,11 +17309,11 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// for it. Later notices about such a payment go from nowhere else. Fails as
   /// `epicbox_address_at` and `drain_epicbox` do.
   Future<InboxReport> drainEpicboxAt({
-    required String dkey,
+    required String serviceKey,
     required int generation,
   }) => RustLib.instance.api.crateApiWalletEpicWalletDrainEpicboxAt(
     that: this,
-    dkey: dkey,
+    serviceKey: serviceKey,
     generation: generation,
   );
 
@@ -17322,18 +17322,18 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   Future<String> epicboxAddress() =>
       RustLib.instance.api.crateApiWalletEpicWalletEpicboxAddress(that: this);
 
-  /// The Epicbox address `<key>@<relay>[:port]` of this wallet's listing with the directory
-  /// whose key is `dkey` (a compressed secp256k1 key, 66 hex digits), generation
+  /// The Epicbox address `<key>@<relay>[:port]` of this wallet's listing with the name
+  /// service whose key is `service_key` (a compressed secp256k1 key, 66 hex digits), generation
   /// `generation`, on the wallet's relay. Its key comes from the phrase alone, so every
   /// install of the phrase and a restore give the same address; raise `generation` after a
-  /// leave for a new one. Needs no relay. Fails with `InvalidArgument` for another `dkey`
+  /// leave for a new one. Needs no relay. Fails with `InvalidArgument` for another `service_key`
   /// and with `Unsupported` when the configuration names no relay.
   Future<String> epicboxAddressAt({
-    required String dkey,
+    required String serviceKey,
     required int generation,
   }) => RustLib.instance.api.crateApiWalletEpicWalletEpicboxAddressAt(
     that: this,
-    dkey: dkey,
+    serviceKey: serviceKey,
     generation: generation,
   );
 
@@ -17960,7 +17960,7 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
       .crateApiWalletEpicWalletPeerCompat(that: this, address: address);
 
   /// Reports what the app learned of one of its own features with the wallet at `address`:
-  /// `bit` is one host bit (16, device forwarding, or 32, the directory); `worked` says
+  /// `bit` is one host bit (16, device forwarding, or 32, the name service); `worked` says
   /// whether it worked. A bit the key never claimed does not start working. Sends nothing.
   /// Fails with `InvalidArgument` for another bit or an address that does not parse.
   Future<void> peerFeatureResult({
@@ -18453,16 +18453,16 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// [`verify_address_signature_at`] checks. `domain` is lowercase `name/version`, such as
   /// `epic-listing/1`, at most 64 bytes; domains starting with `lepic`, in any case, are
   /// refused. The digest is tagged so that no other signature of the wallet can equal it.
-  /// Needs no relay. Fails with `InvalidArgument` for another `dkey` or `domain` and for a
+  /// Needs no relay. Fails with `InvalidArgument` for another `service_key` or `domain` and for a
   /// `message` over 64 KiB.
   Future<String> signWithAddressKeyAt({
-    required String dkey,
+    required String serviceKey,
     required int generation,
     required String domain,
     required List<int> message,
   }) => RustLib.instance.api.crateApiWalletEpicWalletSignWithAddressKeyAt(
     that: this,
-    dkey: dkey,
+    serviceKey: serviceKey,
     generation: generation,
     domain: domain,
     message: message,

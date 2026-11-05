@@ -698,7 +698,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// for it. Later notices about such a payment go from nowhere else. Fails as
   /// `epicbox_address_at` and `drain_epicbox` do.
   Future<InboxReport> drainEpicboxAt({
-    required String dkey,
+    required String serviceKey,
     required int generation,
   });
 
@@ -706,14 +706,14 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// the configuration names no relay.
   Future<String> epicboxAddress();
 
-  /// The Epicbox address `<key>@<relay>[:port]` of this wallet's listing with the directory
-  /// whose key is `dkey` (a compressed secp256k1 key, 66 hex digits), generation
+  /// The Epicbox address `<key>@<relay>[:port]` of this wallet's listing with the name
+  /// service whose key is `service_key` (a compressed secp256k1 key, 66 hex digits), generation
   /// `generation`, on the wallet's relay. Its key comes from the phrase alone, so every
   /// install of the phrase and a restore give the same address; raise `generation` after a
-  /// leave for a new one. Needs no relay. Fails with `InvalidArgument` for another `dkey`
+  /// leave for a new one. Needs no relay. Fails with `InvalidArgument` for another `service_key`
   /// and with `Unsupported` when the configuration names no relay.
   Future<String> epicboxAddressAt({
-    required String dkey,
+    required String serviceKey,
     required int generation,
   });
 
@@ -1272,7 +1272,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   Future<PeerCompat> peerCompat({required String address});
 
   /// Reports what the app learned of one of its own features with the wallet at `address`:
-  /// `bit` is one host bit (16, device forwarding, or 32, the directory); `worked` says
+  /// `bit` is one host bit (16, device forwarding, or 32, the name service); `worked` says
   /// whether it worked. A bit the key never claimed does not start working. Sends nothing.
   /// Fails with `InvalidArgument` for another bit or an address that does not parse.
   Future<void> peerFeatureResult({
@@ -1655,10 +1655,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// [`verify_address_signature_at`] checks. `domain` is lowercase `name/version`, such as
   /// `epic-listing/1`, at most 64 bytes; domains starting with `lepic`, in any case, are
   /// refused. The digest is tagged so that no other signature of the wallet can equal it.
-  /// Needs no relay. Fails with `InvalidArgument` for another `dkey` or `domain` and for a
+  /// Needs no relay. Fails with `InvalidArgument` for another `service_key` or `domain` and for a
   /// `message` over 64 KiB.
   Future<String> signWithAddressKeyAt({
-    required String dkey,
+    required String serviceKey,
     required int generation,
     required String domain,
     required List<int> message,
