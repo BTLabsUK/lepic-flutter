@@ -1130,6 +1130,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// for more than 16 meeting relays or an `expect_address` that is not an Epicbox address of
   /// this network, with `InvalidContactName` for a `name` a card cannot carry, and with `Io`
   /// when 64 pairings are pending.
+  ///
+  /// `kind` is deprecated and ignored: a new pairing writes a person (docs/adr/0041).
   Future<PairingInvite> pairingInvite({
     required String name,
     required ContactKind kind,
@@ -1203,6 +1205,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// live on `home_relay` as [`EpicWallet::pairing_invite`] describes.
   ///
   /// Fails as [`EpicWallet::pairing_invite`] does.
+  ///
+  /// `kind` is deprecated and ignored: a new pairing writes a person (docs/adr/0041).
   Future<PairingCard> pairingShowCard({
     required String name,
     required ContactKind kind,
