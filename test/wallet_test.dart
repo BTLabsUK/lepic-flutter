@@ -715,15 +715,19 @@ void main() {
     final events = <HttpListenerEvent>[];
     final started = Completer<int>();
     final stopped = Completer<void>();
-    bob.startHttpListener(exposure: HttpExposure.localOnly, port: 0).listen((
-      event,
-    ) {
-      events.add(event);
-      if (event.kind == HttpListenerEventKind.started) {
-        started.complete(event.port!);
-      }
-      if (event.kind == HttpListenerEventKind.stopped) stopped.complete();
-    });
+    bob
+        .startHttpListener(
+          exposure: HttpExposure.localOnly,
+          port: 0,
+          coinbase: false,
+        )
+        .listen((event) {
+          events.add(event);
+          if (event.kind == HttpListenerEventKind.started) {
+            started.complete(event.port!);
+          }
+          if (event.kind == HttpListenerEventKind.stopped) stopped.complete();
+        });
     final port = await started.future;
     expect(bob.httpListenerStatus()?.port, port);
 
@@ -799,7 +803,11 @@ void main() {
     );
 
     final events = await alice
-        .startTor(torBinary: '/nonexistent/tor', libDir: null, publishOnion: true)
+        .startTor(
+          torBinary: '/nonexistent/tor',
+          libDir: null,
+          publishOnion: true,
+        )
         .toList();
     expect(events.map((event) => event.kind), contains(TorEventKind.failed));
     expect(
