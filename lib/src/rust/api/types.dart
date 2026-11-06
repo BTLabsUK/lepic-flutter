@@ -2761,6 +2761,12 @@ class TransactionDetails {
   /// report; a cancel here still runs its own checks. `None` for every other transaction.
   final PlatformInt64? senderReportedCancelledAtMs;
 
+  /// For a send this wallet made: when its receiver refused it unanswered, as a wallet set to
+  /// refuse payments nobody asked for does (`PaymentDeclined`, ADR 0045). The send was
+  /// cancelled then and its inputs are free: show it as declined by the receiver. `None` for
+  /// every other transaction.
+  final PlatformInt64? receiverDeclinedAtMs;
+
   /// For origin `OtherWallet` outgoing: no completed scan has covered its blocks yet, so the
   /// node's answers are its only evidence. Show it as unverified until a scan confirms it.
   /// `false` for every other transaction.
@@ -2794,6 +2800,7 @@ class TransactionDetails {
     required this.spentCommits,
     this.senderReportedPostedAtMs,
     this.senderReportedCancelledAtMs,
+    this.receiverDeclinedAtMs,
     required this.unverified,
   });
 
@@ -2826,6 +2833,7 @@ class TransactionDetails {
       spentCommits.hashCode ^
       senderReportedPostedAtMs.hashCode ^
       senderReportedCancelledAtMs.hashCode ^
+      receiverDeclinedAtMs.hashCode ^
       unverified.hashCode;
 
   @override
@@ -2860,6 +2868,7 @@ class TransactionDetails {
           spentCommits == other.spentCommits &&
           senderReportedPostedAtMs == other.senderReportedPostedAtMs &&
           senderReportedCancelledAtMs == other.senderReportedCancelledAtMs &&
+          receiverDeclinedAtMs == other.receiverDeclinedAtMs &&
           unverified == other.unverified;
 }
 
@@ -3454,6 +3463,13 @@ enum WalletEventKind {
   /// and not acknowledged fill its cap. Raised at most once per pairing in a collect. They
   /// arrive after `EpicWallet::contact_payloads_ack` makes room.
   contactPayloadsParked,
+
+  /// The receiver of a send this wallet made refused it unanswered, as a wallet set to refuse
+  /// payments nobody asked for does (ADR 0045): `tx_id` and `slate_id` are set. The send was
+  /// cancelled, as `cancel_transaction` does, so its inputs are free; its `Transaction` event
+  /// to `Cancelled` comes with it. Its `receiver_declined_at_ms` is set from now on. Raised
+  /// once per send, over Epicbox from a LEPIC receiver or from a paired contact.
+  paymentDeclined,
 }
 
 /// An output of the wallet, from `EpicWallet::outputs`.

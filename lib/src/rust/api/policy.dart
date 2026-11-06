@@ -72,6 +72,15 @@ class HostPolicy {
   /// Default 180.
   final BigInt? contactHoldPatienceS;
 
+  /// Refuse a payment nobody asked for: an S1 at the payments address, over HTTP or Tor, or
+  /// from a contact. A LEPIC sender hears `declined` and cancels its send (ADR 0045). A
+  /// payment for a listing and a slate taken by hand are still received. Default off.
+  final bool? refuseUnsolicitedPayments;
+
+  /// Refuse an invoice from a contact instead of parking it, answered `declined`. A plain
+  /// Epicbox invoice is refused anyway. Default off.
+  final bool? refuseUnsolicitedInvoices;
+
   const HostPolicy({
     this.defaultStrategy,
     this.sendTtlBlocks,
@@ -88,6 +97,8 @@ class HostPolicy {
     this.contactCheckAnswersPerDay,
     this.contactHoldAttempts,
     this.contactHoldPatienceS,
+    this.refuseUnsolicitedPayments,
+    this.refuseUnsolicitedInvoices,
   });
 
   static Future<HostPolicy> default_() =>
@@ -109,7 +120,9 @@ class HostPolicy {
       contactCheckAnswersPerHour.hashCode ^
       contactCheckAnswersPerDay.hashCode ^
       contactHoldAttempts.hashCode ^
-      contactHoldPatienceS.hashCode;
+      contactHoldPatienceS.hashCode ^
+      refuseUnsolicitedPayments.hashCode ^
+      refuseUnsolicitedInvoices.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -130,7 +143,9 @@ class HostPolicy {
           contactCheckAnswersPerHour == other.contactCheckAnswersPerHour &&
           contactCheckAnswersPerDay == other.contactCheckAnswersPerDay &&
           contactHoldAttempts == other.contactHoldAttempts &&
-          contactHoldPatienceS == other.contactHoldPatienceS;
+          contactHoldPatienceS == other.contactHoldPatienceS &&
+          refuseUnsolicitedPayments == other.refuseUnsolicitedPayments &&
+          refuseUnsolicitedInvoices == other.refuseUnsolicitedInvoices;
 }
 
 /// How a runtime treats PINs, chosen when the app creates it with
