@@ -81,13 +81,12 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   @override
   int get rustContentHash => -1794940090;
 
-  static const kDefaultExternalLibraryLoaderConfig =
-      ExternalLibraryLoaderConfig(
-        stem: 'lepic_ffi',
-        ioDirectory: null,
-        webPrefix: 'pkg/',
-        wasmBindgenName: 'wasm_bindgen',
-      );
+  static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
+    stem: 'lepic_ffi',
+    ioDirectory: null,
+    webPrefix: 'pkg/',
+    wasmBindgenName: 'wasm_bindgen',
+  );
 }
 
 abstract class RustLibApi extends BaseApi {
@@ -864,6 +863,7 @@ abstract class RustLibApi extends BaseApi {
     required EpicWallet that,
     required HttpExposure exposure,
     required int port,
+    required bool coinbase,
   });
 
   Stream<ListenerEvent> crateApiWalletEpicWalletStartListener({
@@ -6607,6 +6607,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     required EpicWallet that,
     required HttpExposure exposure,
     required int port,
+    required bool coinbase,
   }) {
     final events = RustStreamSink<HttpListenerEvent>();
     unawaited(
@@ -6620,6 +6621,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             );
             sse_encode_http_exposure(exposure, serializer);
             sse_encode_u_16(port, serializer);
+            sse_encode_bool(coinbase, serializer);
             sse_encode_StreamSink_http_listener_event_Sse(events, serializer);
             pdeCallFfi(
               generalizedFrbRustBinding,
@@ -6633,7 +6635,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             decodeErrorData: null,
           ),
           constMeta: kCrateApiWalletEpicWalletStartHttpListenerConstMeta,
-          argValues: [that, exposure, port, events],
+          argValues: [that, exposure, port, coinbase, events],
           apiImpl: this,
         ),
       ),
@@ -6644,7 +6646,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiWalletEpicWalletStartHttpListenerConstMeta =>
       const TaskConstMeta(
         debugName: "EpicWallet_start_http_listener",
-        argNames: ["that", "exposure", "port", "events"],
+        argNames: ["that", "exposure", "port", "coinbase", "events"],
       );
 
   @override
@@ -10904,8 +10906,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TransactionDetails dco_decode_transaction_details(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 28)
-      throw Exception('unexpected arr length: expect 28 but see ${arr.length}');
+    if (arr.length != 29)
+      throw Exception('unexpected arr length: expect 29 but see ${arr.length}');
     return TransactionDetails(
       txId: dco_decode_u_32(arr[0]),
       direction: dco_decode_tx_direction(arr[1]),
@@ -10935,6 +10937,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       senderReportedPostedAtMs: dco_decode_opt_box_autoadd_i_64(arr[25]),
       senderReportedCancelledAtMs: dco_decode_opt_box_autoadd_i_64(arr[26]),
       unverified: dco_decode_bool(arr[27]),
+      coinbase: dco_decode_bool(arr[28]),
     );
   }
 
@@ -13841,6 +13844,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       deserializer,
     );
     var var_unverified = sse_decode_bool(deserializer);
+    var var_coinbase = sse_decode_bool(deserializer);
     return TransactionDetails(
       txId: var_txId,
       direction: var_direction,
@@ -13870,6 +13874,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       senderReportedPostedAtMs: var_senderReportedPostedAtMs,
       senderReportedCancelledAtMs: var_senderReportedCancelledAtMs,
       unverified: var_unverified,
+      coinbase: var_coinbase,
     );
   }
 
@@ -16574,6 +16579,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       serializer,
     );
     sse_encode_bool(self.unverified, serializer);
+    sse_encode_bool(self.coinbase, serializer);
   }
 
   @protected
@@ -18637,6 +18643,10 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// 0 lets the system pick one, which the `Started` event and
   /// [`EpicWallet::http_listener_status`] report; `epic-wallet` listens on 3415.
   ///
+  /// With `coinbase` the listener also answers a mining node's `build_coinbase` (ADR 0046),
+  /// so the node pays its block rewards to this wallet; off, it answers that method as
+  /// unknown. Only a node the user runs should reach it: keep `exposure` `LocalOnly` then.
+  ///
   /// The first event is `Started`, `PortInUse` or `BindFailed`; after a start the last one
   /// is `Stopped`. A wallet runs one HTTP listener: a call while one runs or starts gets a
   /// stream that ends at once. On a locked wallet the stream ends with `Locked` as its error
@@ -18644,10 +18654,12 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   Stream<HttpListenerEvent> startHttpListener({
     required HttpExposure exposure,
     required int port,
+    required bool coinbase,
   }) => RustLib.instance.api.crateApiWalletEpicWalletStartHttpListener(
     that: this,
     exposure: exposure,
     port: port,
+    coinbase: coinbase,
   );
 
   /// Starts the Epicbox listener, unless it runs already, and streams what it does until
