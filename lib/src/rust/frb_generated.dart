@@ -9530,8 +9530,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   HostPolicy dco_decode_host_policy(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 15)
-      throw Exception('unexpected arr length: expect 15 but see ${arr.length}');
+    if (arr.length != 17)
+      throw Exception('unexpected arr length: expect 17 but see ${arr.length}');
     return HostPolicy(
       defaultStrategy: dco_decode_opt_box_autoadd_selection_strategy(arr[0]),
       sendTtlBlocks: dco_decode_opt_box_autoadd_u_64(arr[1]),
@@ -9548,6 +9548,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       contactCheckAnswersPerDay: dco_decode_opt_box_autoadd_u_32(arr[12]),
       contactHoldAttempts: dco_decode_opt_box_autoadd_u_32(arr[13]),
       contactHoldPatienceS: dco_decode_opt_box_autoadd_u_64(arr[14]),
+      refuseUnsolicitedPayments: dco_decode_opt_box_autoadd_bool(arr[15]),
+      refuseUnsolicitedInvoices: dco_decode_opt_box_autoadd_bool(arr[16]),
     );
   }
 
@@ -10904,8 +10906,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TransactionDetails dco_decode_transaction_details(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 28)
-      throw Exception('unexpected arr length: expect 28 but see ${arr.length}');
+    if (arr.length != 29)
+      throw Exception('unexpected arr length: expect 29 but see ${arr.length}');
     return TransactionDetails(
       txId: dco_decode_u_32(arr[0]),
       direction: dco_decode_tx_direction(arr[1]),
@@ -10934,7 +10936,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       spentCommits: dco_decode_list_String(arr[24]),
       senderReportedPostedAtMs: dco_decode_opt_box_autoadd_i_64(arr[25]),
       senderReportedCancelledAtMs: dco_decode_opt_box_autoadd_i_64(arr[26]),
-      unverified: dco_decode_bool(arr[27]),
+      receiverDeclinedAtMs: dco_decode_opt_box_autoadd_i_64(arr[27]),
+      unverified: dco_decode_bool(arr[28]),
     );
   }
 
@@ -12017,6 +12020,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_contactHoldPatienceS = sse_decode_opt_box_autoadd_u_64(
       deserializer,
     );
+    var var_refuseUnsolicitedPayments = sse_decode_opt_box_autoadd_bool(
+      deserializer,
+    );
+    var var_refuseUnsolicitedInvoices = sse_decode_opt_box_autoadd_bool(
+      deserializer,
+    );
     return HostPolicy(
       defaultStrategy: var_defaultStrategy,
       sendTtlBlocks: var_sendTtlBlocks,
@@ -12033,6 +12042,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       contactCheckAnswersPerDay: var_contactCheckAnswersPerDay,
       contactHoldAttempts: var_contactHoldAttempts,
       contactHoldPatienceS: var_contactHoldPatienceS,
+      refuseUnsolicitedPayments: var_refuseUnsolicitedPayments,
+      refuseUnsolicitedInvoices: var_refuseUnsolicitedInvoices,
     );
   }
 
@@ -13840,6 +13851,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_senderReportedCancelledAtMs = sse_decode_opt_box_autoadd_i_64(
       deserializer,
     );
+    var var_receiverDeclinedAtMs = sse_decode_opt_box_autoadd_i_64(
+      deserializer,
+    );
     var var_unverified = sse_decode_bool(deserializer);
     return TransactionDetails(
       txId: var_txId,
@@ -13869,6 +13883,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       spentCommits: var_spentCommits,
       senderReportedPostedAtMs: var_senderReportedPostedAtMs,
       senderReportedCancelledAtMs: var_senderReportedCancelledAtMs,
+      receiverDeclinedAtMs: var_receiverDeclinedAtMs,
       unverified: var_unverified,
     );
   }
@@ -15089,6 +15104,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_u_32(self.contactCheckAnswersPerDay, serializer);
     sse_encode_opt_box_autoadd_u_32(self.contactHoldAttempts, serializer);
     sse_encode_opt_box_autoadd_u_64(self.contactHoldPatienceS, serializer);
+    sse_encode_opt_box_autoadd_bool(self.refuseUnsolicitedPayments, serializer);
+    sse_encode_opt_box_autoadd_bool(self.refuseUnsolicitedInvoices, serializer);
   }
 
   @protected
@@ -16573,6 +16590,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       self.senderReportedCancelledAtMs,
       serializer,
     );
+    sse_encode_opt_box_autoadd_i_64(self.receiverDeclinedAtMs, serializer);
     sse_encode_bool(self.unverified, serializer);
   }
 
