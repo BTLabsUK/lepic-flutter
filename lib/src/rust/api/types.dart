@@ -2772,6 +2772,11 @@ class TransactionDetails {
   /// `false` for every other transaction.
   final bool unverified;
 
+  /// A block reward: an incoming transaction with no slate whose output is a coinbase
+  /// output, built for a mining node or found by a scan. Its output stays immature until
+  /// the `lock_height` of its `WalletOutput`. `false` for every other transaction.
+  final bool coinbase;
+
   const TransactionDetails({
     required this.txId,
     required this.direction,
@@ -2802,6 +2807,7 @@ class TransactionDetails {
     this.senderReportedCancelledAtMs,
     this.receiverDeclinedAtMs,
     required this.unverified,
+    required this.coinbase,
   });
 
   @override
@@ -2834,7 +2840,8 @@ class TransactionDetails {
       senderReportedPostedAtMs.hashCode ^
       senderReportedCancelledAtMs.hashCode ^
       receiverDeclinedAtMs.hashCode ^
-      unverified.hashCode;
+      unverified.hashCode ^
+      coinbase.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2869,7 +2876,8 @@ class TransactionDetails {
           senderReportedPostedAtMs == other.senderReportedPostedAtMs &&
           senderReportedCancelledAtMs == other.senderReportedCancelledAtMs &&
           receiverDeclinedAtMs == other.receiverDeclinedAtMs &&
-          unverified == other.unverified;
+          unverified == other.unverified &&
+          coinbase == other.coinbase;
 }
 
 /// Which of a transport's connections changed. A drain connects on its own beside a running

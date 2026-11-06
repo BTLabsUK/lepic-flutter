@@ -81,6 +81,13 @@ class HostPolicy {
   /// Epicbox invoice is refused anyway. Default off.
   final bool? refuseUnsolicitedInvoices;
 
+  /// Whether `start_tor` with `publish_onion` also publishes the previous onion, the one
+  /// LEPIC 0.3.1 and earlier published (ADR 0044), on its own listener, so senders that saved
+  /// it still reach the wallet. Payment proofs asked for there are signed with the
+  /// payment-proof key, as before. While it is published it links the Tor and Epicbox
+  /// identities. Default false.
+  final bool? publishPreviousOnion;
+
   const HostPolicy({
     this.defaultStrategy,
     this.sendTtlBlocks,
@@ -99,6 +106,7 @@ class HostPolicy {
     this.contactHoldPatienceS,
     this.refuseUnsolicitedPayments,
     this.refuseUnsolicitedInvoices,
+    this.publishPreviousOnion,
   });
 
   static Future<HostPolicy> default_() =>
@@ -122,7 +130,8 @@ class HostPolicy {
       contactHoldAttempts.hashCode ^
       contactHoldPatienceS.hashCode ^
       refuseUnsolicitedPayments.hashCode ^
-      refuseUnsolicitedInvoices.hashCode;
+      refuseUnsolicitedInvoices.hashCode ^
+      publishPreviousOnion.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -145,7 +154,8 @@ class HostPolicy {
           contactHoldAttempts == other.contactHoldAttempts &&
           contactHoldPatienceS == other.contactHoldPatienceS &&
           refuseUnsolicitedPayments == other.refuseUnsolicitedPayments &&
-          refuseUnsolicitedInvoices == other.refuseUnsolicitedInvoices;
+          refuseUnsolicitedInvoices == other.refuseUnsolicitedInvoices &&
+          publishPreviousOnion == other.publishPreviousOnion;
 }
 
 /// How a runtime treats PINs, chosen when the app creates it with
