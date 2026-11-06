@@ -382,6 +382,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   HostPolicy dco_decode_host_policy(dynamic raw);
 
   @protected
+  HttpCoinbase dco_decode_http_coinbase(dynamic raw);
+
+  @protected
   HttpExposure dco_decode_http_exposure(dynamic raw);
 
   @protected
@@ -1229,6 +1232,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   HostPolicy sse_decode_host_policy(SseDeserializer deserializer);
+
+  @protected
+  HttpCoinbase sse_decode_http_coinbase(SseDeserializer deserializer);
 
   @protected
   HttpExposure sse_decode_http_exposure(SseDeserializer deserializer);
@@ -2263,6 +2269,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_host_policy(HostPolicy self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_http_coinbase(HttpCoinbase self, SseSerializer serializer);
 
   @protected
   void sse_encode_http_exposure(HttpExposure self, SseSerializer serializer);
