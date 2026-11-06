@@ -337,6 +337,11 @@ class ContactView {
   /// The profile the contact sent, `peer_features` from bit 16 up moved down; 0 when none
   /// came. LEPIC reads no bit of it.
   final int peerProfile;
+
+  /// The contact's X25519 encryption key (card tag 05), 32 bytes, from the card stored for
+  /// it; `None` before its card arrived. A completed pairing shows the contact holds it, so
+  /// a host may recognise a service by it.
+  final Uint8List? peerEncKey;
   final PairingEndReason? endedReason;
   final PlatformInt64? endedAtMs;
 
@@ -364,6 +369,7 @@ class ContactView {
     this.peerVerifiedAtMs,
     required this.peerFeatures,
     required this.peerProfile,
+    this.peerEncKey,
     this.endedReason,
     this.endedAtMs,
   });
@@ -393,6 +399,7 @@ class ContactView {
       peerVerifiedAtMs.hashCode ^
       peerFeatures.hashCode ^
       peerProfile.hashCode ^
+      peerEncKey.hashCode ^
       endedReason.hashCode ^
       endedAtMs.hashCode;
 
@@ -424,6 +431,7 @@ class ContactView {
           peerVerifiedAtMs == other.peerVerifiedAtMs &&
           peerFeatures == other.peerFeatures &&
           peerProfile == other.peerProfile &&
+          peerEncKey == other.peerEncKey &&
           endedReason == other.endedReason &&
           endedAtMs == other.endedAtMs;
 }

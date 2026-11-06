@@ -81,12 +81,13 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   @override
   int get rustContentHash => 896780669;
 
-  static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
-    stem: 'lepic_ffi',
-    ioDirectory: null,
-    webPrefix: 'pkg/',
-    wasmBindgenName: 'wasm_bindgen',
-  );
+  static const kDefaultExternalLibraryLoaderConfig =
+      ExternalLibraryLoaderConfig(
+        stem: 'lepic_ffi',
+        ioDirectory: null,
+        webPrefix: 'pkg/',
+        wasmBindgenName: 'wasm_bindgen',
+      );
 }
 
 abstract class RustLibApi extends BaseApi {
@@ -313,6 +314,7 @@ abstract class RustLibApi extends BaseApi {
   Future<int> crateApiWalletEpicWalletContactsMoveHome({
     required EpicWallet that,
     required String relay,
+    required int drainDays,
   });
 
   Future<OutboxReport> crateApiWalletEpicWalletContactsOutboxDeliver({
@@ -2678,6 +2680,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Future<int> crateApiWalletEpicWalletContactsMoveHome({
     required EpicWallet that,
     required String relay,
+    required int drainDays,
   }) {
     return handler.executeNormal(
       NormalTask(
@@ -2688,6 +2691,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             serializer,
           );
           sse_encode_String(relay, serializer);
+          sse_encode_u_32(drainDays, serializer);
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
@@ -2700,7 +2704,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletContactsMoveHomeConstMeta,
-        argValues: [that, relay],
+        argValues: [that, relay, drainDays],
         apiImpl: this,
       ),
     );
@@ -2709,7 +2713,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiWalletEpicWalletContactsMoveHomeConstMeta =>
       const TaskConstMeta(
         debugName: "EpicWallet_contacts_move_home",
-        argNames: ["that", "relay"],
+        argNames: ["that", "relay", "drainDays"],
       );
 
   @override
@@ -9340,8 +9344,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ContactView dco_decode_contact_view(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 25)
-      throw Exception('unexpected arr length: expect 25 but see ${arr.length}');
+    if (arr.length != 26)
+      throw Exception('unexpected arr length: expect 26 but see ${arr.length}');
     return ContactView(
       contactId: dco_decode_String(arr[0]),
       label: dco_decode_String(arr[1]),
@@ -9366,8 +9370,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       peerVerifiedAtMs: dco_decode_opt_box_autoadd_i_64(arr[20]),
       peerFeatures: dco_decode_u_32(arr[21]),
       peerProfile: dco_decode_u_32(arr[22]),
-      endedReason: dco_decode_opt_box_autoadd_pairing_end_reason(arr[23]),
-      endedAtMs: dco_decode_opt_box_autoadd_i_64(arr[24]),
+      peerEncKey: dco_decode_opt_list_prim_u_8_strict(arr[23]),
+      endedReason: dco_decode_opt_box_autoadd_pairing_end_reason(arr[24]),
+      endedAtMs: dco_decode_opt_box_autoadd_i_64(arr[25]),
     );
   }
 
@@ -10173,6 +10178,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   List<String>? dco_decode_opt_list_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_list_String(raw);
+  }
+
+  @protected
+  Uint8List? dco_decode_opt_list_prim_u_8_strict(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_list_prim_u_8_strict(raw);
   }
 
   @protected
@@ -11774,6 +11785,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_peerVerifiedAtMs = sse_decode_opt_box_autoadd_i_64(deserializer);
     var var_peerFeatures = sse_decode_u_32(deserializer);
     var var_peerProfile = sse_decode_u_32(deserializer);
+    var var_peerEncKey = sse_decode_opt_list_prim_u_8_strict(deserializer);
     var var_endedReason = sse_decode_opt_box_autoadd_pairing_end_reason(
       deserializer,
     );
@@ -11802,6 +11814,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       peerVerifiedAtMs: var_peerVerifiedAtMs,
       peerFeatures: var_peerFeatures,
       peerProfile: var_peerProfile,
+      peerEncKey: var_peerEncKey,
       endedReason: var_endedReason,
       endedAtMs: var_endedAtMs,
     );
@@ -12970,6 +12983,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
     if (sse_decode_bool(deserializer)) {
       return (sse_decode_list_String(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  Uint8List? sse_decode_opt_list_prim_u_8_strict(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_list_prim_u_8_strict(deserializer));
     } else {
       return null;
     }
@@ -14887,6 +14911,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_i_64(self.peerVerifiedAtMs, serializer);
     sse_encode_u_32(self.peerFeatures, serializer);
     sse_encode_u_32(self.peerProfile, serializer);
+    sse_encode_opt_list_prim_u_8_strict(self.peerEncKey, serializer);
     sse_encode_opt_box_autoadd_pairing_end_reason(self.endedReason, serializer);
     sse_encode_opt_box_autoadd_i_64(self.endedAtMs, serializer);
   }
@@ -15874,6 +15899,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_list_String(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_list_prim_u_8_strict(
+    Uint8List? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_list_prim_u_8_strict(self, serializer);
     }
   }
 
@@ -17228,17 +17266,28 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
 
   /// Moves this wallet's home relay for its contacts to `relay` (`domain[:port]`): every
   /// paired contact that has not ended gets this wallet's card naming its mailbox there,
-  /// once, as a contact update, and this wallet reads only the new mailbox from then on.
-  /// Returns how many contacts were told. The old mailboxes are not read again: a contact
-  /// that takes the update sees `ContactRelayMoveRequested` and follows once the app on its
-  /// side applies it; one that never takes it stops reaching this wallet and has to pair
-  /// again, which `contact_check` shows as no answer. Private pairings and pairings in
-  /// progress keep their relay. Switch the wallet's Epicbox relay to `relay` too, so new
+  /// once, as a contact update. Returns how many contacts were told. A contact that takes
+  /// the update sees `ContactRelayMoveRequested` and follows once the app on its side
+  /// applies it. For `drain_days` (0 to 365) every collect still reads the old mailboxes:
+  /// what a contact sends there is taken, and a `contact_check` there is answered with the
+  /// card naming the new mailbox, so a contact away longer than the relay keeps the update
+  /// still learns of the move. The drain takes the one previous-home slot a contact has,
+  /// replacing one left by following that contact's move. With 0 the old mailboxes are not
+  /// read again: a contact that never takes the update stops reaching this wallet and has
+  /// to pair again, which `contact_check` shows as no answer. Private pairings and pairings
+  /// in progress keep their relay. Switch the wallet's Epicbox relay to `relay` too, so new
   /// invites name it.
   ///
-  /// Fails with `InvalidArgument` for a host that is not a relay's name.
-  Future<int> contactsMoveHome({required String relay}) => RustLib.instance.api
-      .crateApiWalletEpicWalletContactsMoveHome(that: this, relay: relay);
+  /// Fails with `InvalidArgument` for a host that is not a relay's name, or a drain longer
+  /// than 365 days.
+  Future<int> contactsMoveHome({
+    required String relay,
+    required int drainDays,
+  }) => RustLib.instance.api.crateApiWalletEpicWalletContactsMoveHome(
+    that: this,
+    relay: relay,
+    drainDays: drainDays,
+  );
 
   /// Posts every outbox entry that is due, raising `OutboxDelivered` for each that reached
   /// its relay and `OutboxStuck` for one undelivered for a day, which stops retrying. A relay
