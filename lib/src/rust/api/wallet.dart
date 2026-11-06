@@ -989,8 +989,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required String notice,
   });
 
-  /// The wallet's onion address, `<56 characters>.onion`: its payment-proof address in onion
-  /// form, which `epic-wallet address` prints too. It is known without tor running and stays
+  /// The wallet's onion address, `<56 characters>.onion`, with a key of its own from the
+  /// phrase (ADR 0044): it is not the payment-proof address, and a payment proof asked for
+  /// over the onion is signed with the onion's key. It is known without tor running and stays
   /// the same after a restore from the phrase.
   ///
   /// Fails with `Locked` while the wallet is locked.
@@ -1302,6 +1303,13 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required int bit,
     required bool worked,
   });
+
+  /// The onion LEPIC 0.3.1 and earlier published: the payment-proof address in onion form,
+  /// which `epic-wallet address` prints too. [`EpicWallet::start_tor`] publishes it as well
+  /// while `HostPolicy::publish_previous_onion` allows.
+  ///
+  /// Fails with `Locked` while the wallet is locked.
+  Future<String> previousOnionAddress();
 
   /// The private pairings (two wallets of one owner), oldest first, in progress or paired;
   /// `state` tells which. They are never listed by [`EpicWallet::contacts`] or
@@ -1726,6 +1734,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// With `publish_onion` false the wallet's onion is not published and no listener runs
   /// behind it: tor only carries the node, relay and Tor-send connections, and the stream
   /// stops at `Bootstrapped`, never `Publishing` or `Ready`.
+  ///
+  /// With `publish_onion` and `HostPolicy::publish_previous_onion` (the default), the
+  /// previous onion is published too, once the onion is, behind a listener of its own. The
+  /// stream reports only the onion: a previous onion that cannot be added is logged.
   Stream<TorEvent> startTor({
     required String torBinary,
     String? libDir,

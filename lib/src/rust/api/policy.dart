@@ -72,6 +72,12 @@ class HostPolicy {
   /// Default 180.
   final BigInt? contactHoldPatienceS;
 
+  /// Whether `start_tor` with `publish_onion` also publishes the previous onion, the one
+  /// LEPIC 0.3.1 and earlier published (ADR 0044), on its own listener, so senders that saved
+  /// it still reach the wallet. Payment proofs asked for there are signed with the
+  /// payment-proof key, as before. Default true.
+  final bool? publishPreviousOnion;
+
   const HostPolicy({
     this.defaultStrategy,
     this.sendTtlBlocks,
@@ -88,6 +94,7 @@ class HostPolicy {
     this.contactCheckAnswersPerDay,
     this.contactHoldAttempts,
     this.contactHoldPatienceS,
+    this.publishPreviousOnion,
   });
 
   static Future<HostPolicy> default_() =>
@@ -109,7 +116,8 @@ class HostPolicy {
       contactCheckAnswersPerHour.hashCode ^
       contactCheckAnswersPerDay.hashCode ^
       contactHoldAttempts.hashCode ^
-      contactHoldPatienceS.hashCode;
+      contactHoldPatienceS.hashCode ^
+      publishPreviousOnion.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -130,7 +138,8 @@ class HostPolicy {
           contactCheckAnswersPerHour == other.contactCheckAnswersPerHour &&
           contactCheckAnswersPerDay == other.contactCheckAnswersPerDay &&
           contactHoldAttempts == other.contactHoldAttempts &&
-          contactHoldPatienceS == other.contactHoldPatienceS;
+          contactHoldPatienceS == other.contactHoldPatienceS &&
+          publishPreviousOnion == other.publishPreviousOnion;
 }
 
 /// How a runtime treats PINs, chosen when the app creates it with
