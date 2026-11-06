@@ -353,6 +353,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactView dco_decode_contact_view(dynamic raw);
 
   @protected
+  DomainVerdict dco_decode_domain_verdict(dynamic raw);
+
+  @protected
   EndedPairing dco_decode_ended_pairing(dynamic raw);
 
   @protected
@@ -1197,6 +1200,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ContactView sse_decode_contact_view(SseDeserializer deserializer);
+
+  @protected
+  DomainVerdict sse_decode_domain_verdict(SseDeserializer deserializer);
 
   @protected
   EndedPairing sse_decode_ended_pairing(SseDeserializer deserializer);
@@ -2228,6 +2234,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_contact_view(ContactView self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_domain_verdict(DomainVerdict self, SseSerializer serializer);
 
   @protected
   void sse_encode_ended_pairing(EndedPairing self, SseSerializer serializer);

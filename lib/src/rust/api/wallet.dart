@@ -323,6 +323,19 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// id waits.
   Future<void> contactDeclineInvoice({required String slateId});
 
+  /// Whether `file`, the well-known file the app fetched from the domain the contact claimed
+  /// (`ContactView::peer_domain`, at `https://<domain>/.well-known/epic-wallet.json`), proves
+  /// the claim stored from the pairing. Nothing is fetched here and nothing is stored: the
+  /// app does the request, passes the body, and shows the result. A file longer than 4096
+  /// bytes is refused.
+  ///
+  /// Fails with `ContactNotFound` for no such contact and `InvalidArgument` for a contact
+  /// that claimed no domain.
+  Future<DomainVerdict> contactDomainVerify({
+    required String contactId,
+    required List<int> file,
+  });
+
   /// The invoices from contacts waiting for the user, oldest first.
   Future<List<ContactInvoiceView>> contactInvoices();
 
