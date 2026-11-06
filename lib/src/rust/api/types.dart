@@ -216,6 +216,9 @@ class ContactInvoiceView {
 }
 
 /// What a contact says it is.
+///
+/// Deprecated: always written for wallets that read it, never to be read for meaning;
+/// to be removed (docs/adr/0041 or RFC 0002 6.1).
 enum ContactKind { person, shop, exchange }
 
 /// A payload a paired contact sent, from `EpicWallet::contact_payloads`.
@@ -270,6 +273,9 @@ class ContactView {
 
   /// The name the contact gives itself, unverified: show it only as "calls themselves".
   final String? claimedName;
+
+  /// Deprecated: always written for wallets that read it, never to be read for meaning;
+  /// to be removed (docs/adr/0041 or RFC 0002 6.1).
   final ContactKind? kind;
   final PairingState state;
 
@@ -821,6 +827,9 @@ enum InviteExpiry { oneHour, oneDay, sevenDays }
 class InvitePreview {
   /// The inviter's own name for itself, not checked.
   final String claimedName;
+
+  /// Deprecated: always written for wallets that read it, never to be read for meaning;
+  /// to be removed (docs/adr/0041 or RFC 0002 6.1).
   final ContactKind kind;
   final PlatformInt64 expiresAtMs;
 
@@ -1502,6 +1511,9 @@ class PairRequestView {
 
   /// The name the invite gives its maker, unverified.
   final String claimedName;
+
+  /// Deprecated: always written for wallets that read it, never to be read for meaning;
+  /// to be removed (docs/adr/0041 or RFC 0002 6.1).
   final ContactKind kind;
   final PlatformInt64 receivedAtMs;
   final PlatformInt64 expiresAtMs;

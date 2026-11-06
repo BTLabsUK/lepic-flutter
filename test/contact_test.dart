@@ -140,6 +140,7 @@ void main() {
 
       final invite = await anna.pairingInvite(
         name: 'Anna',
+        // Deprecated and ignored: the pairing writes person.
         kind: ContactKind.shop,
         expiry: InviteExpiry.oneHour,
         offerWords: false,
@@ -155,7 +156,7 @@ void main() {
 
       final preview = await ben.pairingPreview(link: invite.link);
       expect(preview.claimedName, 'Anna');
-      expect(preview.kind, ContactKind.shop);
+      expect(preview.kind, ContactKind.person);
       expect(preview.homeRelay, '$relayDomain:443');
       final answer = await ben.pairingAccept(
         link: invite.link,
@@ -190,7 +191,7 @@ void main() {
       expect(annaView.peerProfile, 0);
       expect(benView.peerProfile, 0);
       expect(annaView.claimedName, 'Ben');
-      expect(benView.kind, ContactKind.shop);
+      expect(benView.kind, ContactKind.person);
       expect(annaView.sas, hasLength(4));
       expect(annaView.sas, benView.sas);
       expect(
