@@ -8,7 +8,20 @@ import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
+
+/// Who the HTTP listener builds block rewards for.
+enum HttpCoinbase {
+  /// Nobody: `build_coinbase` is answered as unknown.
+  off,
+
+  /// A mining node on this device, or a tunnel to it. Anyone else gets the answer of `Off`.
+  localOnly,
+
+  /// A mining node anywhere: whoever reaches the port. Needs `HttpExposure::Internet` to mean
+  /// more than `LocalOnly`.
+  remote,
+}
 
 /// Who can reach the HTTP listener.
 enum HttpExposure {
