@@ -719,7 +719,7 @@ void main() {
         .startHttpListener(
           exposure: HttpExposure.localOnly,
           port: 0,
-          coinbase: false,
+          coinbase: HttpCoinbase.off,
         )
         .listen((event) {
           events.add(event);
