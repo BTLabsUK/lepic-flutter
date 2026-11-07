@@ -499,6 +499,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
   @protected
+  List<QuarantinedMessageView> dco_decode_list_quarantined_message_view(
+    dynamic raw,
+  );
+
+  @protected
   List<SasEntry> dco_decode_list_sas_entry(dynamic raw);
 
   @protected
@@ -705,6 +710,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PinWallet dco_decode_pin_wallet(dynamic raw);
+
+  @protected
+  QuarantineRetryReport dco_decode_quarantine_retry_report(dynamic raw);
+
+  @protected
+  QuarantinedMessageView dco_decode_quarantined_message_view(dynamic raw);
 
   @protected
   ReceivedSlate dco_decode_received_slate(dynamic raw);
@@ -1371,6 +1382,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
+  List<QuarantinedMessageView> sse_decode_list_quarantined_message_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<SasEntry> sse_decode_list_sas_entry(SseDeserializer deserializer);
 
   @protected
@@ -1631,6 +1647,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PinWallet sse_decode_pin_wallet(SseDeserializer deserializer);
+
+  @protected
+  QuarantineRetryReport sse_decode_quarantine_retry_report(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  QuarantinedMessageView sse_decode_quarantined_message_view(
+    SseDeserializer deserializer,
+  );
 
   @protected
   ReceivedSlate sse_decode_received_slate(SseDeserializer deserializer);
@@ -2442,6 +2468,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_quarantined_message_view(
+    List<QuarantinedMessageView> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_sas_entry(List<SasEntry> self, SseSerializer serializer);
 
   @protected
@@ -2755,6 +2787,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_pin_wallet(PinWallet self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_quarantine_retry_report(
+    QuarantineRetryReport self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_quarantined_message_view(
+    QuarantinedMessageView self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_received_slate(ReceivedSlate self, SseSerializer serializer);

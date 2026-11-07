@@ -81,6 +81,27 @@ class HostPolicy {
   /// Epicbox invoice is refused anyway. Default off.
   final bool? refuseUnsolicitedInvoices;
 
+  /// A listener moves to a fresh socket after this many rounds with a message held, counted
+  /// per socket and not reset by an acknowledgement; the held message is taken up again on the
+  /// new socket. From 1 to 64. Default none: the listener keeps its socket.
+  final int? listenerHeldRounds;
+
+  /// Bytes of contact messages kept in local quarantine across the wallet, instead of being
+  /// dropped once they cannot be taken. Over this, the contact's own oldest entry goes first,
+  /// then the wallet's oldest; a larger message is not kept. From 1 to 67,108,864. Default
+  /// none: nothing is kept, and a message is dropped as it was before.
+  final BigInt? quarantineMaxBytes;
+
+  /// `declined`, `withdrawn` and `cancelled` notices kept for slates this wallet does not hold
+  /// yet, and applied when the slate arrives. At the cap the oldest entry goes. From 1 to
+  /// 10,000. Set with `early_notice_max_age_s` or not at all; only one of the two fails with
+  /// `InvalidArgument`. Default none: no notice is kept.
+  final int? earlyNoticeMaxCount;
+
+  /// How long such a notice is kept, in seconds; one past this goes at the next write or
+  /// apply. From 1 to 2,592,000. Set with `early_notice_max_count` or not at all.
+  final BigInt? earlyNoticeMaxAgeS;
+
   /// Whether `start_tor` with `publish_onion` also publishes the previous onion, the one
   /// LEPIC 0.3.1 and earlier published (ADR 0044), on its own listener, so senders that saved
   /// it still reach the wallet. Payment proofs asked for there are signed with the
@@ -106,6 +127,10 @@ class HostPolicy {
     this.contactHoldPatienceS,
     this.refuseUnsolicitedPayments,
     this.refuseUnsolicitedInvoices,
+    this.listenerHeldRounds,
+    this.quarantineMaxBytes,
+    this.earlyNoticeMaxCount,
+    this.earlyNoticeMaxAgeS,
     this.publishPreviousOnion,
   });
 
@@ -131,6 +156,10 @@ class HostPolicy {
       contactHoldPatienceS.hashCode ^
       refuseUnsolicitedPayments.hashCode ^
       refuseUnsolicitedInvoices.hashCode ^
+      listenerHeldRounds.hashCode ^
+      quarantineMaxBytes.hashCode ^
+      earlyNoticeMaxCount.hashCode ^
+      earlyNoticeMaxAgeS.hashCode ^
       publishPreviousOnion.hashCode;
 
   @override
@@ -155,6 +184,10 @@ class HostPolicy {
           contactHoldPatienceS == other.contactHoldPatienceS &&
           refuseUnsolicitedPayments == other.refuseUnsolicitedPayments &&
           refuseUnsolicitedInvoices == other.refuseUnsolicitedInvoices &&
+          listenerHeldRounds == other.listenerHeldRounds &&
+          quarantineMaxBytes == other.quarantineMaxBytes &&
+          earlyNoticeMaxCount == other.earlyNoticeMaxCount &&
+          earlyNoticeMaxAgeS == other.earlyNoticeMaxAgeS &&
           publishPreviousOnion == other.publishPreviousOnion;
 }
 

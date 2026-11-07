@@ -472,6 +472,20 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required ContactRelayMode relayMode,
   });
 
+  /// The messages kept in quarantine, oldest first, without their envelopes.
+  Future<List<QuarantinedMessageView>> contactQuarantine();
+
+  /// Forgets the kept message `id`. Returns whether there was one.
+  Future<bool> contactQuarantineDiscard({required String id});
+
+  /// Runs the normal handling again on the kept message `id`, or on all of them for `None`,
+  /// oldest first. A message handled leaves quarantine; any other stays with one more attempt
+  /// counted. LEPIC never retries on its own: when to call this is the app's choice.
+  Future<QuarantineRetryReport> contactQuarantineRetry({
+    String? id,
+    required ContactRelayMode relayMode,
+  });
+
   /// "Remove pairing": the contact, its mailboxes and anything pending for it go, and the
   /// contact is not told. Returns whether anything was removed.
   Future<bool> contactRemove({required String contactId});

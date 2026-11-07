@@ -11,7 +11,7 @@ import 'policy.dart';
 import 'tor.dart';
 
 // These functions are ignored because they are not marked as `pub`: `network`, `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Which Epic chain the wallet talks to.
 enum Chain { mainnet, floonet }
@@ -69,6 +69,21 @@ enum ContactChange {
 /// What one `EpicWallet::contacts_collect` did.
 class ContactCollectReport {
   final int mailboxes;
+
+  /// Mailboxes whose drain stopped at the per-mailbox message limit.
+  final int capped;
+
+  /// Mailboxes whose drain stopped because a message was kept for later.
+  final int kept;
+
+  /// Mailboxes whose drain stopped because the relay refused an acknowledgement.
+  final int refused;
+
+  /// Mailboxes the drain's time ran out on.
+  final int timedOut;
+
+  /// Mailboxes the drain ended before, including those of a relay that failed.
+  final int notReached;
   final int messages;
 
   /// Pairings that completed.
@@ -87,25 +102,51 @@ class ContactCollectReport {
   /// Pairings that ended in this cycle; their records are kept.
   final List<EndedPairing> ended;
 
+  /// Contact messages kept in quarantine in this cycle.
+  final int quarantined;
+
+  /// Contact messages lost to `HostPolicy::quarantine_max_bytes` in this cycle: entries that
+  /// went to make room, and messages too large to keep.
+  final int quarantineDropped;
+
+  /// Notices for a slate this wallet does not hold yet, kept to apply when it arrives.
+  final int buffered;
+
   const ContactCollectReport({
     required this.mailboxes,
+    required this.capped,
+    required this.kept,
+    required this.refused,
+    required this.timedOut,
+    required this.notReached,
     required this.messages,
     required this.paired,
     required this.failed,
     required this.delivered,
     required this.unreachable,
     required this.ended,
+    required this.quarantined,
+    required this.quarantineDropped,
+    required this.buffered,
   });
 
   @override
   int get hashCode =>
       mailboxes.hashCode ^
+      capped.hashCode ^
+      kept.hashCode ^
+      refused.hashCode ^
+      timedOut.hashCode ^
+      notReached.hashCode ^
       messages.hashCode ^
       paired.hashCode ^
       failed.hashCode ^
       delivered.hashCode ^
       unreachable.hashCode ^
-      ended.hashCode;
+      ended.hashCode ^
+      quarantined.hashCode ^
+      quarantineDropped.hashCode ^
+      buffered.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -113,12 +154,20 @@ class ContactCollectReport {
       other is ContactCollectReport &&
           runtimeType == other.runtimeType &&
           mailboxes == other.mailboxes &&
+          capped == other.capped &&
+          kept == other.kept &&
+          refused == other.refused &&
+          timedOut == other.timedOut &&
+          notReached == other.notReached &&
           messages == other.messages &&
           paired == other.paired &&
           failed == other.failed &&
           delivered == other.delivered &&
           unreachable == other.unreachable &&
-          ended == other.ended;
+          ended == other.ended &&
+          quarantined == other.quarantined &&
+          quarantineDropped == other.quarantineDropped &&
+          buffered == other.buffered;
 }
 
 /// What `EpicWallet::contacts_import` restored.
@@ -825,6 +874,9 @@ class InboxReport {
   /// of a kind this version does not know, oversize or malformed.
   final int dropped;
 
+  /// Notices for a slate this wallet does not hold yet, kept to apply when it arrives.
+  final int buffered;
+
   const InboxReport({
     required this.received,
     required this.finalized,
@@ -834,6 +886,7 @@ class InboxReport {
     required this.notices,
     required this.bounced,
     required this.dropped,
+    required this.buffered,
   });
 
   static Future<InboxReport> default_() =>
@@ -848,7 +901,8 @@ class InboxReport {
       held.hashCode ^
       notices.hashCode ^
       bounced.hashCode ^
-      dropped.hashCode;
+      dropped.hashCode ^
+      buffered.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -862,7 +916,8 @@ class InboxReport {
           held == other.held &&
           notices == other.notices &&
           bounced == other.bounced &&
-          dropped == other.dropped;
+          dropped == other.dropped &&
+          buffered == other.buffered;
 }
 
 /// How long an invite may be used. An invite with pairing words lasts 10 minutes instead.
@@ -1945,6 +2000,83 @@ class PendingPairingView {
           createdAtMs == other.createdAtMs &&
           homeRelay == other.homeRelay &&
           expectAddress == other.expectAddress;
+}
+
+/// What `EpicWallet::contact_quarantine_retry` did.
+class QuarantineRetryReport {
+  final int retried;
+
+  /// Handled, and gone from quarantine.
+  final int cleared;
+
+  /// Not handled, kept with one more attempt counted.
+  final int kept;
+
+  const QuarantineRetryReport({
+    required this.retried,
+    required this.cleared,
+    required this.kept,
+  });
+
+  @override
+  int get hashCode => retried.hashCode ^ cleared.hashCode ^ kept.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is QuarantineRetryReport &&
+          runtimeType == other.runtimeType &&
+          retried == other.retried &&
+          cleared == other.cleared &&
+          kept == other.kept;
+}
+
+/// A contact's message kept in quarantine, from `EpicWallet::contact_quarantine`. The envelope
+/// stays in the wallet.
+class QuarantinedMessageView {
+  /// The id `EpicWallet::contact_quarantine_retry` and `contact_quarantine_discard` take.
+  final String id;
+  final String contactId;
+
+  /// `hold_bound`, `undecodable_slate`, `unknown_notice`, `receipt_cap` or `receive_refused`.
+  final String reason;
+  final PlatformInt64 firstSeenMs;
+
+  /// Retries so far.
+  final int attempts;
+
+  /// Bytes of the envelope.
+  final BigInt size;
+
+  const QuarantinedMessageView({
+    required this.id,
+    required this.contactId,
+    required this.reason,
+    required this.firstSeenMs,
+    required this.attempts,
+    required this.size,
+  });
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      contactId.hashCode ^
+      reason.hashCode ^
+      firstSeenMs.hashCode ^
+      attempts.hashCode ^
+      size.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is QuarantinedMessageView &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          contactId == other.contactId &&
+          reason == other.reason &&
+          firstSeenMs == other.firstSeenMs &&
+          attempts == other.attempts &&
+          size == other.size;
 }
 
 /// The answer to a received slate, from `EpicWallet::receive_slate` and
