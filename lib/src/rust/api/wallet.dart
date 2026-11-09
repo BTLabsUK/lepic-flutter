@@ -902,6 +902,119 @@ abstract class EpicWallet implements RustOpaqueInterface {
     pin: pin,
   );
 
+  /// The code this wallet showed for the slate `slate_id`, with the answers taken for it and
+  /// their check codes. Reads only the store.
+  ///
+  /// Fails with `InPersonNotFound` when the wallet holds no such code.
+  Future<InPersonCodeView> inPersonAnswers({required String slateId});
+
+  /// Finalizes the answer numbered `answer` to the code for the slate `slate_id`, the one the
+  /// user picked by its check code, and posts it to the node, as finalizing an invoice does.
+  /// The code then takes no more answers.
+  ///
+  /// Fails with `InPersonNotFound` when there is no such code or answer, and as finalizing
+  /// fails.
+  Future<FinalizedTx> inPersonFinalize({
+    required String slateId,
+    required int answer,
+  });
+
+  /// Makes an in-person invoice for `amount` atomic units, with no payment proof, good for
+  /// `ttl_blocks` blocks past the chain tip (15 when `None`). With `Online` the code names a
+  /// reply mailbox on the wallet's relay, which [`EpicWallet::contacts_collect`] then
+  /// watches until the code expires. The invoice and the code are stored.
+  ///
+  /// Fails with `InvalidArgument` for a zero amount, and as `issue_invoice` fails.
+  Future<InPersonCode> inPersonInvoice({
+    required BigInt amount,
+    String? message,
+    BigInt? ttlBlocks,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Pays a scanned in-person invoice of `amount`, the amount [`EpicWallet::in_person_read`]
+  /// showed, as `pay_invoice` pays one, and seals the answer to the code. The payment and
+  /// the answer are stored; the inputs stay locked until the code expires or the payment is
+  /// cancelled. Show `check_code` to the user, then post the answer with
+  /// [`EpicWallet::in_person_post`] or show it back.
+  ///
+  /// Fails as [`EpicWallet::in_person_read`] does, with `InvalidArgument` for a zero amount,
+  /// and as `pay_invoice` fails.
+  Future<InPersonReply> inPersonPay({
+    required List<int> code,
+    required BigInt amount,
+    required BigInt minimumConfirmations,
+    String? message,
+    SendOptions? options,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Posts the stored answer for the slate `slate_id` to the reply mailbox its code named,
+  /// from a key used for this slate only, through the wallet's connection to relays (over
+  /// Tor when Epicbox over Tor is on). `relay_ok` says the user confirmed the mailbox
+  /// [`EpicWallet::in_person_read`] reported. Posting again is safe.
+  ///
+  /// Fails with `RelayNotConfirmed` when `relay_ok` is false, `InPersonNotFound` when no
+  /// answer is stored for the slate, `InPersonNoMailbox` when its code named no mailbox,
+  /// `ContactsOffline` or `EpicboxOff` before connecting, and `TransportFailed` when the
+  /// post failed.
+  Future<void> inPersonPost({
+    required String slateId,
+    required bool relayOk,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Reads a scanned code: raw `lepic.v1` bytes, from a byte-mode QR code or from
+  /// [`in_person_qr_read`]. Nothing is stored. The fee of an invoice is estimated with the
+  /// selection paying it would use. A code with a payment proof, without a reply key or a
+  /// TTL, or whose reply mailbox is a loopback or unspecified host, is refused.
+  ///
+  /// Fails with `InvalidSlate` for a code that is not one or is refused.
+  Future<InPersonRead> inPersonRead({
+    required List<int> code,
+    required BigInt minimumConfirmations,
+    SendOptions? options,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Receives a scanned in-person send as `receive` receives a slate, and seals the answer to
+  /// the code. The transaction and the answer are stored. Show `check_code` to the user, then
+  /// post the answer with [`EpicWallet::in_person_post`] or show it back.
+  ///
+  /// Fails as [`EpicWallet::in_person_read`] does, and as `receive` fails.
+  Future<InPersonReply> inPersonReceive({
+    required List<int> code,
+    String? message,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Makes an in-person send of `amount` atomic units, as [`EpicWallet::in_person_invoice`]
+  /// makes an invoice, selecting outputs as `send` does. The send is stored and its inputs
+  /// stay locked until an answer is finalized, the code expires or the send is cancelled.
+  ///
+  /// Fails with `InvalidArgument` for a zero amount, and as `send` fails before it delivers.
+  Future<InPersonCode> inPersonSend({
+    required BigInt amount,
+    required BigInt minimumConfirmations,
+    String? message,
+    SendOptions? options,
+    required ContactRelayMode relayMode,
+  });
+
+  /// Takes an answer to a code this wallet showed, scanned or pasted: the envelope's bytes,
+  /// or its `BEGINEPICTX.` text as UTF-8. It is checked and stored as a collected answer is,
+  /// and nothing is finalized.
+  ///
+  /// Fails with `InvalidSlate` for input that is not such an answer, `SealedForAnotherWallet`
+  /// when it answers no open code of this wallet, and as the answer fails to check.
+  Future<InPersonTaken> inPersonTake({required List<int> answer});
+
+  /// As [`EpicWallet::in_person_take`], for the parts of an animated QR code scanned so far.
+  ///
+  /// Fails as [`in_person_qr_read`] does, with `UrCodeIncomplete` while parts are missing,
+  /// and with `InvalidSlate` when the parts hold a code rather than an answer.
+  Future<InPersonTaken> inPersonTakeQr({required List<String> parts});
+
   /// [`EpicWallet::issue_invoice_slate`] writing the I1 to the file at `path`. Fails with
   /// `NotDelivered` when the file cannot be written; the invoice is stored then, and
   /// `cancel_transaction` withdraws it.
@@ -974,6 +1087,14 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required String pin,
     required String sealedPassword,
   });
+
+  /// The native slates setting as [`EpicWallet::set_native_direct`] last saved it: what the
+  /// wallet does from its next open.
+  bool nativeDirect();
+
+  /// Whether this session sends native slates to contacts that claim them: the setting as
+  /// it was when the wallet opened.
+  bool nativeDirectInUse();
 
   /// Whether the node client over Tor is on, as [`EpicWallet::set_node_over_tor`] set it.
   bool nodeOverTor();
@@ -1650,6 +1771,16 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `summary(refresh: false)` and the balance events use it. Pass this value as the
   /// `minimum_confirmations` of a send so it spends what the balance calls spendable.
   Future<void> setMinimumConfirmations({required BigInt count});
+
+  /// Turns native slates to contacts (RFC 0003) on or off for this wallet. While it is on,
+  /// new slates to a contact that claims native slates over a pairing that is not private
+  /// go as native slates; [`ContactView`] says so in `native_slates`. It is off until this
+  /// turns it on. The setting is kept in the wallet's directory and takes effect when the
+  /// wallet next opens; [`EpicWallet::native_direct_in_use`] says what this session does.
+  /// Deleting the wallet removes it.
+  ///
+  /// Fails with `Io` when the setting cannot be written.
+  void setNativeDirect({required bool enabled});
 
   /// Says that [`EpicWallet::start_tor`] follows, so that a relay connection made before it,
   /// such as the listener's when the wallet opens, waits for tor instead of going directly.

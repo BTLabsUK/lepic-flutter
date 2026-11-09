@@ -10,6 +10,7 @@ import 'api/at_rest.dart';
 import 'api/diagnostics.dart';
 import 'api/error.dart';
 import 'api/http.dart';
+import 'api/in_person.dart';
 import 'api/policy.dart';
 import 'api/runtime.dart';
 import 'api/secret_store.dart';
@@ -248,6 +249,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ImportedTx dco_decode_box_autoadd_imported_tx(dynamic raw);
 
   @protected
+  InPersonHost dco_decode_box_autoadd_in_person_host(dynamic raw);
+
+  @protected
   KernelLocation dco_decode_box_autoadd_kernel_location(dynamic raw);
 
   @protected
@@ -421,6 +425,30 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ImportedTxKind dco_decode_imported_tx_kind(dynamic raw);
 
   @protected
+  InPersonAnswerView dco_decode_in_person_answer_view(dynamic raw);
+
+  @protected
+  InPersonCode dco_decode_in_person_code(dynamic raw);
+
+  @protected
+  InPersonCodeView dco_decode_in_person_code_view(dynamic raw);
+
+  @protected
+  InPersonHost dco_decode_in_person_host(dynamic raw);
+
+  @protected
+  InPersonQrProgress dco_decode_in_person_qr_progress(dynamic raw);
+
+  @protected
+  InPersonRead dco_decode_in_person_read(dynamic raw);
+
+  @protected
+  InPersonReply dco_decode_in_person_reply(dynamic raw);
+
+  @protected
+  InPersonTaken dco_decode_in_person_taken(dynamic raw);
+
+  @protected
   InboxReport dco_decode_inbox_report(dynamic raw);
 
   @protected
@@ -470,6 +498,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<FailedPairing> dco_decode_list_failed_pairing(dynamic raw);
+
+  @protected
+  List<InPersonAnswerView> dco_decode_list_in_person_answer_view(dynamic raw);
 
   @protected
   List<LogField> dco_decode_list_log_field(dynamic raw);
@@ -574,6 +605,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImportedTx? dco_decode_opt_box_autoadd_imported_tx(dynamic raw);
+
+  @protected
+  InPersonHost? dco_decode_opt_box_autoadd_in_person_host(dynamic raw);
 
   @protected
   KernelLocation? dco_decode_opt_box_autoadd_kernel_location(dynamic raw);
@@ -1079,6 +1113,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ImportedTx sse_decode_box_autoadd_imported_tx(SseDeserializer deserializer);
 
   @protected
+  InPersonHost sse_decode_box_autoadd_in_person_host(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   KernelLocation sse_decode_box_autoadd_kernel_location(
     SseDeserializer deserializer,
   );
@@ -1288,6 +1327,34 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ImportedTxKind sse_decode_imported_tx_kind(SseDeserializer deserializer);
 
   @protected
+  InPersonAnswerView sse_decode_in_person_answer_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  InPersonCode sse_decode_in_person_code(SseDeserializer deserializer);
+
+  @protected
+  InPersonCodeView sse_decode_in_person_code_view(SseDeserializer deserializer);
+
+  @protected
+  InPersonHost sse_decode_in_person_host(SseDeserializer deserializer);
+
+  @protected
+  InPersonQrProgress sse_decode_in_person_qr_progress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  InPersonRead sse_decode_in_person_read(SseDeserializer deserializer);
+
+  @protected
+  InPersonReply sse_decode_in_person_reply(SseDeserializer deserializer);
+
+  @protected
+  InPersonTaken sse_decode_in_person_taken(SseDeserializer deserializer);
+
+  @protected
   InboxReport sse_decode_inbox_report(SseDeserializer deserializer);
 
   @protected
@@ -1345,6 +1412,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<FailedPairing> sse_decode_list_failed_pairing(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<InPersonAnswerView> sse_decode_list_in_person_answer_view(
     SseDeserializer deserializer,
   );
 
@@ -1475,6 +1547,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImportedTx? sse_decode_opt_box_autoadd_imported_tx(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  InPersonHost? sse_decode_opt_box_autoadd_in_person_host(
     SseDeserializer deserializer,
   );
 
@@ -2087,6 +2164,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_in_person_host(
+    InPersonHost self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_kernel_location(
     KernelLocation self,
     SseSerializer serializer,
@@ -2348,6 +2431,39 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_in_person_answer_view(
+    InPersonAnswerView self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_in_person_code(InPersonCode self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_in_person_code_view(
+    InPersonCodeView self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_in_person_host(InPersonHost self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_in_person_qr_progress(
+    InPersonQrProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_in_person_read(InPersonRead self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_in_person_reply(InPersonReply self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_in_person_taken(InPersonTaken self, SseSerializer serializer);
+
+  @protected
   void sse_encode_inbox_report(InboxReport self, SseSerializer serializer);
 
   @protected
@@ -2416,6 +2532,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_failed_pairing(
     List<FailedPairing> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_in_person_answer_view(
+    List<InPersonAnswerView> self,
     SseSerializer serializer,
   );
 
@@ -2575,6 +2697,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_imported_tx(
     ImportedTx? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_in_person_host(
+    InPersonHost? self,
     SseSerializer serializer,
   );
 
