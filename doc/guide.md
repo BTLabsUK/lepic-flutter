@@ -1151,3 +1151,197 @@ Every call that receives a `WalletConfig` moves the node API secret into a buffe
 dropped. Secrets passed as arguments are held in zeroizing values. The app should not write any of
 the values above to logs or analytics.
 
+## Errors
+
+Every fallible call throws a `WalletError`. Its fields:
+
+| Field | Holds |
+|---|---|
+| `kind` | a `WalletErrorKind`, the failure the app acts on |
+| `code` | the kind's stable number, for an app that stores or sends the error |
+| `message` | English text for logs and bug reports; it never holds a secret |
+| `txId` | the stored transaction a failed call left behind with its inputs locked, if any |
+| `origin` | the listener origin (`scheme://host:port`) for `pinnedNoAdvert`, `pinChanged`, `peerProbeFailed` and `thisComputer` |
+| `pinnedKey`, `shownKey` | for `pinChanged`: the pinned key and the key the listener shows, 64 hex digits each |
+
+`toString` prints `WalletError(<kind name>, <code>): <message>`. Branch on `kind`, not on the
+message.
+
+```dart
+try {
+  await wallet.repostTransaction(txId: txId);
+} on WalletError catch (error) {
+  switch (error.kind) {
+    case WalletErrorKind.onChain:
+    case WalletErrorKind.inPool:
+      break; // the node holds the transaction; refresh later
+    case WalletErrorKind.nodeUnreachable:
+      showRetry();
+    default:
+      log('${error.kind.name} (${error.code}): ${error.message}');
+  }
+}
+```
+
+When `txId` is set, the call stored a transaction and a later step failed. Cancel it with
+`cancelTransaction(txId:)` or run the step again; until then its inputs stay locked.
+
+Each call's doc comment lists the kinds it throws. The numbers are part of the API. Numbers 32 to
+36, 38 and 39 are unused. `WalletErrorKind.code()` is an `async` call that returns the number; a
+caught `WalletError` already carries it in `code`.
+
+### Wallet and password
+
+| Code | Kind | Meaning |
+|---|---|---|
+| 1 | `invalidMnemonic` | the recovery phrase is not valid |
+| 2 | `wrongPassword` | the password or PIN does not open the vault |
+| 3 | `walletAlreadyExists` | the data directory holds a wallet |
+| 4 | `walletNotFound` | the data directory holds no wallet |
+| 11 | `walletBusy` | the wallet is open in this runtime, another runtime or another process, or is being deleted |
+| 15 | `locked` | the handle is locked; open the wallet again |
+| 16 | `foreignWallet` | the directory holds the database of another wallet or network |
+| 17 | `secretStore` | the app's `SecretStore` failed or returned damaged data |
+| 22 | `restoreScanRequired` | a restored wallet needs one full `scan` before it creates outputs |
+| 25 | `foreignAppData` | the app data file belongs to a wallet with another seed |
+| 26 | `damagedAppData` | the app data file belongs to this wallet but was changed or cut short |
+| 37 | `damagedDatabase` | LEPIC renamed the database to `wallet.sqlite3.damaged-<unix seconds>`; opening again rebuilds it from the vault, so `scan` to the end |
+| 74 | `phraseMismatch` | the phrase given to `resetPassword` belongs to another wallet |
+| 90 | `wrongKey` | the database does not open with the key the phrase gives; nothing changed |
+| 113 | `walletTooNew` | a newer LEPIC or app version wrote the database; update the app and keep the data |
+
+After `damagedDatabase`, the transaction history, labels and messages are not in the rebuilt
+database. After `walletTooNew`, do not delete or restore the wallet.
+
+### General
+
+| Code | Kind | Meaning |
+|---|---|---|
+| 8 | `invalidArgument` | an argument is out of range or malformed |
+| 13 | `io` | the wallet's store or a file operation failed |
+| 14 | `other` | a failure with no kind of its own; read `message` |
+| 19 | `cancelled` | the operation was cancelled, for example a scan stopped with `cancelScan` |
+| 20 | `unsupported` | not available in this build or configuration |
+| 21 | `panic` | a defect inside LEPIC; the operation was abandoned and the wallet stays usable |
+| 78 | `offline` | the wallet is open offline (`WalletConfig.offline`), or no confirmed tip exists to work from |
+
+`chainBusy` (10) is part of the enum and is never returned.
+
+### Network and transports
+
+| Code | Kind | Meaning |
+|---|---|---|
+| 5 | `nodeUnreachable` | the Epic node did not answer |
+| 9 | `transportFailed` | the Epicbox relay was unreachable or refused, or a slate file could not be read or written |
+| 40 | `httpUrlInvalid` | the address is not an `http(s)://host[:port][/path]` URL, or names a `.onion` host |
+| 41 | `plainHttpNotAllowed` | plain `http` to another computer without `allow_plain_http`; ask the user or use `https` |
+| 42 | `onionAddressInvalid` | the address is not an onion v3 address |
+| 43 | `torNotRunning` | Tor is not running or not connected; `startTor`, then wait for the `bootstrapped` event |
+| 44 | `onionUnreachable` | the other wallet is not online with Tor on; the send is stored as sent |
+| 81 | `otherAddress` | the pairing proves another payments address than the one given |
+| 97 | `pinnedNoAdvert` | the origin is pinned and its listener advertises no native endpoint |
+| 98 | `pinChanged` | a pinned listener shows another key; see [Native slates](#native-slates) |
+| 99 | `peerProbeFailed` | the pinned listener could not be asked for its endpoint |
+| 100 | `nativeExchangeFailed` | the native exchange of a stored send failed; deliver it again or cancel it |
+| 101 | `thisComputer` | the native endpoint is one of this device's own addresses |
+
+`torNotRunning` stores nothing when the send failed before anything went out. A send whose Tor
+stopped during delivery is stored as sent. `onionUnreachable`, `nativeExchangeFailed` and a
+`thisComputer` for a name that only resolves to this device leave the send stored with its inputs
+locked, and `txId` is set.
+
+### Sending and transactions
+
+| Code | Kind | Meaning |
+|---|---|---|
+| 6 | `notEnoughFunds` | the spendable balance is below the amount and fee |
+| 7 | `invalidSlate` | the slate is malformed or not valid for this call |
+| 12 | `paymentExpired` | the slate's time to live passed; nothing was signed or posted |
+| 18 | `notPosted` | the transaction is finalized and stored, but the node did not accept it; `repostTransaction` |
+| 23 | `changedDuringCancel` | another operation changed the transaction during the cancel; nothing was cancelled |
+| 24 | `onChain` | the node holds the kernel; the transaction cannot be cancelled or released |
+| 27 | `inPool` | the node's pool holds the transaction; refresh later |
+| 28 | `notReleasable` | the transaction is not a finalized or posted send, or no refresh has missed its kernel yet |
+| 31 | `notDelivered` | the invoice or payment is stored but the relay did not take it; cancel it |
+| 45 | `changeTooSmall` | the change cannot split into the requested number of outputs |
+| 46 | `tooHeavy` | the transaction would exceed the input or output limit; send less or consolidate |
+| 47 | `nothingToConsolidate` | `sendToSelf` found fewer than two spendable outputs |
+| 76 | `inputsSpentElsewhere` | another wallet on the same phrase spent the inputs; the send was cancelled |
+| 79 | `inputsSpentByOwnTransaction` | another transaction of this wallet whose kernel the chain holds spent the inputs |
+| 80 | `peerInputsSpent` | the other party spent the inputs it added; the transaction can never be mined |
+| 89 | `foreignProofAddress` | a payment proof was asked for a key this wallet does not sign, or for a listing address |
+| 102 | `savedTransaction` | the text is a record another Epic wallet keeps in its `saved_txs` directory |
+
+### Invoice errors
+
+| Code | Kind | Meaning |
+|---|---|---|
+| 29 | `invoiceNotFound` | no invoice with that slate id waits to be paid or declined |
+| 30 | `amountMismatch` | the invoice asks for another amount than the one the user typed |
+| 48 | `invoiceAlreadyPaid` | this wallet holds the payment or finalized it |
+| 49 | `invoiceLockedAboveTip` | the invoice's lock height is above the chain tip |
+| 50 | `invoiceChanged` | the payer's answer changed a field of the invoice this wallet issued |
+| 75 | `invoiceNotForThisChain` | the invoice is for another network, or its heights are out of range |
+
+### QR code and in-person errors
+
+| Code | Kind | Meaning |
+|---|---|---|
+| 51 | `notUrCode` | the scan is not a slate code; drop it and keep the earlier parts |
+| 52 | `foreignUrCode` | the scan is a uniform resource of another type |
+| 53 | `mixedUrCodes` | the parts belong to two slate codes; start over |
+| 54 | `invalidUrCode` | a slate code is damaged or of a newer version than LEPIC reads |
+| 55 | `urCodeTooLarge` | the slate is too large for QR codes, or the parts exceed one code; use a file |
+| 93 | `inPersonNotFound` | no in-person code or answer for the slate, or no answer with that number |
+| 94 | `relayNotConfirmed` | `inPersonPost` was called without the user confirming the relay |
+| 95 | `inPersonNoMailbox` | the code names no reply mailbox; show the answer instead |
+| 96 | `urCodeIncomplete` | the scanned parts do not make a whole code; keep scanning and pass every part |
+
+### Contact and pairing errors
+
+| Code | Kind | Meaning |
+|---|---|---|
+| 56 | `contactsOffline` | the user chose Offline; the contact call reached no relay |
+| 57 | `epicboxOff` | Epicbox is switched off; the contact call reached no relay |
+| 58 | `invalidPairingText` | the link, card, reply or sealed text is damaged, is not one, or is for the other network |
+| 59 | `invalidContactName` | the name cannot go in a contact card |
+| 60 | `inviteExpired` | the invite expired |
+| 61 | `alreadyPaired` | the invite, reply or card belongs to a contact already paired, or to this wallet |
+| 62 | `contactNotFound` | no paired contact has that id, or it is not in the state the call needs |
+| 63 | `pairingNotFound` | no pairing in progress has that id |
+| 64 | `contactNotVerified` | the contact's words were not checked; invoices need a verified contact |
+| 65 | `pairingWordsUnavailable` | pairing words exist only on LEPIC's built-in relays; share the link |
+| 66 | `sealingOff` | sealing is off for the contact, or its wallet cannot open sealed text |
+| 67 | `noSlateToSend` | the transaction has no slate to send, or the outbox has no entry with that id |
+| 68 | `sealedForAnotherWallet` | the sealed text is for another wallet or install, or signed by someone else |
+| 69 | `sealedUnopenable` | the sealed text does not open |
+| 70 | `keyCheckRefused` | a key check is allowed once per pairing and within a day of the new pairing |
+| 71 | `pairingWordsNotFound` | no invite for these words: wrong, expired or used |
+| 72 | `invalidPairingWords` | a word is not in the table, or there are not five |
+| 73 | `contactRefusesInvoices` | the contact's wallet does not pay invoices |
+| 77 | `wrongPairingClass` | the invite, contact or call is of the other pairing class |
+| 82 | `addressProofMissing` | an address was given and the pairing proves none |
+| 83 | `peerNotProven` | `pairingRequestSend` to a key that did not run LEPIC lately; offer the invite |
+| 84 | `pairingInProgress` | a pairing or live request with that wallet exists; show it |
+| 85 | `pairingCrossed` | this wallet's own pairing wins under the lower-key rule; keep waiting |
+| 86 | `inviteDismissed` | the invite of a request this wallet dismissed |
+| 87 | `pairingEnded` | the pairing ended; nothing goes through it |
+| 88 | `pairingWaiting` | the contact's wallet has not been heard yet; no sealed send or invoice |
+| 91 | `pairingKindDiffers` | the card names another contact kind than the invite did |
+| 92 | `relayMoveNotRequested` | the relay is not the one the contact asked to move to |
+
+### epic1 errors
+
+| Code | Kind | Meaning |
+|---|---|---|
+| 103 | `epic1CannotPay` | the link names no transport this wallet can use |
+| 104 | `epic1NoMoreRelays` | the payment went to every relay of the link |
+| 105 | `printedLinksFull` | all printed links are in use; retire one |
+| 106 | `epic1NotFound` | no printed link with that number, or no epic1 payment or answer for the slate |
+| 107 | `ownRelayLocal` | the wallet's relay is on this device, so no other device reaches a link to it |
+| 108 | `epic1RelayInvalid` | a relay is not a domain with an optional port, is on this device, or there are more than three |
+| 109 | `epic1MessageInvalid` | the message is longer than a link carries or holds control characters |
+| 110 | `epic1Finalized` | the epic1 payment was finalized already |
+| 111 | `epic1WrongNetwork` | the link or its slate is for another network |
+| 112 | `notAnEpic1Link` | the text is not an epic1 link |
+
