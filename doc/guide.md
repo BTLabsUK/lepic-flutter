@@ -1345,3 +1345,100 @@ locked, and `txId` is set.
 | 111 | `epic1WrongNetwork` | the link or its slate is for another network |
 | 112 | `notAnEpic1Link` | the text is not an epic1 link |
 
+## Testing
+
+`package:lepic/testing.dart` gives an app's tests an in-process chain and Epicbox relay, so wallets
+can create, fund, send and receive with no network. The helpers work only against a native library
+built with LEPIC's `mock` feature. A release library has none of them, and
+`package:lepic/lepic.dart` does not export them. Import `testing.dart` from tests only.
+
+| Type | Stands for |
+|---|---|
+| `MockChain(height:)` | an Epic node with an empty chain whose tip is at `height` |
+| `MockRelay(chain:)` | an Epicbox relay for the addresses of that chain |
+| `MockStockPeer(relay:, seed:)` | a stock `epic-wallet` peer on the relay |
+
+`MockChain.runtime(logLevel:)` returns a `LepicRuntime` whose wallets all talk to the chain,
+whatever node their `WalletConfig` names. Its vaults use the cheapest Argon2 setting, so tests stay
+fast. `runtimeWithRelay(logLevel:, relay:)` also sends every Epicbox connection to the relay.
+
+```dart
+import 'package:lepic/lepic.dart';
+import 'package:lepic/testing.dart';
+
+final chain = MockChain(height: BigInt.one);
+final runtime = chain.runtime(logLevel: LogLevel.info);
+
+// Create a wallet on `runtime` from `testPhrase`, a phrase made for tests, then fund it:
+chain.fund(
+  mnemonic: testPhrase,
+  chain: Chain.floonet,
+  amount: BigInt.from(100000000),
+  child: 0,
+);
+```
+
+`fund` mines a plain output for key `m/0/0/<child>` of the wallet with that recovery phrase into
+the tip block. Pass a phrase of a test wallet only.
+
+| Call | Effect |
+|---|---|
+| `MockChain.setHeight`, `height` | moves the tip, reads it |
+| `minePushed` | mines every posted transaction into the tip block |
+| `poolPushed` | lists every posted transaction in the node's pool, until the next call |
+| `pushedCount` | how many transactions wallets have posted |
+| `loseNextPostReply` | the next post reaches the pool, but the wallet gets a connection error |
+| `setNodeUnreachable`, `setNodeStalled` | node requests fail, or wait without an answer; `stalledNodeCalls` counts the waiting ones |
+| `setNodeReadyForTxs` | what the node answers to `ready_for_txs`; `null` answers as a node that does not know the method |
+| `panicOnNextNodeCall` | the next node request panics inside the engine operation |
+| `MockRelay.setRefusing`, `pending(address:)` | new connections fail; messages for an address that no wallet acknowledged |
+| `MockStockPeer.send`, `returnMessages`, `address` | the peer posts text to an address; sends back every message waiting for it, unchanged; its address |
+
+### Running the package's tests
+
+`tool/lepic.sh test` builds the scripted-node library from the pinned LEPIC into `test_native/`,
+which the build hook bundles through the `native_dir` user define in `pubspec.yaml`, then runs
+`flutter test`. Arguments pass through to `flutter test`:
+
+```sh
+tool/lepic.sh sync                               # once: LEPIC at the pin in third_party/lepic
+tool/lepic.sh test                               # all host tests
+tool/lepic.sh test test/wallet_test.dart         # one file
+```
+
+The command refuses to run when the LEPIC checkout is not at the commit in `lepic.rev` or has local
+changes. `LEPIC_DIR` names another checkout. `test/hook_test.dart` runs the build hook on
+stand-in files and needs no native library.
+
+Other checks:
+
+```sh
+tool/lepic.sh check              # both bridge halves match what the pinned LEPIC generates
+flutter analyze
+tool/lepic.sh emulator-test      # the device test on an attached Android device or emulator
+```
+
+`emulator-test` builds the scripted-node library for the device's ABI (arm64-v8a, armeabi-v7a or
+x86_64), then runs `integration_test` in `emulator_test/`, an app without a UI. With several
+devices attached, pass the serial: `tool/lepic.sh emulator-test <serial>`.
+
+### Against a local chain
+
+`test/interop_test.dart` runs the binding against a reference node, an Epicbox relay and an
+`epic-wallet` funder that run in Docker. LEPIC's `interop/acceptance` starts them
+([requirements](https://github.com/BTLabsUK/lepic/blob/main/interop/README.md#requirements)).
+The test funds a wallet from the funder over Epicbox and sends the coins back by slate file. It is
+skipped unless `LEPIC_INTEROP=1`.
+
+```sh
+# In the LEPIC checkout the package uses: start the stack and keep it until Ctrl-C.
+interop/acceptance/run.sh --stack-only
+
+# In another terminal, in the lepic-flutter root:
+LEPIC_INTEROP=1 tool/lepic.sh test test/interop_test.dart
+```
+
+The test reads the node URL, the API secret file, the relay and the slate exchange directory from
+`interop/acceptance/chain.sh env` in that checkout, so the stack must run before the test starts.
+The chain is a test chain on which `epic-wallet` derives mainnet Epicbox addresses, so the test
+creates its wallet with `Chain.mainnet`.
