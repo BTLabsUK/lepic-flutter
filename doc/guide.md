@@ -1028,3 +1028,73 @@ fails with `UrCodeIncomplete` while parts are missing.
 `inPersonQrParts` and `inPersonQrRead` are top-level functions in
 `lib/src/rust/api/in_person.dart`, which `package:lepic/lepic.dart` does not export.
 
+## epic1 links
+
+An epic1 address is a payments address derived from the recovery phrase: it holds the wallet's seal
+key and its proof key for the network. A link to it asks for a payment, optionally of a fixed
+amount, and names mailboxes on Epicbox relays where the answer is collected. Payer and payee both
+run LEPIC. [LEPIC's epic1 page](https://github.com/BTLabsUK/lepic/blob/main/docs/protocols/epic1.md)
+describes the address and the link.
+
+| Side | Call | Use |
+|---|---|---|
+| Payee | `epic1Address()` | the wallet's epic1 address |
+| Payee | `epic1LinkMake(amount:, message:, kind:, relays:, relayMode:)` | issues a link; a null `amount` lets the payer choose |
+| Payee | `epic1Links()`, `epic1LinkRetire(n:)` | lists the link mailboxes; frees printed link `n` |
+| Payee | `epic1Answers(relayMode:)`, `epic1PostAnswer(slateId:, relayOk:, relayMode:)` | the answers made for payments taken, and a post of one |
+| Payee | `epic1Restore(relayMode:)` | after a restore from the phrase, drains the link mailboxes once |
+| Payer | `epic1LinkRead(link:, relayMode:)` | shows the payee, amount, message and relays; stores nothing |
+| Payer | `epic1Pay(link:, amount:, minimumConfirmations:, proof:, hostsOk:, ...)` | pays the link |
+| Payer | `epic1PostNext(slateId:, hostsOk:, relayMode:)` | posts the payment again to the next relay of the link |
+
+`Epic1LinkKind` picks the mailbox lifetime. An `onScreen` link takes the next mailbox of a ring of
+50 that wraps, and the wallet drains it for seven days after it was issued or last used. A `printed`
+link holds one of 32 mailboxes until `epic1LinkRetire` frees it. `relays` names at most three
+relays, each `domain[:port]`; with an empty list the link names the wallet's own relay. A link has
+no expiry. `epic1LinkMake` fails with `PrintedLinksFull` when all 32 printed links are in use,
+`Epic1RelayInvalid` for more than three relays or one that is not a domain with an optional port or
+is on this device, `OwnRelayLocal` when the wallet's own relay is on this device,
+`Epic1MessageInvalid` for a message longer than a link carries or with control characters, and
+`InvalidArgument` for a zero amount.
+
+The payer reads the link first and shows the user every relay in `Epic1LinkRead.hosts`. The user
+confirms them, and `epic1Pay` takes `hostsOk: true`. Without it the call fails with
+`RelayNotConfirmed`. The payment goes to the first relay of the link, to the next when a post fails,
+at most three, and `Epic1Paid.attempts` lists the posts. With `proof` the payee is asked for a
+payment proof signed with the address's epic1 proof key. The payment's answer arrives with
+`contactsCollect`, which finalizes it. `epic1PostNext` fails with `Epic1Finalized` once the payment
+is finalized and `Epic1NoMoreRelays` when every relay was tried. `epic1LinkRead` fails with
+`NotAnEpic1Link`, `Epic1WrongNetwork` or `Epic1CannotPay` for a link that names no relay this wallet
+can use.
+
+The payee shows the relay of each answer from `epic1Answers` and passes `relayOk: true` to
+`epic1PostAnswer` once the user confirmed it. Posting again is safe. Both sides write native slates
+(`format` is always `Native`).
+
+### Sealed text
+
+Sealed text is a slate encrypted to one wallet's keys, armored as `BEGINEPICTX.` for a native slate
+or `BEGINEPICSEALED.` for any other. It travels in a file or a paste. A contact's mailbox carries
+the same text ([Contacts and pairing](#contacts-and-pairing)).
+
+| Call | Use |
+|---|---|
+| `sealedOpen(text:)` | opens the text with this wallet's keys and returns a `SealedSlateView`; nothing is stored, except that a newer card of the contact in it refreshes the contact |
+| `epictxOpen(text:)` | shows the slate as JSON in an `EpictxView`; nothing is stored and no contact is refreshed |
+| `sealedReceive(text:, message:)` | receives the sealed S1 and returns a `SealedAnswer` |
+| `sealedPay(text:, amount:, ...)` | pays the sealed I1 after the user approved the invoiced amount |
+| `sealedFinalize(text:)` | finalizes and posts the sealed S2 or I2 |
+| `sealedAnswerToMarker(incoming:, reply:)` | seals an answer to the reply key a plain slate from LEPIC carries; null when it carries none |
+
+`SealedAnswer.answer` is armored sealed text when `sealed` is true and plain slate JSON when the
+sender cannot open sealed text. The app returns it the way the slate came. `SealedSlateView.stage`
+says which call applies. Its `messages`, `reference` and `purpose` come from the other side: show
+them as quoted text and do not use a reference to credit a payment. `sealedOpen` fails with
+`InvalidPairingText` for text that is not sealed or is for the other network,
+`SealedForAnotherWallet`, `SealedUnopenable` and `InvalidSlate`; `epictxOpen` also fails with
+`SavedTransaction` for a record another Epic wallet keeps in its `saved_txs` directory.
+
+`sealedFileExtension(text:)` returns the extension, without the dot, to save armored text under:
+`epictx` for `BEGINEPICTX.` text and `epicsealed` for any other. It is a top-level function in
+`lib/src/rust/api/contact.dart`, which `package:lepic/lepic.dart` does not export.
+
