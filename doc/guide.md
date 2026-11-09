@@ -252,3 +252,257 @@ keep the wallet's `dataDir`, `chain` and `offline` value, and cannot switch Epic
 
 `nodeTip(runtime:, config:, route:)` asks a node for its tip and version without a wallet; the
 route says whether the request goes directly or through a SOCKS5 proxy on a loopback address.
+
+## Wallet lifecycle
+
+One `EpicWallet` handle is one open wallet. Four static methods produce a handle, and each takes
+the runtime, a `WalletConfig` and the wallet's `AppSecretStore`.
+
+| Method | Use |
+|---|---|
+| `EpicWallet.create` | makes a wallet; with `mnemonic` it restores that phrase |
+| `EpicWallet.importWalletSeed` | makes a wallet from the text of an `epic-wallet` `wallet.seed` file and the password that file was written with (4,096 bytes at most) |
+| `EpicWallet.open` | opens the wallet in `dataDir` with its password |
+| `EpicWallet.openWithPin` | opens a wallet made for a PIN ([PIN wallets](#pin-wallets)) |
+
+### Create and restore
+
+```dart
+final wallet = await EpicWallet.create(
+  runtime: runtime,
+  config: config,
+  store: store,
+  password: password,
+);
+final phrase = await wallet.mnemonic(password: password); // for the backup screen
+```
+
+Without `mnemonic`, `create` generates a seed. With `mnemonic` it restores that seed, and the app
+then calls `scan` to find the wallet's outputs. `restoreFromHeight` sets the height that restore
+scan starts from; it needs `mnemonic`, otherwise the call fails with `InvalidArgument`. Without
+it the restore starts at genesis. Pass a height only when the phrase was first used above it:
+outputs below the height are not found.
+
+`create` fails with `InvalidArgument`, `WalletAlreadyExists` (the store holds a vault),
+`InvalidMnemonic`, `ForeignWallet` (the directory holds another wallet's database), `WalletBusy`
+(a wallet on that directory is open) and `SecretStore`.
+
+`validateMnemonic(phrase:)` checks a phrase without a wallet. `walletExists(runtime:, store:)`
+tells whether a store holds a vault. `walletFingerprint(mnemonic:, chain:)` and
+`wallet.fingerprint()` return a 32-bit identifier of a phrase's wallet, to tell whether the app
+already has it. The fingerprint identifies a wallet and does not prove a phrase: another phrase
+can have the same value. Keep it out of logs.
+
+### Open
+
+```dart
+final wallet = await EpicWallet.open(
+  runtime: runtime,
+  config: config,
+  store: store,
+  password: password,
+);
+```
+
+`open` fails with `WrongPassword`, `WalletNotFound` (the store holds no vault), `ForeignWallet`,
+`WalletBusy` and `DamagedDatabase`. On `DamagedDatabase` LEPIC has renamed the database to
+`wallet.sqlite3.damaged-<unix seconds>`. Opening again builds a new database from the seed, and
+`scan` without a start height then runs from genesis.
+
+Every `open` attempt counts as a failure in the store (`lepic.pin-failures`) and may wait; a right
+password clears the count ([PIN rules](#pin-rules)). Attempts of one runtime run one at a time.
+
+### Scan, refresh and summary
+
+| Call | Does |
+|---|---|
+| `scan(startHeight:, deleteUnconfirmed:)` | streams `ScanProgress` until an event with `finished`, which carries the result |
+| `cancelScan()` | stops a running scan; the stream ends with `Cancelled` |
+| `refresh()` | streams `RefreshProgress`: an event at 0 percent, then one at 100 with the `summary` |
+| `summary(refresh:)` | returns the `WalletSummary`; without `refresh` it answers from the store |
+| `restoreScanRequired()` | whether the wallet was rebuilt from its seed and no restore scan has completed |
+| `transactions()`, `transaction(txId:)` | transaction records |
+| `outputs()` | every output of the default account, spent ones included |
+| `minimumConfirmations()`, `setMinimumConfirmations(count:)` | the confirmations an output needs to count as spendable; 6 until changed |
+
+A scan stores every page of outputs as it goes, so a cancelled or failed scan leaves the wallet
+consistent. The next scan with the same arguments resumes after the last stored page.
+
+While `restoreScanRequired()` is true the wallet refuses new outputs: receiving, the change of a
+send and invoices fail with `RestoreScanRequired`. A `scan` without `startHeight` starts where the
+restore scan starts and ends the restore when it completes. A scan from a higher `startHeight`
+leaves the restore pending.
+
+`deleteUnconfirmed: true` also runs the repair of `epic-wallet scan --delete_unconfirmed`. It needs
+`startHeight: null`, starts at the beginning of the chain, unlocks outputs locked by transactions
+in progress that are unspent on chain, deletes outputs that are not on chain yet and cancels their
+transactions, including sends waiting for an answer.
+
+### Lock and delete
+
+`wallet.lock()` stops the listener and any scan, wipes the root key and ends running calls with
+`Cancelled`. Every later call on the handle fails with `Locked`. Open the wallet again on a new
+handle. A call that failed with `Cancelled` at a lock may still have stored its effect: after a
+lock, read the transactions again instead of taking the failure as the outcome. A send stored as
+sent goes out again with its resend call, and one finalized is posted again with
+`repostTransaction`.
+
+`deleteWallet(runtime:, config:, store:)` deletes the database in `dataDir`, the vault in the
+store, the PIN key and the failure count. It takes no password or PIN, so the app asks the user to
+confirm first. It fails with `WalletBusy` while a wallet on that directory is open. Only the
+recovery phrase brings the wallet back.
+
+`resetPassword(runtime:, config:, store:, mnemonic:, newPassword:)` writes a new vault for a user
+who forgot the password and keeps the database, its history and its outputs, so no scan follows.
+Call it with the wallet closed. It proves the phrase against the database, not by fingerprint, and
+fails with `InvalidMnemonic`, `PhraseMismatch` (the database belongs to another seed),
+`ForeignWallet` (another chain), `WalletNotFound`, `WalletBusy` and `DamagedDatabase`. It removes
+the PIN key and failure count, so a PIN wallet opens with `newPassword` afterwards.
+
+### Encrypted database
+
+The database is encrypted at rest. `storeAtRest()` returns a `StoreAtRest` with a `state`
+(`encrypted`, `migratedNow` or `fellBackToPlain`), a `reason` and `rollbackSetAside`.
+`retirePlainStore(olderThanDays:)` deletes the plain copies a migration leaves in `dataDir`,
+`wallet.sqlite3.pre-encryption` and older `wallet.sqlite3.after-rollback-<unix>` files, and
+returns a `RetiredPlainStore` with `deleted` and `kept`. It deletes nothing while the session runs
+on the plain database. `runtime.storeMigrationProgress()` streams `StoreMigrationProgress` (a
+`stage` of `copying`, `checking` or `finished`, with `done` and `total`) while a plain database is
+copied.
+
+### Other wallet data
+
+| Call | Returns |
+|---|---|
+| `epicboxAddress()` | `<key>@<domain>[:port]`; fails with `Unsupported` when the configuration names no relay |
+| `onionAddress()` | the wallet's `<56 characters>.onion` address |
+| `epic1Address()` | the wallet's epic1 address |
+| `sealAppData(payload:)`, `openAppData(file:)` | encrypt and decrypt an app file as a `WFEH` version 1 file, 32 MiB at most; only this wallet or one restored from the same phrase opens it |
+| `nodeTip` and `nodeTipFor(config:)` | the tip and version of a node |
+
+## Secret store, password and PIN
+
+LEPIC keeps no secret on disk in the clear. The app gives each wallet a `SecretStore` over the
+platform's secure storage, such as `flutter_secure_storage`:
+
+```dart
+abstract interface class SecretStore {
+  Future<String?> read(String key);
+  Future<void> write(String key, String value);
+  Future<void> delete(String key);
+}
+```
+
+`lepicSecretStore(store)` wraps it into the `AppSecretStore` every wallet call takes. An exception
+in the app's store becomes a failed reply, and the LEPIC call fails with
+`WalletErrorKind.secretStore`. Use one store per wallet: the keys have fixed names, and `write`
+must have stored the value durably when it completes.
+
+| Key | Holds |
+|---|---|
+| `lepic.vault` | the wallet's seed, encrypted under the password |
+| `lepic.vault-next` | a replacement vault while a password change is under way |
+| `lepic.pin-key` | the random key a sealed PIN password is bound to |
+| `lepic.pin-key-pending` | the new PIN key while a PIN change awaits confirmation |
+| `lepic.pin-failures` | the count of failed password or PIN attempts |
+
+### Password wallets
+
+`create`, `open`, `mnemonic(password:)` and `changePassword(currentPassword:, newPassword:)` take
+the password as text. The vault is encrypted with Argon2id under a fresh salt. LEPIC sets no
+minimum length for a password; the app does. `checkPassword(password:)` returns whether a password
+opens the vault, for an action that asks again. A wrong password gives `false`, and the attempt is
+counted like an `open`.
+
+`changePassword` writes the new vault as `lepic.vault-next`, reads it back, then replaces
+`lepic.vault`. If the app stops part way, the old or the new password opens the wallet and the
+next `open` settles it. It fails with `Unsupported` for a PIN wallet.
+
+### PIN wallets
+
+A PIN wallet gives the app a short secret to ask for and keeps the wallet password inside LEPIC.
+`createWithPin` generates the password, seals it under the PIN and returns a `PinWallet` with the
+open `wallet` and the `sealedPassword` text. The sealed text is bound to the random key LEPIC
+writes into the store as `lepic.pin-key`, so it opens only together with that store.
+
+```dart
+final created = await EpicWallet.createWithPin(
+  runtime: runtime,
+  config: config,
+  store: store,
+  pin: pin,
+);
+await appStorage.write('sealed', created.sealedPassword); // before anything else
+final phrase = await created.wallet.mnemonicWithPin(
+  pin: pin,
+  sealedPassword: created.sealedPassword,
+);
+```
+
+The app stores `sealedPassword` before it shows the phrase or receives funds. If the app stops
+before it stored the text, the wallet cannot be opened by PIN: delete it with `deleteWallet` and
+restore it from the phrase.
+
+| Call | Does |
+|---|---|
+| `EpicWallet.createWithPin` | as `create`, with a generated and sealed password; also takes `mnemonic` and `restoreFromHeight` |
+| `EpicWallet.importWalletSeedWithPin` | as `importWalletSeed`, with a generated and sealed password |
+| `EpicWallet.openWithPin(pin:, sealedPassword:)` | opens the wallet; a wrong PIN gives `WrongPassword`, damaged text `InvalidArgument`, a store without the PIN key `SecretStore` |
+| `wallet.mnemonicWithPin(pin:, sealedPassword:)` | returns the recovery phrase |
+| `wallet.checkPin(pin:, sealedPassword:)` | returns nothing when the PIN is right and throws `WrongPassword` otherwise |
+| `wallet.changePin(sealedPassword:, oldPin:, newPin:)` | returns the new sealed text; the change stays pending |
+| `wallet.confirmPinChange(sealedPassword:)` | makes the change final once the app stored the new text |
+
+`changePin` keeps the new key as `lepic.pin-key-pending` next to `lepic.pin-key`. Until
+`confirmPinChange`, the old PIN with the old text and the new PIN with the new text both open the
+wallet. Store the new text first, then confirm. If the app stops before it stored the text, the
+old pair still opens.
+
+### PIN rules
+
+`PinSettings` holds the rules of a runtime. Create the runtime with
+`LepicRuntime.withPinSettings(logLevel:, pin:)` to change them; `LepicRuntime(logLevel:)` uses
+`await PinSettings.default_()`.
+
+| Field | Default | Meaning |
+|---|---|---|
+| `minLen` | 6 | shortest PIN `createWithPin` and `changePin` accept (`InvalidArgument` otherwise) |
+| `freeFailures` | 3 | failed attempts that never wait |
+| `firstDelayS` | 30 | wait before an attempt after the free failures |
+| `maxDelayS` | 3,600 | the wait doubles after each further failure up to this |
+
+Every attempt to open, check or change by password or PIN is counted in the store as
+`lepic.pin-failures` until a right one clears the count. The count lives in the store, so
+restarting the app does not reset it.
+
+## Events
+
+`wallet.events()` streams `WalletEvent` records until the wallet is dropped. Each has a `kind`
+(`WalletEventKind`) and the fields that kind sets, such as `txId`, `slateId`, `amount`,
+`contactId`. Subscribe once, right after opening.
+
+| Kind | Meaning |
+|---|---|
+| `session` | the session state changed (`session`) |
+| `balance` | the balance of an account after a refresh |
+| `transaction` | a transaction moved from `from` to `to` |
+| `sync_` | scan progress (`height`, `targetHeight`) |
+| `transport` | a transport's connection changed |
+| `missed` | the stream fell behind and `missed` events were dropped; refresh to catch up |
+| `selfSend` | a split or consolidation was stored and finalized |
+| `invoiceReceived`, `invoiceFromContact` | an invoice waits to be paid or declined |
+| `invoiceFinalized`, `invoicePosted`, `invoiceExpired`, `invoiceDeclined`, `invoiceWithdrawn`, `invoiceBounced` | the course of an invoice ([Invoices](#invoices)) |
+| `withdrawalFromContact`, `sealedReceived` | a contact's payment arrived and was received |
+| `contactPaymentFinalized`, `paymentDeclined`, `paymentCancelled`, `notPosted` | the course of a payment this wallet sent |
+| `receiveSuperseded`, `paymentPosted` | news about a payment this wallet received |
+| `pairingRequested`, `pairingReplied`, `pairingConfirmed`, `pairingFailed` | pairing steps ([Contacts and pairing](#contacts-and-pairing)) |
+| `contactUpdated`, `contactKeysRestored`, `contactKeysChanged`, `contactRelayMoveRequested`, `contactUnpaired`, `contactPayload`, `contactPayloadsParked` | changes to a contact |
+| `homeRelayUnreachable`, `outboxDelivered`, `outboxStuck` | delivery to contact mailboxes |
+| `inPersonAnswer` | an answer to an in-person code was taken |
+| `unknownSlate`, `noticeUnmatched`, `sealedUnopenable` | advisory events |
+
+The doc comment of each kind in `lib/src/rust/api/types.dart` lists the fields it sets.
+
+Advisory events (`unknownSlate`, `noticeUnmatched`, `sealedUnopenable`) report messages that
+nothing has verified: anyone who knows the wallet's address can cause them. Show them as
+information and never act on them or show their sender as trusted.
