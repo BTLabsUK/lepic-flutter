@@ -462,11 +462,46 @@ meaning. `message` is English for logs and bug reports and holds no secret; do n
 | 71 | `pairingWordsNotFound` | No invite was found for these words: wrong, expired, or used. |
 | 72 | `invalidPairingWords` | A word is not in the pairing words table, or there are not five. |
 | 73 | `contactRefusesInvoices` | The contact's wallet says it does not pay invoices. Nothing was sent. |
+| 74 | `phraseMismatch` | The recovery phrase given to `resetPassword` belongs to another wallet than the database in the wallet directory. Nothing was changed. |
 | 75 | `invoiceNotForThisChain` | The invoice was made for another network, or its heights are wrong. Nothing was paid or stored. |
 | 76 | `inputsSpentElsewhere` | The node refused the transaction because coins of this wallet in it are already spent, and no transaction of this wallet spent them: another wallet on the same recovery phrase did. The transaction was cancelled and a refresh ran; that spend shows as a transaction of origin `otherWallet`. |
+| 77 | `wrongPairingClass` | The invite, contact or call is of the other pairing class: a private invite answered as a contact or the other way round, words asked for a private pairing, or a slate or invoice for a private pairing. Nothing was stored or sent. |
 | 78 | `offline` | The wallet was opened with `WalletConfig.offline`, so the call reached no node or relay, or found no confirmed tip to work offline from. Nothing was sent. |
 | 79 | `inputsSpentByOwnTransaction` | The node refused the transaction because another transaction of this wallet, which the chain holds, already spent its coins: a cancelled payment mined before the move of its coins back to the wallet, or that move mined first. The refused transaction was cancelled and stays watched, and a refresh ran, which shows the other one as confirmed. Nothing went to another wallet. |
 | 80 | `peerInputsSpent` | The node refused the transaction because the other party's coins in it are already spent: the payer cancelled and moved them, so the payment can never be mined. The transaction was cancelled and stays watched, so it still confirms if it is mined after all, and a refresh ran. |
+| 81 | `otherAddress` | The pairing proves another payments address than the one given. Nothing changed. |
+| 82 | `addressProofMissing` | A payments address was given and the pairing proves none. Nothing changed; try again after the contact's card with a proof arrives. |
+| 83 | `peerNotProven` | `pairingRequestSend` to a key that did not run LEPIC lately, answered unmarked since, or never claimed pair requests. Nothing was sent; offer the invite instead. |
+| 84 | `pairingInProgress` | A request or answer toward a wallet that already has a pairing in progress here, one waiting for it, or a live request from it. Show that pairing or request. |
+| 85 | `pairingCrossed` | This wallet's own pairing with the same wallet wins under the lower-key rule: keep waiting for its answer. Nothing changed. |
+| 86 | `inviteDismissed` | The invite of a request this wallet dismissed. Ask for a new one. |
+| 87 | `pairingEnded` | The pairing ended: nothing new goes through it. Offer to remove it. |
+| 88 | `pairingWaiting` | The contact's wallet has not been heard in this pairing yet: no sealed send or invoice. |
+| 89 | `foreignProofAddress` | A payment asked for a payment proof that this wallet does not sign: one for another key than its own, or any proof for a payment to a listing address. Nothing was signed or stored. |
+| 90 | `wrongKey` | The wallet's encrypted database does not open with the key its recovery phrase gives. Nothing was changed or moved. Recover with the phrase only if it is this wallet's; the database is kept. |
+| 91 | `pairingKindDiffers` | The inviter's card names another contact kind than its invite did. Nothing was stored; pair again. |
+| 92 | `relayMoveNotRequested` | The relay given to `contactApplyRelayMove` is not the one the contact asked to move to (`ContactView.requestedRelay`), or the contact asked for no move. Nothing changed. |
+| 93 | `inPersonNotFound` | The wallet holds no in-person code or answer for the slate, or no answer with that number was taken for the code. |
+| 94 | `relayNotConfirmed` | `inPersonPost`, `epic1Pay` or `epic1PostNext` was called without the user confirming the relay. Nothing was posted. |
+| 95 | `inPersonNoMailbox` | The in-person code named no reply mailbox: show the answer instead of posting it. |
+| 96 | `urCodeIncomplete` | The QR parts scanned do not make a whole code yet: keep scanning and pass every part scanned so far. |
+| 97 | `pinnedNoAdvert` | The listener's origin (`WalletError.origin`) is pinned and no longer advertises a native endpoint. Nothing was stored; a send that asks for the legacy dialect goes out. |
+| 98 | `pinChanged` | The listener's origin (`WalletError.origin`) shows another key (`WalletError.shownKey`) than the pinned one (`WalletError.pinnedKey`). Nothing was stored. Once the receiver confirms the new key, `forgetPeerPin` takes it at the next send; a send that asks for the legacy dialect goes out as well. |
+| 99 | `peerProbeFailed` | The listener of a pinned origin (`WalletError.origin`) could not be asked for its endpoint. Nothing was stored. |
+| 100 | `nativeExchangeFailed` | The send was stored (`WalletError.txId`) and its native exchange failed; nothing went through the legacy dialect. The inputs stay locked: deliver it again, in either dialect, or cancel it. |
+| 101 | `thisComputer` | The native endpoint's address is one of this device's own; a native slate goes only to other devices. A send to `localhost` or an address literal of this device fails before it stores anything, with `WalletError.origin` set and no `txId`: ask for the legacy dialect. A name that only resolves to this device fails after the send was stored (`WalletError.txId` is set): deliver it again in the legacy dialect or cancel it. |
+| 102 | `savedTransaction` | The text is a record another Epic wallet keeps in its `saved_txs` directory, not a payment file. |
+| 103 | `epic1CannotPay` | The epic1 link names no transport this wallet can use. |
+| 104 | `epic1NoMoreRelays` | The epic1 payment went to every relay of the link: none is left to try. The payment is stored. |
+| 105 | `printedLinksFull` | All 32 printed epic1 links are in use: retire one first. |
+| 106 | `epic1NotFound` | No printed link with that number is in use, or the wallet holds no epic1 payment or answer for the slate. |
+| 107 | `ownRelayLocal` | The wallet's relay is on this device, so no other device reaches a link to it. |
+| 108 | `epic1RelayInvalid` | A relay named for a link is not a domain with an optional port, is on this device, or there are more than three. |
+| 109 | `epic1MessageInvalid` | The message is longer than a link carries or holds control characters. |
+| 110 | `epic1Finalized` | The epic1 payment was finalized already. |
+| 111 | `epic1WrongNetwork` | The epic1 link or its slate is for another network than the wallet. |
+| 112 | `notAnEpic1Link` | The text is not an epic1 link. |
+| 113 | `walletTooNew` | The wallet's database was written by a newer LEPIC or app version than this one reads. Nothing was changed; update the app to open the wallet. Do not delete or restore it. |
 
 Kinds 22 to 24 used to arrive as `other`. Kinds 25 and 26 are new with `sealAppData` and
 `openAppData`, 27 and 28 with `releaseTransaction`, 29 to 31 with the invoice calls, 40 and
@@ -476,9 +511,29 @@ consolidation of one output), 48 to 50 with the invoice refusals of U-23 (before
 arrived as `invalidSlate`), 51 to 55 with the QR slate calls, 56 to 73 with the pairing calls, 75 with the time to live of
 invoices (before, an invoice made at a height above the chain's arrived as `invalidSlate`), 78
 with offline sessions, 79 and 80 with posts refused because the coins were spent (before, both
-arrived as `notPosted`, or 79 as `inputsSpentElsewhere`). An
+arrived as `notPosted`, or 79 as `inputsSpentElsewhere`), 81 to 92 with the pairing requests, 93 to
+96 with the in-person calls, 97 to 101 with the native direct send, 102 with `epictxOpen`, 103 to 112
+with the epic1 calls, and 113 with the schema check of the wallet database (before, a database from a
+newer version arrived as `io`). Codes 32 to 36, 38 and 39 are not used. An
 exhaustive `switch` over
 `WalletErrorKind` must handle them.
+
+Four fields of `WalletError` carry more than the kind: `txId`, the transaction a failed call stored
+and left behind with its inputs locked (cancel it, or try its step again; `null` when nothing was
+left behind), and `origin`, `pinnedKey` and `shownKey` for the native direct kinds 97 to 99 and for
+101 when nothing was stored. A kind whose row says "Nothing was stored" leaves no transaction to
+cancel or resend.
+
+## Slate format
+
+Every call that sends or answers a slate reports the format it used, `SlateWire.legacy` or
+`SlateWire.native` (RFC 0003). `native` happens
+only while `setNativeDirect` is on. The format is in a `format` field of `ReceivedSlate`, `SentTx`,
+`PaidInvoice`, `PaidInvoiceSlate`, `SealedAnswer`, `InPersonCode`, `InPersonReply`, `Epic1Paid`,
+`HttpSentTx` and `HttpResentTx`. Calls that returned nothing before now return the `SlateWire`:
+`resendEpicbox`, `contactPostSlate`, `contactOutboxResend`, `inPersonPost` and `epic1PostAnswer`.
+`inPersonSend` takes `ttlBlocks`, the code's time to live in blocks (`null` is 30; 10 or fewer is
+`invalidArgument`).
 
 ## Direct transactions over HTTP
 
