@@ -958,3 +958,73 @@ whose keys the seed does not derive.
 A contact message that cannot be handled yet stays in quarantine. `contactQuarantine()` lists the
 messages without their envelopes, `contactQuarantineDiscard(id:)` forgets one and
 `contactQuarantineRetry(id:, relayMode:)` handles one or all again. LEPIC never retries on its own.
+
+## QR codes and in-person transfers
+
+Two phones next to each other can make a payment with no relay in the middle for the code itself.
+One wallet shows a code, the other scans it and shows an answer back, and the first wallet
+finalizes the answer and posts the transaction. The code is a raw `lepic.v1` native slate, so both
+wallets run LEPIC. [LEPIC's EPICTX page](https://github.com/BTLabsUK/lepic/blob/main/docs/protocols/epictx.md)
+describes the format.
+
+| Step | Shows the code | Scans the code |
+|---|---|---|
+| 1 | `inPersonSend(amount:, minimumConfirmations:, relayMode:)` for a send, or `inPersonInvoice(amount:, relayMode:)` for an invoice, returns an `InPersonCode` | |
+| 2 | | `inPersonRead(code:, minimumConfirmations:, relayMode:)` shows what the code asks for; nothing is stored |
+| 3 | | after the user approves, `inPersonReceive(code:, ...)` for a send, `inPersonPay(code:, amount:, ...)` for an invoice; both return an `InPersonReply` |
+| 4 | | `inPersonPost(slateId:, relayOk:, relayMode:)` posts the answer, or the app shows `armored` or `envelope` back |
+| 5 | `inPersonTake(answer:)` takes a scanned or pasted answer; a posted one arrives with `contactsCollect` and an `inPersonAnswer` event | |
+| 6 | `inPersonAnswers(slateId:)` lists the answers; `inPersonFinalize(slateId:, answer:)` finalizes the one the user picked | |
+
+`InPersonCode.bytes` is the code to show, as one byte-mode QR code or as the parts
+`inPersonQrParts` gives. `ttlBlocks` of `inPersonSend` and `inPersonInvoice` sets how long the code
+is good, in blocks past the chain tip. It defaults to 30, and a value of 10 or less fails with
+`InvalidArgument`, because the payer stops paying 10 blocks before the cutoff. The cutoff is
+`InPersonCode.ttlCutoff`. A send keeps its inputs locked until an answer is finalized, the code
+expires or the send is cancelled.
+
+`inPersonRead` returns an `InPersonRead` with the `stage` (`S1` for a send to receive, `I1` for an
+invoice to pay), the `amount`, the `fee`, the other party's `message` and the reply `mailbox`. Show
+the message as quoted text. A code with a payment proof, without a reply key or a TTL, or whose
+mailbox is a loopback or unspecified host fails with `InvalidSlate`.
+
+`InPersonRead.mailbox` is an `InPersonHost` (`host`, `port`, `inRelayList`, `localNetwork`) and is
+null when the answer goes back by scan. When the answer posts to a mailbox, the user confirms that
+host first: `inPersonPost` fails with `RelayNotConfirmed` unless `relayOk` is true. The post uses a
+key made for that slate, goes through Tor when Epicbox over Tor is on, and is safe to repeat.
+
+`InPersonReply.checkCode` is four digits. The scanning side shows it, and the showing side
+finalizes only the answer that carries the same code. `InPersonAnswerView.sameCode` marks answers
+whose check codes collide, which the user cannot tell apart by the code.
+
+### Animated QR codes
+
+A code or answer larger than one QR code travels as an animated sequence of parts. Both
+directions are available for in-person bytes and for slate text.
+
+| Direction | In-person bytes | Slate text |
+|---|---|---|
+| Parts to show | `inPersonQrParts(bytes:, maxFragmentLen:)` | `encodeUrSlate(json:, maxFragmentLen:)` |
+| Parts scanned | `inPersonQrRead(parts:)` returns `InPersonQrProgress` | `decodeUrSlate(parts:)` returns `UrSlateProgress` |
+
+`maxFragmentLen` bounds the payload of each part, 16 to 1024 bytes; 200 suits most screens. Bytes
+of at most 360 fit one single-part code. Pass every distinct text scanned so far on each read, in
+any order and case; the functions hold no state. Once `complete`, `bytes` (or `json`) holds the
+payload, which is not yet checked. Pass in-person bytes to `inPersonRead` or `inPersonTake`, or
+`inPersonTakeQr(parts:)` takes the parts directly. Pass slate text to `inspectSlate`.
+
+`encodeUrSlate` writes the legacy slate JSON as `ur:epic-slate` codes
+([format](https://github.com/BTLabsUK/lepic/blob/main/docs/compat/ur-epic-slate.md)), uppercase for
+the QR alphanumeric mode. Nothing is encrypted: anyone who sees the screen can read the slate.
+Encoding fails with `UrCodeTooLarge` for text over 64 KiB or more than 256 parts, and
+`InvalidArgument` for a fragment length outside the limits. `inPersonQrParts` fails with
+`UrCodeTooLarge` for more than 67,648 bytes or 256 parts.
+
+Decoding fails with `NotUrCode` or `ForeignUrCode` for a scan that is not a slate code (drop that
+scan and keep the others), `MixedUrCodes` for parts of two codes (start over with the newest scan),
+`InvalidUrCode` for a damaged code or an unknown version, and `UrCodeTooLarge`. `inPersonTakeQr`
+fails with `UrCodeIncomplete` while parts are missing.
+
+`inPersonQrParts` and `inPersonQrRead` are top-level functions in
+`lib/src/rust/api/in_person.dart`, which `package:lepic/lepic.dart` does not export.
+
