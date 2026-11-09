@@ -11,7 +11,7 @@ import 'policy.dart';
 import 'tor.dart';
 
 // These functions are ignored because they are not marked as `pub`: `network`, `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Which Epic chain the wallet talks to.
 enum Chain { mainnet, floonet }
@@ -116,6 +116,10 @@ class ContactCollectReport {
   /// `InPersonAnswer`.
   final int inPerson;
 
+  /// Payments taken at this wallet's epic1 link mailboxes, and answers to its epic1
+  /// payments finalized.
+  final int epic1;
+
   const ContactCollectReport({
     required this.mailboxes,
     required this.capped,
@@ -133,6 +137,7 @@ class ContactCollectReport {
     required this.quarantineDropped,
     required this.buffered,
     this.inPerson = 0,
+    this.epic1 = 0,
   });
 
   @override
@@ -152,7 +157,8 @@ class ContactCollectReport {
       quarantined.hashCode ^
       quarantineDropped.hashCode ^
       buffered.hashCode ^
-      inPerson.hashCode;
+      inPerson.hashCode ^
+      epic1.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -174,7 +180,8 @@ class ContactCollectReport {
           quarantined == other.quarantined &&
           quarantineDropped == other.quarantineDropped &&
           buffered == other.buffered &&
-          inPerson == other.inPerson;
+          inPerson == other.inPerson &&
+          epic1 == other.epic1;
 }
 
 /// What `EpicWallet::contacts_import` restored.
@@ -555,6 +562,266 @@ class EndedPairing {
           reason == other.reason;
 }
 
+/// An answer this wallet made for a payment taken at one of its link mailboxes, as
+/// `EpicWallet::epic1_answers` lists it.
+class Epic1AnswerView {
+  final int txId;
+  final String slateId;
+
+  /// The relay of the payer's reply mailbox, as the payment wrote it.
+  final String mailbox;
+
+  /// The relay to show before `EpicWallet::epic1_post_answer`; `None` when it cannot be
+  /// posted to.
+  final Epic1Host? host;
+  final bool posted;
+
+  const Epic1AnswerView({
+    required this.txId,
+    required this.slateId,
+    required this.mailbox,
+    this.host,
+    required this.posted,
+  });
+
+  @override
+  int get hashCode =>
+      txId.hashCode ^
+      slateId.hashCode ^
+      mailbox.hashCode ^
+      host.hashCode ^
+      posted.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Epic1AnswerView &&
+          runtimeType == other.runtimeType &&
+          txId == other.txId &&
+          slateId == other.slateId &&
+          mailbox == other.mailbox &&
+          host == other.host &&
+          posted == other.posted;
+}
+
+/// One post of an epic1 payment to a transport of its link.
+class Epic1Attempt {
+  final String host;
+
+  /// Why the post failed; `None` when it went through.
+  final String? error;
+
+  const Epic1Attempt({required this.host, this.error});
+
+  @override
+  int get hashCode => host.hashCode ^ error.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Epic1Attempt &&
+          runtimeType == other.runtimeType &&
+          host == other.host &&
+          error == other.error;
+}
+
+/// A relay an epic1 payment or answer would be posted to: show it before the user confirms.
+class Epic1Host {
+  final String host;
+  final int port;
+  final HostClassView class_;
+
+  /// The host is in the wallet's relay list.
+  final bool inRelayList;
+
+  const Epic1Host({
+    required this.host,
+    required this.port,
+    required this.class_,
+    required this.inRelayList,
+  });
+
+  @override
+  int get hashCode =>
+      host.hashCode ^ port.hashCode ^ class_.hashCode ^ inRelayList.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Epic1Host &&
+          runtimeType == other.runtimeType &&
+          host == other.host &&
+          port == other.port &&
+          class_ == other.class_ &&
+          inRelayList == other.inRelayList;
+}
+
+/// An epic1 link issued by `EpicWallet::epic1_link_make`.
+class Epic1Link {
+  /// The link text, `epic:epic1…?epicbox=…`, to show as a QR code or share.
+  final String link;
+
+  /// The epic1 address the link pays.
+  final String address;
+  final Epic1LinkKind kind;
+
+  /// The link's number within its kind, from 0.
+  final int n;
+
+  const Epic1Link({
+    required this.link,
+    required this.address,
+    required this.kind,
+    required this.n,
+  });
+
+  @override
+  int get hashCode =>
+      link.hashCode ^ address.hashCode ^ kind.hashCode ^ n.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Epic1Link &&
+          runtimeType == other.runtimeType &&
+          link == other.link &&
+          address == other.address &&
+          kind == other.kind &&
+          n == other.n;
+}
+
+/// The kind of an epic1 link this wallet issues.
+enum Epic1LinkKind {
+  /// A link shown on a screen: it takes the next mailbox of a ring of 50, which wraps, and
+  /// its mailbox is drained for seven days after it was issued or last used.
+  onScreen,
+
+  /// A link printed or kept: one of 32 mailboxes, held until the link is retired.
+  printed,
+}
+
+/// What an epic1 link asks, from `EpicWallet::epic1_link_read`. Nothing is stored.
+class Epic1LinkRead {
+  /// The payee: the epic1 address.
+  final String address;
+
+  /// The amount the link asks, in base units; `None` when the payer chooses it.
+  final BigInt? amount;
+  final String? message;
+  final String? label;
+
+  /// The relays of the usable transports, in the order a payment tries them.
+  final List<Epic1Host> hosts;
+
+  const Epic1LinkRead({
+    required this.address,
+    this.amount,
+    this.message,
+    this.label,
+    required this.hosts,
+  });
+
+  @override
+  int get hashCode =>
+      address.hashCode ^
+      amount.hashCode ^
+      message.hashCode ^
+      label.hashCode ^
+      hosts.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Epic1LinkRead &&
+          runtimeType == other.runtimeType &&
+          address == other.address &&
+          amount == other.amount &&
+          message == other.message &&
+          label == other.label &&
+          hosts == other.hosts;
+}
+
+/// An epic1 link mailbox in use, as `EpicWallet::epic1_links` lists it.
+class Epic1LinkView {
+  final Epic1LinkKind kind;
+  final int n;
+  final PlatformInt64 issuedAtMs;
+
+  /// When a payment last came to the link.
+  final PlatformInt64? usedAtMs;
+
+  /// The relays the link names its mailbox on, `domain[:port]`.
+  final List<String> relays;
+
+  const Epic1LinkView({
+    required this.kind,
+    required this.n,
+    required this.issuedAtMs,
+    this.usedAtMs,
+    required this.relays,
+  });
+
+  @override
+  int get hashCode =>
+      kind.hashCode ^
+      n.hashCode ^
+      issuedAtMs.hashCode ^
+      usedAtMs.hashCode ^
+      relays.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Epic1LinkView &&
+          runtimeType == other.runtimeType &&
+          kind == other.kind &&
+          n == other.n &&
+          issuedAtMs == other.issuedAtMs &&
+          usedAtMs == other.usedAtMs &&
+          relays == other.relays;
+}
+
+/// A payment made to an epic1 link, from `EpicWallet::epic1_pay` or
+/// `EpicWallet::epic1_post_next`.
+class Epic1Paid {
+  final int txId;
+  final String slateId;
+  final String address;
+
+  /// The posts made, in order; the last went through when `posted` is set.
+  final List<Epic1Attempt> attempts;
+
+  /// The transport, from 0, the payment was posted to.
+  final int? posted;
+
+  const Epic1Paid({
+    required this.txId,
+    required this.slateId,
+    required this.address,
+    required this.attempts,
+    this.posted,
+  });
+
+  @override
+  int get hashCode =>
+      txId.hashCode ^
+      slateId.hashCode ^
+      address.hashCode ^
+      attempts.hashCode ^
+      posted.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Epic1Paid &&
+          runtimeType == other.runtimeType &&
+          txId == other.txId &&
+          slateId == other.slateId &&
+          address == other.address &&
+          attempts == other.attempts &&
+          posted == other.posted;
+}
+
 /// The Epicbox relay connection.
 class EpicboxTuning {
   /// The TCP, TLS and websocket handshakes together.
@@ -618,6 +885,56 @@ class EpicboxTuning {
           torConnectTimeoutS == other.torConnectTimeoutS &&
           onionDiscoveryTimeoutS == other.onionDiscoveryTimeoutS &&
           onionDiscoveryRetryS == other.onionDiscoveryRetryS;
+}
+
+/// A slate in sealed text as it arrived, from `EpicWallet::epictx_open`. Nothing is stored.
+class EpictxView {
+  /// The contact whose signature the envelope carries; `None` for an anonymous envelope.
+  final String? contactId;
+
+  /// The body is a `lepic.v1` slate (RFC 0003).
+  final bool native;
+
+  /// The slate as JSON: the view of a `lepic.v1` slate (RFC 0003 5.10), or the V3 JSON of
+  /// another.
+  final String slateJson;
+  final SlatePurpose? purpose;
+
+  /// The sender's own reference, shown and never trusted for crediting.
+  final String? reference;
+
+  /// When the sender stops honouring the slate, in unix seconds; advisory.
+  final BigInt? expires;
+
+  const EpictxView({
+    this.contactId,
+    required this.native,
+    required this.slateJson,
+    this.purpose,
+    this.reference,
+    this.expires,
+  });
+
+  @override
+  int get hashCode =>
+      contactId.hashCode ^
+      native.hashCode ^
+      slateJson.hashCode ^
+      purpose.hashCode ^
+      reference.hashCode ^
+      expires.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EpictxView &&
+          runtimeType == other.runtimeType &&
+          contactId == other.contactId &&
+          native == other.native &&
+          slateJson == other.slateJson &&
+          purpose == other.purpose &&
+          reference == other.reference &&
+          expires == other.expires;
 }
 
 /// A pairing in progress that ended with nothing stored.
@@ -749,6 +1066,14 @@ class FoundInvite {
           runtimeType == other.runtimeType &&
           link == other.link &&
           preview == other.preview;
+}
+
+/// Where a relay host is, as the host rule classifies it.
+enum HostClassView {
+  public,
+
+  /// An address on the local network rather than the internet.
+  localNetwork,
 }
 
 /// The wallet's HTTP listener, which tor's onion forwards to too, and sends to other
@@ -2282,6 +2607,10 @@ class PeerCompat {
   /// Derived: `notices`, and no unmarked slate in the last 30 days.
   final bool fresh;
 
+  /// Its latest marked slate claimed native slates (RFC 0003) and gave the key to seal them
+  /// to.
+  final bool nativeSlates;
+
   const PeerCompat({
     this.lastMarkedAtMs,
     this.lastUnmarkedAtMs,
@@ -2291,6 +2620,7 @@ class PeerCompat {
     required this.lepic,
     required this.notices,
     required this.fresh,
+    required this.nativeSlates,
   });
 
   @override
@@ -2302,7 +2632,8 @@ class PeerCompat {
       featuresAtMs.hashCode ^
       lepic.hashCode ^
       notices.hashCode ^
-      fresh.hashCode;
+      fresh.hashCode ^
+      nativeSlates.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2316,7 +2647,8 @@ class PeerCompat {
           featuresAtMs == other.featuresAtMs &&
           lepic == other.lepic &&
           notices == other.notices &&
-          fresh == other.fresh;
+          fresh == other.fresh &&
+          nativeSlates == other.nativeSlates;
 }
 
 /// A pairing in progress, from `EpicWallet::pairings_pending`.
@@ -2926,6 +3258,11 @@ class SelfSentTx {
           outputCount == other.outputCount;
 }
 
+/// The dialect a send to a listener over HTTP or Tor took: `Native` to the endpoint the
+/// listener advertises, `Legacy` as every Epic wallet listener takes it. Native only while
+/// `EpicWallet::set_native_direct` is on and the listener advertises it.
+enum SendDialect { native, legacy }
+
 /// How a send chooses its inputs and change. A call given `None` uses `Smallest` with one
 /// change output.
 class SendOptions {
@@ -2968,16 +3305,24 @@ class SentTx {
   final BigInt amount;
   final BigInt fee;
 
+  /// How the S1 went out.
+  final SlateWire format;
+
   const SentTx({
     required this.txId,
     required this.slateId,
     required this.amount,
     required this.fee,
+    required this.format,
   });
 
   @override
   int get hashCode =>
-      txId.hashCode ^ slateId.hashCode ^ amount.hashCode ^ fee.hashCode;
+      txId.hashCode ^
+      slateId.hashCode ^
+      amount.hashCode ^
+      fee.hashCode ^
+      format.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2987,7 +3332,8 @@ class SentTx {
           txId == other.txId &&
           slateId == other.slateId &&
           amount == other.amount &&
-          fee == other.fee;
+          fee == other.fee &&
+          format == other.format;
 }
 
 enum SessionState { unlocked, locked, closed }
@@ -3117,6 +3463,11 @@ enum SlateStage {
   /// A finalized invoice.
   i3,
 }
+
+/// How a slate went out: as legacy JSON, or as a native slate (RFC 0003), over Epicbox to a
+/// payments address whose wallet claims native slates or to a listener's native endpoint.
+/// Native only while `EpicWallet::set_native_direct` is on.
+enum SlateWire { legacy, native }
 
 /// The wallet's tor. Ignored in a build without tor, but still checked.
 class TorTuning {
