@@ -192,7 +192,7 @@ pass a secret to `logMessage`.
 
 | Field | Type | Meaning |
 |---|---|---|
-| `dataDir` | `String` | directory that holds the wallet database `wallet.sqlite3`; it must exist and only this wallet may use it |
+| `dataDir` | `String` | directory that holds the wallet database (`wallet.enc.sqlite3`, or `wallet.sqlite3` for a plain store); it must exist and only this wallet may use it |
 | `chain` | `Chain` | the network, such as `Chain.mainnet` |
 | `nodeUrl` | `String` | the Epic node's foreign API URL |
 | `nodeApiSecret` | `String?` | the node's API secret, when it needs one |
@@ -305,8 +305,8 @@ final wallet = await EpicWallet.open(
 ```
 
 `open` fails with `WrongPassword`, `WalletNotFound` (the store holds no vault), `ForeignWallet`,
-`WalletBusy` and `DamagedDatabase`. On `DamagedDatabase` LEPIC has renamed the database to
-`wallet.sqlite3.damaged-<unix seconds>`. Opening again builds a new database from the seed, and
+`WalletBusy` and `DamagedDatabase`. On `DamagedDatabase` LEPIC has renamed the database file to
+`<file>.damaged-<unix seconds>`. Opening again builds a new database from the seed, and
 `scan` without a start height then runs from genesis.
 
 Every `open` attempt counts as a failure in the store (`lepic.pin-failures`) and may wait; a right
@@ -1205,7 +1205,7 @@ caught `WalletError` already carries it in `code`.
 | 22 | `restoreScanRequired` | a restored wallet needs one full `scan` before it creates outputs |
 | 25 | `foreignAppData` | the app data file belongs to a wallet with another seed |
 | 26 | `damagedAppData` | the app data file belongs to this wallet but was changed or cut short |
-| 37 | `damagedDatabase` | LEPIC renamed the database to `wallet.sqlite3.damaged-<unix seconds>`; opening again rebuilds it from the vault, so `scan` to the end |
+| 37 | `damagedDatabase` | LEPIC renamed the database file to `<file>.damaged-<unix seconds>`; opening again rebuilds it from the vault, so `scan` to the end |
 | 74 | `phraseMismatch` | the phrase given to `resetPassword` belongs to another wallet |
 | 90 | `wrongKey` | the database does not open with the key the phrase gives; nothing changed |
 | 113 | `walletTooNew` | a newer LEPIC or app version wrote the database; update the app and keep the data |
