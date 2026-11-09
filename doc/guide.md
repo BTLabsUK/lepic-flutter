@@ -506,3 +506,262 @@ The doc comment of each kind in `lib/src/rust/api/types.dart` lists the fields i
 Advisory events (`unknownSlate`, `noticeUnmatched`, `sealedUnopenable`) report messages that
 nothing has verified: anyone who knows the wallet's address can cause them. Show them as
 information and never act on them or show their sender as trusted.
+
+## Sending and receiving
+
+Amounts are `BigInt` base units. A send takes `minimumConfirmations`: pass the value of
+`wallet.minimumConfirmations()` so the send spends what the balance calls spendable.
+
+### Choosing inputs and change
+
+`SendOptions` chooses a send's inputs and change. A call given `null` uses `Smallest` with one
+change output.
+
+| Field | Meaning |
+|---|---|
+| `strategy` | `SelectionStrategy.smallest`: the fewest of the smallest outputs that cover amount and fee. `all`: every spendable output, up to 500 |
+| `changeOutputs` | 1 to 10 outputs for the change, equal parts with the remainder on the last; each adds to the fee |
+| `excludeOutputs` | up to 500 output commitments (66 hex characters) the send must not take; unknown ones are ignored |
+
+`estimateFee(amount:, minimumConfirmations:, options:)` returns a `FeeEstimate` (`fee`,
+`inputCount`, `change`, `locked`, `changeOutputs`) and locks nothing. A send at the same chain tip,
+with the same options and no output changed in between, charges that fee. `estimateMax` returns
+the largest amount a send can pay; use it with `SelectionStrategy.all` to send everything.
+`estimateSendToSelf` does the same for [`sendToSelf`](#splitting-and-merging-outputs).
+
+### Methods
+
+| Method | Call | The other wallet's answer |
+|---|---|---|
+| Epicbox | `sendEpicbox(amount:, minimumConfirmations:, address:, message:, options:)` | the listener or `drainEpicbox` finalizes and posts it |
+| HTTP | `sendHttp(..., url:, allowPlainHttp:)` | `sendHttp` waits for it, finalizes and posts |
+| Tor | `sendTor(..., onion:)` | `sendTor` waits for it, finalizes and posts |
+| Slate text | `createSendSlate` then `finalizeAndPost` | the app carries the slate and the answer |
+| Slate file | `sendFile(..., path:)` then `finalizeFile` | the app carries the file and the answer |
+| In person | [`inPersonSend`](#qr-codes-and-in-person-transfers) | the app carries the code and the answer |
+| Contact | [`contactSend`](#contacts-and-pairing) | through the contact's mailbox |
+
+`address` of `sendEpicbox` is `<key>@<relay>[:port]`; an address `validate_epicbox_address`
+refuses, such as a key without `@<relay>`, fails with `InvalidArgument` and stores nothing.
+`message` goes to the recipient signed with the slate and is cut to its first 256 bytes.
+
+```dart
+final sent = await wallet.sendEpicbox(
+  amount: BigInt.from(1500000000),
+  minimumConfirmations: await wallet.minimumConfirmations(),
+  address: 'es1qexample...@relay.example.org',
+);
+// sent.txId, sent.slateId, sent.fee; sent.format is SlateWire.legacy or SlateWire.native
+```
+
+A send is stored and its inputs are locked before it goes out. When delivery fails, the send stays
+stored as sent:
+
+| Failure | Deliver again with |
+|---|---|
+| `sendEpicbox` fails with `TransportFailed`, or `TransactionDetails.undelivered` is set | `resendEpicbox(txId:)` |
+| `sendHttp` or `sendTor` fails with `TransportFailed` | `resendHttp(txId:, url:, allowPlainHttp:)` or `resendTor(txId:, onion:)`, to any address |
+| the answer was received but the node refused the transaction (`NotPosted`, or `posted` false) | `repostTransaction(txId:)` |
+| the send should not go ahead | `cancelTransaction(txId:)` |
+
+`cancelTransaction` fails with `OnChain` or `InPool` when the node holds the finalized transaction.
+`releaseTransaction(txId:)` frees a finalized or posted send the network never took, once
+`TransactionDetails.releasable` says so; a node that mines it later spends the inputs after all.
+
+### HTTP
+
+`sendHttp` posts to `http(s)://host[:port][/path]`. A missing port is 3415 for `http` and 443 for
+`https`. Plain `http` to any host but this device needs `allowPlainHttp: true`; set it only after
+the user agreed that the slate travels unencrypted, or the call fails with `PlainHttpNotAllowed`.
+Over Tor, see [Listeners and Tor](#listeners-and-tor).
+
+`HttpSentTx` has `posted` (false when the node refused the transaction), `dialect`
+(`SendDialect.native` or `legacy`) and `format`.
+
+### Native slates
+
+With `setNativeDirect(enabled: true)` a send over HTTP or Tor to a wallet that advertises a native
+endpoint is sealed to that wallet's key
+([ADR 0052](https://github.com/BTLabsUK/lepic/blob/main/docs/adr/0052-native-direct-endpoint.md)).
+Every other wallet gets the slate as every Epic wallet takes it. The setting is stored in the
+wallet's directory and applies when the wallet next opens; `nativeDirectInUse()` says what the
+session does. `sendHttpDialect(..., legacy: true)`, `sendTorDialect` and the matching resend calls
+send the legacy form whatever the other wallet advertises.
+
+After a native exchange succeeds, the wallet pins the key for the URL's origin. `peerPins()` lists
+the pins (`PeerPinView`: `origin`, `sealKey`, `firstSeenMs`, `lastSeenMs`). A send to a pinned
+origin fails when the wallet there stops advertising (`PinnedNoAdvert`), advertises another key
+(`PinChanged`) or cannot be asked (`PeerProbeFailed`); `WalletError.origin` names the origin. After
+the user confirmed that the wallet changed its key, `forgetPeerPin(origin:)` drops the pin. A wallet
+advertising a native endpoint on `localhost` or an address of the device fails with `ThisComputer`;
+ask for the legacy dialect.
+
+### Receiving
+
+`receiveSlate(slateJson:)` and `receiveFile(path:)` sign an incoming send and return the answer for
+the sender in `ReceivedSlate.json`. `receiveFile` also writes it to `<path>.response`. The same
+slate again returns the stored answer with `repeated` set and the first call's `txId`; show it as
+already answered, not as a second payment. A wallet whose restore scan is pending refuses with
+`RestoreScanRequired`.
+
+Payments over Epicbox, HTTP and Tor arrive through the [listeners](#listeners-and-tor) or
+`drainEpicbox()`, which connects once, handles every pending message and disconnects. It returns an
+`InboxReport` with counts of what was received, finalized, repeated, rejected, held on the relay,
+noticed, bounced, dropped and buffered.
+
+### Finishing a send
+
+`finalizeAndPost(slateJson:)` takes the recipient's answer to a send, or the payer's answer to an
+invoice this wallet issued, and posts the transaction. Finalizing the same answer again returns the
+stored result. `FinalizedTx.posted` is false in an [offline session](#offline-sessions), where
+nothing goes to the node.
+
+### Splitting and merging outputs
+
+`sendToSelf(request:, minimumConfirmations:)` spends outputs into outputs of the same wallet as a
+normal network transaction, never through the Epicbox address. `SelfSendRequest` combines `inputs`
+(`SelfInputs.all`, `smallest`, `named`) with `outputs` (`SelfOutputs.count` or `amounts`), 1 to 10
+outputs in all. A split into `n` is `all` with `count` `n`; a merge is `all` with `count` 1. It
+appears as two transactions over transport `self`. `SelfSentTx` holds both transaction ids.
+
+### Inspecting slates
+
+`inspectSlate` reads a slate's text and describes it without storing anything. `finishedPayment`
+returns the final slate of a finalized, posted or confirmed transaction as legacy V3 JSON, which
+`epic-wallet post -i` reads, to post from another device. `encodeUrSlate` and `decodeUrSlate`
+convert a slate to and from the parts of an animated QR code
+([QR codes](#qr-codes-and-in-person-transfers)).
+
+## Listeners and Tor
+
+A wallet receives only while a listener runs. The app starts the ones it wants after opening the
+wallet and keeps their streams subscribed.
+
+| Listener | Start | Receives | Stream |
+|---|---|---|---|
+| Epicbox | `startListener()` | payments and answers through the configured relay | `ListenerEvent` |
+| HTTP | `startHttpListener(exposure:, port:, coinbase:)` | payments at `http://<host>:<port>` | `HttpListenerEvent` |
+| Tor | `startTor(torBinary:, libDir:, publishOnion:)` | payments at the wallet's onion | `TorEvent` |
+
+Each wallet runs at most one of each; a second call returns a stream that ends at once. On a locked
+wallet the stream ends with `Locked` as its error.
+
+### Epicbox listener
+
+`startListener()` subscribes at the relay named in the `WalletConfig`, answers payments, and
+finalizes and posts answers to this wallet's sends. Its last event is `Stopped`. A relay that
+cannot be reached gives `Disconnected` events with `reason` and `retryInMs`, and the listener
+retries with backoff. Without a relay in the configuration the stream fails with `Unsupported`.
+`stopListener()` ends it; `listenerRunning()` tells whether it runs.
+
+| `ListenerEventKind` | Meaning |
+|---|---|
+| `connected`, `disconnected` | the relay connection |
+| `received`, `repeated` | a payment was signed and answered, or came again and was answered with the stored reply |
+| `finalized` | an answer to one of this wallet's sends was finalized and posted |
+| `invoiceBounced` | a payer sent an invoice back unpaid, as a stock `epic-wallet` does; cancel it with `cancelTransaction` |
+| `error`, `stopped` | the listener failed (`stopped` follows) or ended |
+
+### HTTP listener
+
+`startHttpListener` serves the foreign API on `port`; `epic-wallet` listens on 3415. Port 0 lets the
+system pick one, which `Started` and `httpListenerStatus()` report.
+
+| `HttpExposure` | Reachable from |
+|---|---|
+| `localOnly` | this device, on `127.0.0.1` |
+| `internet` | every network interface, on `0.0.0.0`; anyone who can reach the port can send the wallet payments |
+
+`HttpCoinbase` (`off`, `localOnly`, `remote`) sets who the listener builds block rewards for, so a
+mining node pays them to the wallet ([LEPIC HTTP page](https://github.com/BTLabsUK/lepic/blob/main/docs/protocols/http.md)).
+The first event is `started`, `portInUse` or `bindFailed`. Events carry `txId`, `amount` and
+`repeated` for `received`, and a `refusal` (`rejected` for good, `unavailable` for now) for
+`refused`. They carry nothing about the sender. `stopHttpListener()` ends it.
+
+### Tor
+
+`startTor` starts the Tor binary at `torBinary` and, with `publishOnion`, publishes the wallet's
+onion service behind a listener of its own. The onion is the same on every start. Tor keeps its
+files in `tor` inside the data directory. Native builds with Tor and the Tor binary are described in
+[Native libraries](#native-libraries); a build without Tor is in [Without Tor](#without-tor). iOS
+starts nothing: the stream gets `Failed` with `Missing`, then `Stopped`.
+
+```dart
+wallet.expectTor(); // before startListener, so the relay waits for tor
+wallet.startTor(torBinary: torPath, libDir: torLibDir, publishOnion: true).listen((e) {
+  if (e.kind == TorEventKind.ready) showOnion(e.onion!);
+});
+```
+
+| `TorEventKind` | Meaning |
+|---|---|
+| `starting` | connecting to the Tor network; `progress` 0 to 100 |
+| `bootstrapped` | connected; sends to onions work; `socksPort` is the proxy on `127.0.0.1` |
+| `publishing`, `ready` | the onion is being published; other wallets reach this one at `onion` |
+| `failed` | `failure` says why (`TorFailureKind`) |
+| `sending` | a send or resend over Tor is reaching the other wallet |
+| `received`, `refused` | a payment came in over Tor, as in the HTTP listener |
+| `stopped` | tor and its listener ended; the last event |
+
+With `publishOnion` false the stream stops at `bootstrapped`: tor carries the node, relay and
+Tor-send connections only. With `HostPolicy.publishPreviousOnion` (the default) the wallet also
+publishes `previousOnionAddress()` behind a second listener. `torStatus()` returns the current
+`TorStatus` (`off`, `starting`, `bootstrapped`, `publishing`, `ready`).
+
+App lifecycle calls:
+
+| Call | When |
+|---|---|
+| `refreshTor(networkChanged:)` | the app returns to the foreground; `networkChanged` after the device changed network. Fails with `TorNotRunning` when no tor runs |
+| `torNetworkLost()` | the device has no network; tor makes no attempt until the next `refreshTor` |
+| `stopTor()` | stops tor, then its listener; sends over Tor in progress fail |
+
+### What goes through Tor
+
+| Setting | Default | Effect |
+|---|---|---|
+| `setEpicboxOverTor` | on | the relay connection goes through tor, to the relay's onion when one is known |
+| `setHttpOverTor` | on | `sendHttp` and `resendHttp` go through tor; a host on this device stays direct |
+| `setNodeOverTor` | on | every node request goes through tor |
+
+Each setting applies only while tor runs or is expected (`WalletConfig.torWanted`, `expectTor()`).
+While it applies, a connection never falls back to a direct one: it waits for tor, then fails.
+`sendTor` always uses tor. `setOnionRoutes(routes:)` replaces the `OnionRoute` list (a host that is
+also an onion service presenting the host's TLS certificate) that `WalletConfig.onionRoutes` set;
+at most 256. `validateOnionAddress(address:)` checks an onion v3 address.
+[LEPIC's Tor page](https://github.com/BTLabsUK/lepic/blob/main/docs/protocols/tor.md) describes the
+routing.
+
+`sendTor` reaches the other wallet at port 80, emits `sending` on the tor stream and takes up to
+about 150 seconds to fail for an onion that is not online. It fails with `OnionAddressInvalid` and
+`TorNotRunning` before it stores anything.
+
+## Invoices
+
+An invoice asks for a payment: the issuer makes it, the payer pays it, and the issuer finalizes the
+payer's answer and posts the transaction. Slates have the stages I1 (the invoice), I2 (the
+payer's answer) and I3 (the finalized transaction).
+
+| Step | Issuer | Payer |
+|---|---|---|
+| By text | `issueInvoiceSlate(amount:, message:)` returns the I1 | `payInvoiceSlate(slateJson:, amount:, minimumConfirmations:, ...)` returns the I2 |
+| By file | `issueInvoiceFile(amount:, path:)` | `payInvoiceFile(path:, amount:, ...)`, which also writes `<path>.response` |
+| Finish | `finalizeAndPost(slateJson:)` with the I2 | |
+| To a contact | `contactIssueInvoice` | `contactPayInvoice`, `contactDeclineInvoice` |
+
+The payer calls `payInvoiceSlate` only after the user approved the amount, which must equal the
+invoiced amount; the fee comes on top. The inputs stay locked until the issuer posts the
+transaction or the payer cancels with `cancelTransaction`. The call fails with `InvalidSlate`,
+`AmountMismatch`, `InvoiceAlreadyPaid`, `PaymentExpired`, `InvoiceNotForThisChain`,
+`InvoiceLockedAboveTip`, `NotEnoughFunds` or `NodeUnreachable`, and stores nothing then.
+
+An invoice has a time to live of 1,440 blocks from the node's tip. A LEPIC payer refuses it, and
+the issuer refuses to finalize a payment of it, from 10 blocks before that. `cancelTransaction` on
+an invoice the wallet issued withdraws it.
+
+`sweepInvoices(expirySecs:)` expires what invoices left unpaid and returns an `InvoiceSweep`. Run
+it from time to time, for example after collecting contact mail. Received invoices waiting longer
+than `expirySecs` are deleted and issued ones are cancelled, each with an `invoiceExpired` event.
+`expirySecs` defaults to a day and is at most two days. `InvoiceSweep.cancellable` lists payments
+whose time to live passed with the transaction neither on chain nor in the pool; the app offers the
+user `cancelTransaction` for them.
