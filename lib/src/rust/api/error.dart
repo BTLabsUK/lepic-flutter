@@ -7,11 +7,14 @@ import '../frb_generated.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `engine_kind`, `epic1_kind`, `from_inner`, `from_send`, `hex`, `in_person_kind`, `native_to_this_computer`, `new`, `refused_offline`, `with_tx`
+// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `engine_kind`, `epic1_kind`, `from_inner`, `from_send`, `hex`, `in_person_kind`, `native_to_this_computer`, `new`, `refused_offline`, `schema_too_new`, `with_tx`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// The error of every fallible call. `message` is English for logs and bug reports; it never
 /// holds a secret.
+///
+/// In Dart `toString` prints the kind, the code and the message, so a log line or an
+/// unhandled exception names the failure.
 class WalletError implements FrbException {
   final WalletErrorKind kind;
 
@@ -25,7 +28,7 @@ class WalletError implements FrbException {
   final int? txId;
 
   /// The listener's origin, `scheme://host:port`, for `PinnedNoAdvert`, `PinChanged`,
-  /// `PeerProbeFailed`: the one `EpicWallet::forget_peer_pin` takes.
+  /// `PeerProbeFailed` and a `ThisComputer` refused before anything was stored: the one `EpicWallet::forget_peer_pin` takes.
   final String? origin;
 
   /// For `PinChanged`: the pinned key, 64 hex digits.
@@ -43,6 +46,9 @@ class WalletError implements FrbException {
     this.pinnedKey,
     this.shownKey,
   });
+
+  @override
+  String toString() => 'WalletError(${kind.name}, $code): $message';
 
   @override
   int get hashCode =>
@@ -413,7 +419,10 @@ enum WalletErrorKind {
   nativeExchangeFailed,
 
   /// The native endpoint's address is one of this device's own; a native slate goes only
-  /// to other devices. The send is stored as `NativeExchangeFailed` describes; deliver it
+  /// to other devices. A send to `localhost` or an address literal of this device fails
+  /// before it stores anything, with `WalletError::origin` set and no `tx_id`: ask for the
+  /// legacy dialect. A name that only resolves to this device fails after the send was
+  /// stored, as `NativeExchangeFailed` describes (`WalletError::tx_id` is set): deliver it
   /// again in the legacy dialect or cancel it.
   thisComputer,
 
@@ -451,7 +460,11 @@ enum WalletErrorKind {
   epic1WrongNetwork,
 
   /// The text is not an epic1 link.
-  notAnEpic1Link;
+  notAnEpic1Link,
+
+  /// The wallet's database was written by a newer LEPIC or app version than this one reads.
+  /// Nothing was changed; update the app to open the wallet. Do not delete or restore it.
+  walletTooNew;
 
   /// The stable number of this kind.
   Future<int> code() =>

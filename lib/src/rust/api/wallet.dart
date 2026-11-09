@@ -397,7 +397,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Fails with `NoSlateToSend` for an id the outbox does not hold or whose transaction
   /// finished, was cancelled or expired, `ContactsOffline` or
   /// `EpicboxOff`, and `TransportFailed` when the relay fails.
-  Future<void> contactOutboxResend({
+  ///
+  /// Returns the format the entry went out in: `Native` for a `BEGINEPICTX.` slate, `Legacy`
+  /// for any other entry, including an app payload, which is no slate.
+  Future<SlateWire> contactOutboxResend({
     required BigInt id,
     required ContactRelayMode relayMode,
   });
@@ -465,7 +468,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `SealingOff` only when its wallet cannot open sealed slates, and `NoSlateToSend` when
   /// the transaction has no slate to send or belongs to another contact. A failure leaves
   /// the transaction as it was: `cancel_transaction` unlocks a send's inputs.
-  Future<void> contactPostSlate({
+  ///
+  /// Returns the format the slate was sealed in.
+  Future<SlateWire> contactPostSlate({
     required String contactId,
     required int txId,
     SlatePurpose? purpose,
@@ -809,7 +814,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   ///
   /// Fails with `RelayNotConfirmed` when `relay_ok` is false, `Epic1NotFound` when no answer
   /// is stored, and `TransportFailed` when the post failed.
-  Future<void> epic1PostAnswer({
+  ///
+  /// Returns the format the answer went out in, always `Native`.
+  Future<SlateWire> epic1PostAnswer({
     required String slateId,
     required bool relayOk,
     required ContactRelayMode relayMode,
@@ -1075,7 +1082,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// answer is stored for the slate, `InPersonNoMailbox` when its code named no mailbox,
   /// `ContactsOffline` or `EpicboxOff` before connecting, and `TransportFailed` when the
   /// post failed.
-  Future<void> inPersonPost({
+  ///
+  /// Returns the format the answer went out in, always `Native`.
+  Future<SlateWire> inPersonPost({
     required String slateId,
     required bool relayOk,
     required ContactRelayMode relayMode,
@@ -1108,13 +1117,17 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Makes an in-person send of `amount` atomic units, as [`EpicWallet::in_person_invoice`]
   /// makes an invoice, selecting outputs as `send` does. The send is stored and its inputs
   /// stay locked until an answer is finalized, the code expires or the send is cancelled.
+  /// `ttl_blocks` is as for `in_person_invoice`: the app chooses it, LEPIC uses 30 when `None`
+  /// and refuses one of 10 or fewer.
   ///
-  /// Fails with `InvalidArgument` for a zero amount, and as `send` fails before it delivers.
+  /// Fails with `InvalidArgument` for a zero amount or a TTL of 10 blocks or fewer, and as
+  /// `send` fails before it delivers.
   Future<InPersonCode> inPersonSend({
     required BigInt amount,
     required BigInt minimumConfirmations,
     String? message,
     SendOptions? options,
+    BigInt? ttlBlocks,
     required ContactRelayMode relayMode,
   });
 
@@ -1629,8 +1642,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// drain finalizes and posts it when the answer arrives; a wallet that answered the slate
   /// before answers it again the same way. Fails with `InvalidArgument` when `tx_id` is not
   /// a send over Epicbox waiting for its answer, and with `TransportFailed` when the relay fails
-  /// again.
-  Future<void> resendEpicbox({required int txId});
+  /// again. Returns the format the slate went out in this time.
+  Future<SlateWire> resendEpicbox({required int txId});
 
   /// Delivers the slate of send `tx_id` again, to the wallet listening at `url`, which may
   /// be another address or method than the first attempt, then finalizes and posts as
@@ -1827,10 +1840,12 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// the errors of [`EpicWallet::estimate_fee`]. For an origin with a pin it fails, storing
   /// nothing, with `PinnedNoAdvert` when the wallet there advertises no native endpoint,
   /// `PinChanged` when it advertises another key, and `PeerProbeFailed` when it could not
-  /// be asked; [`WalletError::origin`] names the origin. A native exchange that fails after
-  /// the send was stored fails with `ThisComputer` for a wallet on this device and
-  /// `NativeExchangeFailed` otherwise; [`WalletError::tx_id`] names the send, which waits for
-  /// a resend or a cancel. Fails with `TransportFailed` when the other
+  /// be asked; [`WalletError::origin`] names the origin. A wallet advertising a native
+  /// endpoint at `localhost` or an address of this device fails, storing nothing, with
+  /// `ThisComputer` and the origin; ask for the legacy dialect. A native exchange that fails
+  /// after the send was stored fails with `ThisComputer` for a name that resolves to this
+  /// device and `NativeExchangeFailed` otherwise; [`WalletError::tx_id`] names the send,
+  /// which waits for a resend or a cancel. Fails with `TransportFailed` when the other
   /// wallet could not be reached, refused, or answered with something else than a slate: the
   /// send is then stored as sent with its inputs locked, so deliver it again with
   /// [`EpicWallet::resend_http`] or cancel it with [`EpicWallet::cancel_transaction`]. Fails

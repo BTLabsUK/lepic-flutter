@@ -155,16 +155,24 @@ class HttpResentTx {
   /// The dialect the resend took to the other wallet.
   final SendDialect dialect;
 
+  /// How the S1 went out this time, as [`HttpSentTx::format`] says.
+  final SlateWire format;
+
   const HttpResentTx({
     required this.txId,
     required this.slateId,
     required this.posted,
     required this.dialect,
+    required this.format,
   });
 
   @override
   int get hashCode =>
-      txId.hashCode ^ slateId.hashCode ^ posted.hashCode ^ dialect.hashCode;
+      txId.hashCode ^
+      slateId.hashCode ^
+      posted.hashCode ^
+      dialect.hashCode ^
+      format.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -174,7 +182,8 @@ class HttpResentTx {
           txId == other.txId &&
           slateId == other.slateId &&
           posted == other.posted &&
-          dialect == other.dialect;
+          dialect == other.dialect &&
+          format == other.format;
 }
 
 /// A send over HTTP that the other wallet answered and this wallet finalized.
