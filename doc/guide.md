@@ -1098,3 +1098,56 @@ them as quoted text and do not use a reference to credit a payment. `sealedOpen`
 `epictx` for `BEGINEPICTX.` text and `epicsealed` for any other. It is a top-level function in
 `lib/src/rust/api/contact.dart`, which `package:lepic/lepic.dart` does not export.
 
+## Offline sessions
+
+`WalletConfig.offline` opens a wallet for a cold device that never reaches a node or a relay. The
+value is read when the wallet is created, restored or opened; changing it means opening the wallet
+again. `setServers` and `nodeTipFor` fail with `InvalidArgument` for another value.
+
+Every call that needs the node or the Epicbox relay fails at once with `Offline`, before any name
+lookup or connection. That includes `scan`, a refresh and `kernelOnChain`.
+
+Sending, receiving and finalizing by slate text or file, and their invoice stages, work. They use
+the highest chain tip the last refresh confirmed, and fail with `Offline` when there is none, so
+refresh the wallet online once before going offline. Finalizing stores the transaction as
+`finalized` without posting it, and `FinalizedTx.posted` is false. `finishedPayment(txId:)` returns
+the final slate as legacy V3 JSON, which `epic-wallet post -i` reads. Save it as a file, or show it
+with `encodeUrSlate`, for a device that posts it.
+
+`ContactRelayMode.offline` is a separate setting of the contact calls. It leaves the wallet able to
+reach the node and stops only the contact calls from reaching a relay
+([Contacts and pairing](#contacts-and-pairing)).
+
+
+## Secrets that cross the boundary
+
+The user types passwords, PINs and recovery phrases in Dart, and Dart strings cannot be wiped, so
+each crossing is listed here. Nothing else crosses
+([LEPIC ADR 0014](https://github.com/BTLabsUK/lepic/blob/main/docs/adr/0014-secrets-at-the-flutter-boundary.md)).
+
+| Direction | What | Through |
+|---|---|---|
+| Into Rust | the wallet password and the PIN | `create`, `open`, `createWithPin`, `openWithPin`, `changePassword`, `changePin` |
+| Into Rust | a recovery phrase | `create` and `createWithPin` when restoring, `validateMnemonic`, `walletFingerprint`, `resetPassword` |
+| Into Rust | the password of an `epic-wallet` `wallet.seed` file | `importWalletSeed` |
+| Into Rust | the node API secret | `WalletConfig.nodeApiSecret` |
+| Out of Rust | the recovery phrase | `mnemonic(password:)`, `mnemonicWithPin(...)`, after the credential is checked |
+| Out of Rust, into the app's `SecretStore` only | the vault, the PIN key, the PIN attempt count | the keys in [Secret store, password and PIN](#secret-store-password-and-pin) |
+| Both ways | an invite link (`epiccash://pair/1/...`) and its five pairing words | `pairingInvite`, `pairingFindWords`, `pairingPreview`, `pairingAccept` |
+
+A new wallet is created without a phrase; the app asks for it with `mnemonic` for the backup screen.
+Seed bytes, private keys, blinding factors, nonces and vault keys never leave Rust. For a PIN
+wallet, LEPIC generates the wallet password, seals it under the PIN together with the PIN key and
+passes the sealed text to the app. The app holds only the sealed text.
+
+The sealed text alone, or with the vault, does not reveal the PIN. With the store's contents a PIN
+can be guessed offline at the cost of one Argon2id run per guess, so the store stays on the device
+and out of backups.
+
+Whoever holds an invite link or its pairing words can pair as the contact until the invite is used
+or expires. The app does not store or log them. Reply, confirmation and card links are not secrets.
+
+Every call that receives a `WalletConfig` moves the node API secret into a buffer that is wiped when
+dropped. Secrets passed as arguments are held in zeroizing values. The app should not write any of
+the values above to logs or analytics.
+
