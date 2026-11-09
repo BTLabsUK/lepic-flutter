@@ -794,12 +794,16 @@ class Epic1Paid {
   /// The transport, from 0, the payment was posted to.
   final int? posted;
 
+  /// How the payment is written: always `Native`, a sealed `lepic.v1` slate.
+  final SlateWire format;
+
   const Epic1Paid({
     required this.txId,
     required this.slateId,
     required this.address,
     required this.attempts,
     this.posted,
+    required this.format,
   });
 
   @override
@@ -808,7 +812,8 @@ class Epic1Paid {
       slateId.hashCode ^
       address.hashCode ^
       attempts.hashCode ^
-      posted.hashCode;
+      posted.hashCode ^
+      format.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -819,7 +824,8 @@ class Epic1Paid {
           slateId == other.slateId &&
           address == other.address &&
           attempts == other.attempts &&
-          posted == other.posted;
+          posted == other.posted &&
+          format == other.format;
 }
 
 /// The Epicbox relay connection.
@@ -1236,12 +1242,17 @@ class InPersonCode {
   /// answer comes back by scan.
   final String? mailbox;
 
+  /// How the code is written: always `Native`, a raw `lepic.v1` slate, whatever
+  /// `EpicWallet::set_native_direct` says.
+  final SlateWire format;
+
   const InPersonCode({
     required this.txId,
     required this.slateId,
     required this.bytes,
     required this.ttlCutoff,
     this.mailbox,
+    required this.format,
   });
 
   @override
@@ -1250,7 +1261,8 @@ class InPersonCode {
       slateId.hashCode ^
       bytes.hashCode ^
       ttlCutoff.hashCode ^
-      mailbox.hashCode;
+      mailbox.hashCode ^
+      format.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1261,7 +1273,8 @@ class InPersonCode {
           slateId == other.slateId &&
           bytes == other.bytes &&
           ttlCutoff == other.ttlCutoff &&
-          mailbox == other.mailbox;
+          mailbox == other.mailbox &&
+          format == other.format;
 }
 
 /// A code this wallet showed and the answers taken for it, from
@@ -1463,6 +1476,9 @@ class InPersonReply {
   final String checkCode;
   final InPersonHost? mailbox;
 
+  /// How the answer is written: always `Native`, a sealed `lepic.v1` slate.
+  final SlateWire format;
+
   const InPersonReply({
     required this.txId,
     required this.slateId,
@@ -1470,6 +1486,7 @@ class InPersonReply {
     required this.armored,
     required this.checkCode,
     this.mailbox,
+    required this.format,
   });
 
   @override
@@ -1479,7 +1496,8 @@ class InPersonReply {
       envelope.hashCode ^
       armored.hashCode ^
       checkCode.hashCode ^
-      mailbox.hashCode;
+      mailbox.hashCode ^
+      format.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1491,7 +1509,8 @@ class InPersonReply {
           envelope == other.envelope &&
           armored == other.armored &&
           checkCode == other.checkCode &&
-          mailbox == other.mailbox;
+          mailbox == other.mailbox &&
+          format == other.format;
 }
 
 /// An answer taken by `EpicWallet::in_person_take` or `EpicWallet::in_person_take_qr`.
@@ -2238,16 +2257,24 @@ class PaidInvoice {
   final BigInt amount;
   final BigInt fee;
 
+  /// How the I2 was sealed for the contact: `Native` when the invoice came as a native slate.
+  final SlateWire format;
+
   const PaidInvoice({
     required this.txId,
     required this.slateId,
     required this.amount,
     required this.fee,
+    required this.format,
   });
 
   @override
   int get hashCode =>
-      txId.hashCode ^ slateId.hashCode ^ amount.hashCode ^ fee.hashCode;
+      txId.hashCode ^
+      slateId.hashCode ^
+      amount.hashCode ^
+      fee.hashCode ^
+      format.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2257,7 +2284,8 @@ class PaidInvoice {
           txId == other.txId &&
           slateId == other.slateId &&
           amount == other.amount &&
-          fee == other.fee;
+          fee == other.fee &&
+          format == other.format;
 }
 
 /// An invoice paid by file, from `EpicWallet::pay_invoice_slate` and
@@ -2275,12 +2303,16 @@ class PaidInvoiceSlate {
   /// The I2 for the issuer.
   final String json;
 
+  /// How the I2 is written: `Legacy`, the JSON in `json`.
+  final SlateWire format;
+
   const PaidInvoiceSlate({
     required this.txId,
     required this.slateId,
     required this.amount,
     required this.fee,
     required this.json,
+    required this.format,
   });
 
   @override
@@ -2289,7 +2321,8 @@ class PaidInvoiceSlate {
       slateId.hashCode ^
       amount.hashCode ^
       fee.hashCode ^
-      json.hashCode;
+      json.hashCode ^
+      format.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2300,7 +2333,8 @@ class PaidInvoiceSlate {
           slateId == other.slateId &&
           amount == other.amount &&
           fee == other.fee &&
-          json == other.json;
+          json == other.json &&
+          format == other.format;
 }
 
 /// A pairing request another wallet sent, from `EpicWallet::pairing_requests`. `invite_link`
@@ -2803,16 +2837,24 @@ class ReceivedSlate {
   /// already answered, not as a second payment.
   final bool repeated;
 
+  /// How the reply is written: `Legacy`, the JSON in `json`.
+  final SlateWire format;
+
   const ReceivedSlate({
     required this.txId,
     required this.slateId,
     required this.json,
     required this.repeated,
+    required this.format,
   });
 
   @override
   int get hashCode =>
-      txId.hashCode ^ slateId.hashCode ^ json.hashCode ^ repeated.hashCode;
+      txId.hashCode ^
+      slateId.hashCode ^
+      json.hashCode ^
+      repeated.hashCode ^
+      format.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2822,7 +2864,8 @@ class ReceivedSlate {
           txId == other.txId &&
           slateId == other.slateId &&
           json == other.json &&
-          repeated == other.repeated;
+          repeated == other.repeated &&
+          format == other.format;
 }
 
 /// Progress of `EpicWallet::refresh`. Only the last event of a successful refresh has `summary`.
@@ -3038,6 +3081,9 @@ class SealedAnswer {
   final String answer;
   final bool sealed;
 
+  /// `Native` when `answer` is a native slate (`BEGINEPICTX.`), else `Legacy`.
+  final SlateWire format;
+
   const SealedAnswer({
     required this.txId,
     required this.slateId,
@@ -3045,6 +3091,7 @@ class SealedAnswer {
     required this.fee,
     required this.answer,
     required this.sealed,
+    required this.format,
   });
 
   @override
@@ -3054,7 +3101,8 @@ class SealedAnswer {
       amount.hashCode ^
       fee.hashCode ^
       answer.hashCode ^
-      sealed.hashCode;
+      sealed.hashCode ^
+      format.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -3066,7 +3114,8 @@ class SealedAnswer {
           amount == other.amount &&
           fee == other.fee &&
           answer == other.answer &&
-          sealed == other.sealed;
+          sealed == other.sealed &&
+          format == other.format;
 }
 
 /// Sealed text opened by `EpicWallet::sealed_open`: who it is from and what it holds.

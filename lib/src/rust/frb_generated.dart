@@ -206,7 +206,7 @@ abstract class RustLibApi extends BaseApi {
     required String contactId,
   });
 
-  Future<void> crateApiWalletEpicWalletContactOutboxResend({
+  Future<SlateWire> crateApiWalletEpicWalletContactOutboxResend({
     required EpicWallet that,
     required BigInt id,
     required ContactRelayMode relayMode,
@@ -243,7 +243,7 @@ abstract class RustLibApi extends BaseApi {
     required ContactRelayMode relayMode,
   });
 
-  Future<void> crateApiWalletEpicWalletContactPostSlate({
+  Future<SlateWire> crateApiWalletEpicWalletContactPostSlate({
     required EpicWallet that,
     required String contactId,
     required int txId,
@@ -440,7 +440,7 @@ abstract class RustLibApi extends BaseApi {
     required ContactRelayMode relayMode,
   });
 
-  Future<void> crateApiWalletEpicWalletEpic1PostAnswer({
+  Future<SlateWire> crateApiWalletEpicWalletEpic1PostAnswer({
     required EpicWallet that,
     required String slateId,
     required bool relayOk,
@@ -588,7 +588,7 @@ abstract class RustLibApi extends BaseApi {
     required ContactRelayMode relayMode,
   });
 
-  Future<void> crateApiWalletEpicWalletInPersonPost({
+  Future<SlateWire> crateApiWalletEpicWalletInPersonPost({
     required EpicWallet that,
     required String slateId,
     required bool relayOk,
@@ -616,6 +616,7 @@ abstract class RustLibApi extends BaseApi {
     required BigInt minimumConfirmations,
     String? message,
     SendOptions? options,
+    BigInt? ttlBlocks,
     required ContactRelayMode relayMode,
   });
 
@@ -881,7 +882,7 @@ abstract class RustLibApi extends BaseApi {
     required int txId,
   });
 
-  Future<void> crateApiWalletEpicWalletResendEpicbox({
+  Future<SlateWire> crateApiWalletEpicWalletResendEpicbox({
     required EpicWallet that,
     required int txId,
   });
@@ -2188,7 +2189,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiWalletEpicWalletContactOutboxResend({
+  Future<SlateWire> crateApiWalletEpicWalletContactOutboxResend({
     required EpicWallet that,
     required BigInt id,
     required ContactRelayMode relayMode,
@@ -2211,7 +2212,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
+          decodeSuccessData: sse_decode_slate_wire,
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletContactOutboxResendConstMeta,
@@ -2446,7 +2447,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiWalletEpicWalletContactPostSlate({
+  Future<SlateWire> crateApiWalletEpicWalletContactPostSlate({
     required EpicWallet that,
     required String contactId,
     required int txId,
@@ -2473,7 +2474,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
+          decodeSuccessData: sse_decode_slate_wire,
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletContactPostSlateConstMeta,
@@ -3807,7 +3808,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiWalletEpicWalletEpic1PostAnswer({
+  Future<SlateWire> crateApiWalletEpicWalletEpic1PostAnswer({
     required EpicWallet that,
     required String slateId,
     required bool relayOk,
@@ -3832,7 +3833,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
+          decodeSuccessData: sse_decode_slate_wire,
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletEpic1PostAnswerConstMeta,
@@ -4882,7 +4883,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiWalletEpicWalletInPersonPost({
+  Future<SlateWire> crateApiWalletEpicWalletInPersonPost({
     required EpicWallet that,
     required String slateId,
     required bool relayOk,
@@ -4907,7 +4908,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
+          decodeSuccessData: sse_decode_slate_wire,
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletInPersonPostConstMeta,
@@ -5022,6 +5023,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     required BigInt minimumConfirmations,
     String? message,
     SendOptions? options,
+    BigInt? ttlBlocks,
     required ContactRelayMode relayMode,
   }) {
     return handler.executeNormal(
@@ -5036,6 +5038,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_u_64(minimumConfirmations, serializer);
           sse_encode_opt_String(message, serializer);
           sse_encode_opt_box_autoadd_send_options(options, serializer);
+          sse_encode_opt_box_autoadd_u_64(ttlBlocks, serializer);
           sse_encode_contact_relay_mode(relayMode, serializer);
           pdeCallFfi(
             generalizedFrbRustBinding,
@@ -5055,6 +5058,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           minimumConfirmations,
           message,
           options,
+          ttlBlocks,
           relayMode,
         ],
         apiImpl: this,
@@ -5071,6 +5075,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           "minimumConfirmations",
           "message",
           "options",
+          "ttlBlocks",
           "relayMode",
         ],
       );
@@ -7006,7 +7011,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiWalletEpicWalletResendEpicbox({
+  Future<SlateWire> crateApiWalletEpicWalletResendEpicbox({
     required EpicWallet that,
     required int txId,
   }) {
@@ -7027,7 +7032,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
+          decodeSuccessData: sse_decode_slate_wire,
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletResendEpicboxConstMeta,
@@ -11350,14 +11355,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Epic1Paid dco_decode_epic_1_paid(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
     return Epic1Paid(
       txId: dco_decode_u_32(arr[0]),
       slateId: dco_decode_String(arr[1]),
       address: dco_decode_String(arr[2]),
       attempts: dco_decode_list_epic_1_attempt(arr[3]),
       posted: dco_decode_opt_box_autoadd_u_32(arr[4]),
+      format: dco_decode_slate_wire(arr[5]),
     );
   }
 
@@ -11550,13 +11556,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   HttpResentTx dco_decode_http_resent_tx(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
     return HttpResentTx(
       txId: dco_decode_u_32(arr[0]),
       slateId: dco_decode_String(arr[1]),
       posted: dco_decode_bool(arr[2]),
       dialect: dco_decode_send_dialect(arr[3]),
+      format: dco_decode_slate_wire(arr[4]),
     );
   }
 
@@ -11648,14 +11655,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   InPersonCode dco_decode_in_person_code(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
     return InPersonCode(
       txId: dco_decode_u_32(arr[0]),
       slateId: dco_decode_String(arr[1]),
       bytes: dco_decode_list_prim_u_8_strict(arr[2]),
       ttlCutoff: dco_decode_u_64(arr[3]),
       mailbox: dco_decode_opt_String(arr[4]),
+      format: dco_decode_slate_wire(arr[5]),
     );
   }
 
@@ -11726,8 +11734,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   InPersonReply dco_decode_in_person_reply(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 6)
-      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
     return InPersonReply(
       txId: dco_decode_u_32(arr[0]),
       slateId: dco_decode_String(arr[1]),
@@ -11735,6 +11743,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       armored: dco_decode_String(arr[3]),
       checkCode: dco_decode_String(arr[4]),
       mailbox: dco_decode_opt_box_autoadd_in_person_host(arr[5]),
+      format: dco_decode_slate_wire(arr[6]),
     );
   }
 
@@ -12437,13 +12446,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   PaidInvoice dco_decode_paid_invoice(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
     return PaidInvoice(
       txId: dco_decode_u_32(arr[0]),
       slateId: dco_decode_String(arr[1]),
       amount: dco_decode_u_64(arr[2]),
       fee: dco_decode_u_64(arr[3]),
+      format: dco_decode_slate_wire(arr[4]),
     );
   }
 
@@ -12451,14 +12461,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   PaidInvoiceSlate dco_decode_paid_invoice_slate(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
     return PaidInvoiceSlate(
       txId: dco_decode_u_32(arr[0]),
       slateId: dco_decode_String(arr[1]),
       amount: dco_decode_u_64(arr[2]),
       fee: dco_decode_u_64(arr[3]),
       json: dco_decode_String(arr[4]),
+      format: dco_decode_slate_wire(arr[5]),
     );
   }
 
@@ -12680,13 +12691,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ReceivedSlate dco_decode_received_slate(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
     return ReceivedSlate(
       txId: dco_decode_u_32(arr[0]),
       slateId: dco_decode_String(arr[1]),
       json: dco_decode_String(arr[2]),
       repeated: dco_decode_bool(arr[3]),
+      format: dco_decode_slate_wire(arr[4]),
     );
   }
 
@@ -12789,8 +12801,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   SealedAnswer dco_decode_sealed_answer(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 6)
-      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
     return SealedAnswer(
       txId: dco_decode_u_32(arr[0]),
       slateId: dco_decode_String(arr[1]),
@@ -12798,6 +12810,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       fee: dco_decode_u_64(arr[3]),
       answer: dco_decode_String(arr[4]),
       sealed: dco_decode_bool(arr[5]),
+      format: dco_decode_slate_wire(arr[6]),
     );
   }
 
@@ -14245,12 +14258,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_address = sse_decode_String(deserializer);
     var var_attempts = sse_decode_list_epic_1_attempt(deserializer);
     var var_posted = sse_decode_opt_box_autoadd_u_32(deserializer);
+    var var_format = sse_decode_slate_wire(deserializer);
     return Epic1Paid(
       txId: var_txId,
       slateId: var_slateId,
       address: var_address,
       attempts: var_attempts,
       posted: var_posted,
+      format: var_format,
     );
   }
 
@@ -14501,11 +14516,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_slateId = sse_decode_String(deserializer);
     var var_posted = sse_decode_bool(deserializer);
     var var_dialect = sse_decode_send_dialect(deserializer);
+    var var_format = sse_decode_slate_wire(deserializer);
     return HttpResentTx(
       txId: var_txId,
       slateId: var_slateId,
       posted: var_posted,
       dialect: var_dialect,
+      format: var_format,
     );
   }
 
@@ -14618,12 +14635,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_bytes = sse_decode_list_prim_u_8_strict(deserializer);
     var var_ttlCutoff = sse_decode_u_64(deserializer);
     var var_mailbox = sse_decode_opt_String(deserializer);
+    var var_format = sse_decode_slate_wire(deserializer);
     return InPersonCode(
       txId: var_txId,
       slateId: var_slateId,
       bytes: var_bytes,
       ttlCutoff: var_ttlCutoff,
       mailbox: var_mailbox,
+      format: var_format,
     );
   }
 
@@ -14714,6 +14733,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_armored = sse_decode_String(deserializer);
     var var_checkCode = sse_decode_String(deserializer);
     var var_mailbox = sse_decode_opt_box_autoadd_in_person_host(deserializer);
+    var var_format = sse_decode_slate_wire(deserializer);
     return InPersonReply(
       txId: var_txId,
       slateId: var_slateId,
@@ -14721,6 +14741,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       armored: var_armored,
       checkCode: var_checkCode,
       mailbox: var_mailbox,
+      format: var_format,
     );
   }
 
@@ -15826,11 +15847,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_slateId = sse_decode_String(deserializer);
     var var_amount = sse_decode_u_64(deserializer);
     var var_fee = sse_decode_u_64(deserializer);
+    var var_format = sse_decode_slate_wire(deserializer);
     return PaidInvoice(
       txId: var_txId,
       slateId: var_slateId,
       amount: var_amount,
       fee: var_fee,
+      format: var_format,
     );
   }
 
@@ -15842,12 +15865,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_amount = sse_decode_u_64(deserializer);
     var var_fee = sse_decode_u_64(deserializer);
     var var_json = sse_decode_String(deserializer);
+    var var_format = sse_decode_slate_wire(deserializer);
     return PaidInvoiceSlate(
       txId: var_txId,
       slateId: var_slateId,
       amount: var_amount,
       fee: var_fee,
       json: var_json,
+      format: var_format,
     );
   }
 
@@ -16103,11 +16128,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_slateId = sse_decode_String(deserializer);
     var var_json = sse_decode_String(deserializer);
     var var_repeated = sse_decode_bool(deserializer);
+    var var_format = sse_decode_slate_wire(deserializer);
     return ReceivedSlate(
       txId: var_txId,
       slateId: var_slateId,
       json: var_json,
       repeated: var_repeated,
+      format: var_format,
     );
   }
 
@@ -16215,6 +16242,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_fee = sse_decode_u_64(deserializer);
     var var_answer = sse_decode_String(deserializer);
     var var_sealed = sse_decode_bool(deserializer);
+    var var_format = sse_decode_slate_wire(deserializer);
     return SealedAnswer(
       txId: var_txId,
       slateId: var_slateId,
@@ -16222,6 +16250,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       fee: var_fee,
       answer: var_answer,
       sealed: var_sealed,
+      format: var_format,
     );
   }
 
@@ -17892,6 +17921,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.address, serializer);
     sse_encode_list_epic_1_attempt(self.attempts, serializer);
     sse_encode_opt_box_autoadd_u_32(self.posted, serializer);
+    sse_encode_slate_wire(self.format, serializer);
   }
 
   @protected
@@ -18062,6 +18092,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.slateId, serializer);
     sse_encode_bool(self.posted, serializer);
     sse_encode_send_dialect(self.dialect, serializer);
+    sse_encode_slate_wire(self.format, serializer);
   }
 
   @protected
@@ -18142,6 +18173,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_list_prim_u_8_strict(self.bytes, serializer);
     sse_encode_u_64(self.ttlCutoff, serializer);
     sse_encode_opt_String(self.mailbox, serializer);
+    sse_encode_slate_wire(self.format, serializer);
   }
 
   @protected
@@ -18205,6 +18237,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.armored, serializer);
     sse_encode_String(self.checkCode, serializer);
     sse_encode_opt_box_autoadd_in_person_host(self.mailbox, serializer);
+    sse_encode_slate_wire(self.format, serializer);
   }
 
   @protected
@@ -19186,6 +19219,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.slateId, serializer);
     sse_encode_u_64(self.amount, serializer);
     sse_encode_u_64(self.fee, serializer);
+    sse_encode_slate_wire(self.format, serializer);
   }
 
   @protected
@@ -19199,6 +19233,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_u_64(self.amount, serializer);
     sse_encode_u_64(self.fee, serializer);
     sse_encode_String(self.json, serializer);
+    sse_encode_slate_wire(self.format, serializer);
   }
 
   @protected
@@ -19386,6 +19421,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.slateId, serializer);
     sse_encode_String(self.json, serializer);
     sse_encode_bool(self.repeated, serializer);
+    sse_encode_slate_wire(self.format, serializer);
   }
 
   @protected
@@ -19468,6 +19504,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_u_64(self.fee, serializer);
     sse_encode_String(self.answer, serializer);
     sse_encode_bool(self.sealed, serializer);
+    sse_encode_slate_wire(self.format, serializer);
   }
 
   @protected
@@ -20292,7 +20329,10 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// Fails with `NoSlateToSend` for an id the outbox does not hold or whose transaction
   /// finished, was cancelled or expired, `ContactsOffline` or
   /// `EpicboxOff`, and `TransportFailed` when the relay fails.
-  Future<void> contactOutboxResend({
+  ///
+  /// Returns the format the entry went out in: `Native` for a `BEGINEPICTX.` slate, `Legacy`
+  /// for any other entry, including an app payload, which is no slate.
+  Future<SlateWire> contactOutboxResend({
     required BigInt id,
     required ContactRelayMode relayMode,
   }) => RustLib.instance.api.crateApiWalletEpicWalletContactOutboxResend(
@@ -20384,7 +20424,9 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// `SealingOff` only when its wallet cannot open sealed slates, and `NoSlateToSend` when
   /// the transaction has no slate to send or belongs to another contact. A failure leaves
   /// the transaction as it was: `cancel_transaction` unlocks a send's inputs.
-  Future<void> contactPostSlate({
+  ///
+  /// Returns the format the slate was sealed in.
+  Future<SlateWire> contactPostSlate({
     required String contactId,
     required int txId,
     SlatePurpose? purpose,
@@ -20791,7 +20833,9 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   ///
   /// Fails with `RelayNotConfirmed` when `relay_ok` is false, `Epic1NotFound` when no answer
   /// is stored, and `TransportFailed` when the post failed.
-  Future<void> epic1PostAnswer({
+  ///
+  /// Returns the format the answer went out in, always `Native`.
+  Future<SlateWire> epic1PostAnswer({
     required String slateId,
     required bool relayOk,
     required ContactRelayMode relayMode,
@@ -21090,7 +21134,9 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// answer is stored for the slate, `InPersonNoMailbox` when its code named no mailbox,
   /// `ContactsOffline` or `EpicboxOff` before connecting, and `TransportFailed` when the
   /// post failed.
-  Future<void> inPersonPost({
+  ///
+  /// Returns the format the answer went out in, always `Native`.
+  Future<SlateWire> inPersonPost({
     required String slateId,
     required bool relayOk,
     required ContactRelayMode relayMode,
@@ -21139,13 +21185,17 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// Makes an in-person send of `amount` atomic units, as [`EpicWallet::in_person_invoice`]
   /// makes an invoice, selecting outputs as `send` does. The send is stored and its inputs
   /// stay locked until an answer is finalized, the code expires or the send is cancelled.
+  /// `ttl_blocks` is as for `in_person_invoice`: the app chooses it, LEPIC uses 30 when `None`
+  /// and refuses one of 10 or fewer.
   ///
-  /// Fails with `InvalidArgument` for a zero amount, and as `send` fails before it delivers.
+  /// Fails with `InvalidArgument` for a zero amount or a TTL of 10 blocks or fewer, and as
+  /// `send` fails before it delivers.
   Future<InPersonCode> inPersonSend({
     required BigInt amount,
     required BigInt minimumConfirmations,
     String? message,
     SendOptions? options,
+    BigInt? ttlBlocks,
     required ContactRelayMode relayMode,
   }) => RustLib.instance.api.crateApiWalletEpicWalletInPersonSend(
     that: this,
@@ -21153,6 +21203,7 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
     minimumConfirmations: minimumConfirmations,
     message: message,
     options: options,
+    ttlBlocks: ttlBlocks,
     relayMode: relayMode,
   );
 
@@ -21772,8 +21823,8 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// drain finalizes and posts it when the answer arrives; a wallet that answered the slate
   /// before answers it again the same way. Fails with `InvalidArgument` when `tx_id` is not
   /// a send over Epicbox waiting for its answer, and with `TransportFailed` when the relay fails
-  /// again.
-  Future<void> resendEpicbox({required int txId}) => RustLib.instance.api
+  /// again. Returns the format the slate went out in this time.
+  Future<SlateWire> resendEpicbox({required int txId}) => RustLib.instance.api
       .crateApiWalletEpicWalletResendEpicbox(that: this, txId: txId);
 
   /// Delivers the slate of send `tx_id` again, to the wallet listening at `url`, which may
@@ -22040,10 +22091,12 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// the errors of [`EpicWallet::estimate_fee`]. For an origin with a pin it fails, storing
   /// nothing, with `PinnedNoAdvert` when the wallet there advertises no native endpoint,
   /// `PinChanged` when it advertises another key, and `PeerProbeFailed` when it could not
-  /// be asked; [`WalletError::origin`] names the origin. A native exchange that fails after
-  /// the send was stored fails with `ThisComputer` for a wallet on this device and
-  /// `NativeExchangeFailed` otherwise; [`WalletError::tx_id`] names the send, which waits for
-  /// a resend or a cancel. Fails with `TransportFailed` when the other
+  /// be asked; [`WalletError::origin`] names the origin. A wallet advertising a native
+  /// endpoint at `localhost` or an address of this device fails, storing nothing, with
+  /// `ThisComputer` and the origin; ask for the legacy dialect. A native exchange that fails
+  /// after the send was stored fails with `ThisComputer` for a name that resolves to this
+  /// device and `NativeExchangeFailed` otherwise; [`WalletError::tx_id`] names the send,
+  /// which waits for a resend or a cancel. Fails with `TransportFailed` when the other
   /// wallet could not be reached, refused, or answered with something else than a slate: the
   /// send is then stored as sent with its inputs locked, so deliver it again with
   /// [`EpicWallet::resend_http`] or cancel it with [`EpicWallet::cancel_transaction`]. Fails
