@@ -11,7 +11,7 @@ import 'policy.dart';
 import 'tor.dart';
 
 // These functions are ignored because they are not marked as `pub`: `network`, `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Which Epic chain the wallet talks to.
 enum Chain { mainnet, floonet }
@@ -112,6 +112,10 @@ class ContactCollectReport {
   /// Notices for a slate this wallet does not hold yet, kept to apply when it arrives.
   final int buffered;
 
+  /// Answers taken from the reply mailboxes of in-person codes; each also raised
+  /// `InPersonAnswer`.
+  final int inPerson;
+
   const ContactCollectReport({
     required this.mailboxes,
     required this.capped,
@@ -128,6 +132,7 @@ class ContactCollectReport {
     required this.quarantined,
     required this.quarantineDropped,
     required this.buffered,
+    this.inPerson = 0,
   });
 
   @override
@@ -146,7 +151,8 @@ class ContactCollectReport {
       ended.hashCode ^
       quarantined.hashCode ^
       quarantineDropped.hashCode ^
-      buffered.hashCode;
+      buffered.hashCode ^
+      inPerson.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -167,7 +173,8 @@ class ContactCollectReport {
           ended == other.ended &&
           quarantined == other.quarantined &&
           quarantineDropped == other.quarantineDropped &&
-          buffered == other.buffered;
+          buffered == other.buffered &&
+          inPerson == other.inPerson;
 }
 
 /// What `EpicWallet::contacts_import` restored.
@@ -401,6 +408,10 @@ class ContactView {
   final PairingEndReason? endedReason;
   final PlatformInt64? endedAtMs;
 
+  /// New slates to the contact go as native slates (RFC 0003): `native_direct` is on, the
+  /// contact claims native slates and the pairing is not private.
+  final bool nativeSlates;
+
   const ContactView({
     required this.contactId,
     required this.label,
@@ -430,6 +441,7 @@ class ContactView {
     this.peerEncKey,
     this.endedReason,
     this.endedAtMs,
+    this.nativeSlates = false,
   });
 
   @override
@@ -461,7 +473,8 @@ class ContactView {
       peerDomainAttestation.hashCode ^
       peerEncKey.hashCode ^
       endedReason.hashCode ^
-      endedAtMs.hashCode;
+      endedAtMs.hashCode ^
+      nativeSlates.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -495,7 +508,8 @@ class ContactView {
           peerDomainAttestation == other.peerDomainAttestation &&
           peerEncKey == other.peerEncKey &&
           endedReason == other.endedReason &&
-          endedAtMs == other.endedAtMs;
+          endedAtMs == other.endedAtMs &&
+          nativeSlates == other.nativeSlates;
 }
 
 /// Whether a contact's domain claim is proven by the well-known file its domain serves.
@@ -842,6 +856,370 @@ enum ImportedTxKind {
   sentMempool,
   receivedMempool,
   sentCreated,
+}
+
+/// An answer taken for a code this wallet showed.
+class InPersonAnswerView {
+  /// The answer's number among the answers to its code, from 1.
+  final int number;
+  final String checkCode;
+
+  /// An earlier answer to the code had the same check code: the user cannot tell the two
+  /// apart by it.
+  final bool sameCode;
+  final PlatformInt64 receivedAtMs;
+
+  const InPersonAnswerView({
+    required this.number,
+    required this.checkCode,
+    required this.sameCode,
+    required this.receivedAtMs,
+  });
+
+  @override
+  int get hashCode =>
+      number.hashCode ^
+      checkCode.hashCode ^
+      sameCode.hashCode ^
+      receivedAtMs.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonAnswerView &&
+          runtimeType == other.runtimeType &&
+          number == other.number &&
+          checkCode == other.checkCode &&
+          sameCode == other.sameCode &&
+          receivedAtMs == other.receivedAtMs;
+}
+
+/// An in-person code to show, from `EpicWallet::in_person_invoice` or
+/// `EpicWallet::in_person_send`.
+class InPersonCode {
+  final int txId;
+  final String slateId;
+
+  /// The raw `lepic.v1` slate to show: as one byte-mode QR code, or as the parts
+  /// `in_person_qr_parts` gives.
+  final Uint8List bytes;
+
+  /// The code is good until this height.
+  final BigInt ttlCutoff;
+
+  /// `domain:port` of the reply mailbox the code names; `None` when it names none and the
+  /// answer comes back by scan.
+  final String? mailbox;
+
+  const InPersonCode({
+    required this.txId,
+    required this.slateId,
+    required this.bytes,
+    required this.ttlCutoff,
+    this.mailbox,
+  });
+
+  @override
+  int get hashCode =>
+      txId.hashCode ^
+      slateId.hashCode ^
+      bytes.hashCode ^
+      ttlCutoff.hashCode ^
+      mailbox.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonCode &&
+          runtimeType == other.runtimeType &&
+          txId == other.txId &&
+          slateId == other.slateId &&
+          bytes == other.bytes &&
+          ttlCutoff == other.ttlCutoff &&
+          mailbox == other.mailbox;
+}
+
+/// A code this wallet showed and the answers taken for it, from
+/// `EpicWallet::in_person_answers`.
+class InPersonCodeView {
+  final int txId;
+  final String slateId;
+
+  /// `S1` or `I1`.
+  final SlateStage stage;
+  final BigInt ttlCutoff;
+  final String? mailbox;
+
+  /// No more answers are taken.
+  final bool closed;
+
+  /// The number of the answer finalized.
+  final int? finalized;
+  final List<InPersonAnswerView> answers;
+
+  const InPersonCodeView({
+    required this.txId,
+    required this.slateId,
+    required this.stage,
+    required this.ttlCutoff,
+    this.mailbox,
+    required this.closed,
+    this.finalized,
+    required this.answers,
+  });
+
+  @override
+  int get hashCode =>
+      txId.hashCode ^
+      slateId.hashCode ^
+      stage.hashCode ^
+      ttlCutoff.hashCode ^
+      mailbox.hashCode ^
+      closed.hashCode ^
+      finalized.hashCode ^
+      answers.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonCodeView &&
+          runtimeType == other.runtimeType &&
+          txId == other.txId &&
+          slateId == other.slateId &&
+          stage == other.stage &&
+          ttlCutoff == other.ttlCutoff &&
+          mailbox == other.mailbox &&
+          closed == other.closed &&
+          finalized == other.finalized &&
+          answers == other.answers;
+}
+
+/// A reply mailbox an in-person code names, as `EpicWallet::in_person_read` reports it: show
+/// it before the answer is posted there.
+class InPersonHost {
+  final String host;
+  final int port;
+
+  /// The host is in the wallet's relay list.
+  final bool inRelayList;
+
+  /// The host is an address on the local network rather than the internet.
+  final bool localNetwork;
+
+  const InPersonHost({
+    required this.host,
+    required this.port,
+    required this.inRelayList,
+    required this.localNetwork,
+  });
+
+  @override
+  int get hashCode =>
+      host.hashCode ^
+      port.hashCode ^
+      inRelayList.hashCode ^
+      localNetwork.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonHost &&
+          runtimeType == other.runtimeType &&
+          host == other.host &&
+          port == other.port &&
+          inRelayList == other.inRelayList &&
+          localNetwork == other.localNetwork;
+}
+
+/// How far the scanned parts of an in-person QR code got, from `in_person_qr_read`.
+class InPersonQrProgress {
+  final bool complete;
+  final int receivedFragments;
+  final int fragmentCount;
+
+  /// Once `complete`: the code or answer, to pass to `EpicWallet::in_person_read` or
+  /// `EpicWallet::in_person_take`. Not yet checked.
+  final Uint8List? bytes;
+
+  const InPersonQrProgress({
+    required this.complete,
+    required this.receivedFragments,
+    required this.fragmentCount,
+    this.bytes,
+  });
+
+  @override
+  int get hashCode =>
+      complete.hashCode ^
+      receivedFragments.hashCode ^
+      fragmentCount.hashCode ^
+      bytes.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonQrProgress &&
+          runtimeType == other.runtimeType &&
+          complete == other.complete &&
+          receivedFragments == other.receivedFragments &&
+          fragmentCount == other.fragmentCount &&
+          bytes == other.bytes;
+}
+
+/// A scanned in-person code, read by `EpicWallet::in_person_read`. Nothing is stored.
+class InPersonRead {
+  final String slateId;
+
+  /// `S1` for a send to receive, `I1` for an invoice to pay.
+  final SlateStage stage;
+  final BigInt amount;
+
+  /// The fee of the send; for an invoice, the estimated fee of paying it, `None` when no
+  /// estimate could be made.
+  final BigInt? fee;
+
+  /// The other party's message, as it gave it: show it as quoted text.
+  final String? message;
+
+  /// The code is good until this height.
+  final BigInt ttlCutoff;
+
+  /// The reply mailbox the answer would be posted to; `None` when the answer is shown back.
+  final InPersonHost? mailbox;
+
+  const InPersonRead({
+    required this.slateId,
+    required this.stage,
+    required this.amount,
+    this.fee,
+    this.message,
+    required this.ttlCutoff,
+    this.mailbox,
+  });
+
+  @override
+  int get hashCode =>
+      slateId.hashCode ^
+      stage.hashCode ^
+      amount.hashCode ^
+      fee.hashCode ^
+      message.hashCode ^
+      ttlCutoff.hashCode ^
+      mailbox.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonRead &&
+          runtimeType == other.runtimeType &&
+          slateId == other.slateId &&
+          stage == other.stage &&
+          amount == other.amount &&
+          fee == other.fee &&
+          message == other.message &&
+          ttlCutoff == other.ttlCutoff &&
+          mailbox == other.mailbox;
+}
+
+/// The answer to a scanned in-person code, from `EpicWallet::in_person_pay` or
+/// `EpicWallet::in_person_receive`. It is stored.
+class InPersonReply {
+  final int txId;
+  final String slateId;
+
+  /// The sealed answer: post it with `EpicWallet::in_person_post`, or show it as one
+  /// byte-mode QR code, as `armored` text or as the parts `in_person_qr_parts` gives.
+  final Uint8List envelope;
+
+  /// `envelope` as `BEGINEPICTX.` text.
+  final String armored;
+
+  /// Four digits to show: the other party finalizes the answer that shows the same.
+  final String checkCode;
+  final InPersonHost? mailbox;
+
+  const InPersonReply({
+    required this.txId,
+    required this.slateId,
+    required this.envelope,
+    required this.armored,
+    required this.checkCode,
+    this.mailbox,
+  });
+
+  @override
+  int get hashCode =>
+      txId.hashCode ^
+      slateId.hashCode ^
+      envelope.hashCode ^
+      armored.hashCode ^
+      checkCode.hashCode ^
+      mailbox.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonReply &&
+          runtimeType == other.runtimeType &&
+          txId == other.txId &&
+          slateId == other.slateId &&
+          envelope == other.envelope &&
+          armored == other.armored &&
+          checkCode == other.checkCode &&
+          mailbox == other.mailbox;
+}
+
+/// An answer taken by `EpicWallet::in_person_take` or `EpicWallet::in_person_take_qr`.
+/// Nothing was finalized.
+class InPersonTaken {
+  final int txId;
+  final String slateId;
+
+  /// `S1` or `I1`: the code the answer is for.
+  final SlateStage stage;
+
+  /// The answer's number among the answers to its code, from 1.
+  final int answer;
+  final String checkCode;
+
+  /// An earlier answer to the code had the same check code.
+  final bool sameCode;
+
+  /// The same answer was taken before; nothing new was stored.
+  final bool duplicate;
+
+  const InPersonTaken({
+    required this.txId,
+    required this.slateId,
+    required this.stage,
+    required this.answer,
+    required this.checkCode,
+    required this.sameCode,
+    required this.duplicate,
+  });
+
+  @override
+  int get hashCode =>
+      txId.hashCode ^
+      slateId.hashCode ^
+      stage.hashCode ^
+      answer.hashCode ^
+      checkCode.hashCode ^
+      sameCode.hashCode ^
+      duplicate.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonTaken &&
+          runtimeType == other.runtimeType &&
+          txId == other.txId &&
+          slateId == other.slateId &&
+          stage == other.stage &&
+          answer == other.answer &&
+          checkCode == other.checkCode &&
+          sameCode == other.sameCode &&
+          duplicate == other.duplicate;
 }
 
 /// What one Epicbox drain did.
@@ -3309,6 +3687,15 @@ class WalletEvent {
   /// For `ContactUpdated` with `Ended`.
   final PairingEndReason? endedReason;
 
+  /// For `InPersonAnswer`: the answer's number among the answers to its code, from 1.
+  final int? answer;
+
+  /// For `InPersonAnswer`: the four digits the answering wallet shows for the answer.
+  final String? checkCode;
+
+  /// For `InPersonAnswer`: an earlier answer to the code had the same check code.
+  final bool? sameCode;
+
   const WalletEvent({
     required this.kind,
     this.session,
@@ -3340,6 +3727,9 @@ class WalletEvent {
     this.requestId,
     this.contactChange,
     this.endedReason,
+    this.answer,
+    this.checkCode,
+    this.sameCode,
   });
 
   @override
@@ -3373,7 +3763,10 @@ class WalletEvent {
       notice.hashCode ^
       requestId.hashCode ^
       contactChange.hashCode ^
-      endedReason.hashCode;
+      endedReason.hashCode ^
+      answer.hashCode ^
+      checkCode.hashCode ^
+      sameCode.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -3409,7 +3802,10 @@ class WalletEvent {
           notice == other.notice &&
           requestId == other.requestId &&
           contactChange == other.contactChange &&
-          endedReason == other.endedReason;
+          endedReason == other.endedReason &&
+          answer == other.answer &&
+          checkCode == other.checkCode &&
+          sameCode == other.sameCode;
 }
 
 enum WalletEventKind {
@@ -3610,6 +4006,13 @@ enum WalletEventKind {
   /// to `Cancelled` comes with it. Its `receiver_declined_at_ms` is set from now on. Raised
   /// once per send, over Epicbox from a LEPIC receiver or from a paired contact.
   paymentDeclined,
+
+  /// An answer to an in-person code this wallet showed was taken, from its reply mailbox or
+  /// by `EpicWallet::in_person_take`: `tx_id`, `slate_id`, `slate_stage` (`S2` or `I2`),
+  /// `answer`, `check_code` and `same_code` are set. Nothing was finalized: show the answer
+  /// with its check code, and finalize the one the user picks with
+  /// `EpicWallet::in_person_finalize`. Raised once per answer.
+  inPersonAnswer,
 }
 
 /// An output of the wallet, from `EpicWallet::outputs`.

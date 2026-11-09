@@ -7,7 +7,7 @@ import '../frb_generated.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `engine_kind`, `from_inner`, `from_send`, `new`, `refused_offline`, `with_tx`
+// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `engine_kind`, `from_inner`, `from_send`, `in_person_kind`, `new`, `refused_offline`, `with_tx`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// The error of every fallible call. `message` is English for logs and bug reports; it never
@@ -354,7 +354,22 @@ enum WalletErrorKind {
   /// The relay given to `EpicWallet::contact_apply_relay_move` is not the one the contact
   /// asked to move to (`ContactView::requested_relay`), or the contact asked for no move.
   /// Nothing changed.
-  relayMoveNotRequested;
+  relayMoveNotRequested,
+
+  /// This wallet holds no in-person code or answer for the slate, or no answer with that
+  /// number was taken for the code.
+  inPersonNotFound,
+
+  /// `EpicWallet::in_person_post` was called without the user confirming the relay the
+  /// answer goes to. Nothing was posted.
+  relayNotConfirmed,
+
+  /// The in-person code named no reply mailbox: show the answer instead of posting it.
+  inPersonNoMailbox,
+
+  /// The QR parts scanned do not make a whole code yet: keep scanning and pass every part
+  /// scanned so far.
+  urCodeIncomplete;
 
   /// The stable number of this kind.
   Future<int> code() =>
