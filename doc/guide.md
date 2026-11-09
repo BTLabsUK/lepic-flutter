@@ -541,8 +541,9 @@ the largest amount a send can pay; use it with `SelectionStrategy.all` to send e
 | In person | [`inPersonSend`](#qr-codes-and-in-person-transfers) | the app carries the code and the answer |
 | Contact | [`contactSend`](#contacts-and-pairing) | through the contact's mailbox |
 
-`address` of `sendEpicbox` is `<key>@<relay>[:port]`; an address `validate_epicbox_address`
-refuses, such as a key without `@<relay>`, fails with `InvalidArgument` and stores nothing.
+`address` of `sendEpicbox` is `<key>@<relay>[:port]`. An address that
+`validateEpicboxAddress(address:, chain:)` refuses, such as a key without `@<relay>`, fails with
+`InvalidArgument` and stores nothing.
 `message` goes to the recipient signed with the slate and is cut to its first 256 bytes.
 
 ```dart
@@ -582,7 +583,7 @@ Over Tor, see [Listeners and Tor](#listeners-and-tor).
 
 With `setNativeDirect(enabled: true)` a send over HTTP or Tor to a wallet that advertises a native
 endpoint is sealed to that wallet's key
-([ADR 0052](https://github.com/BTLabsUK/lepic/blob/main/docs/adr/0052-native-direct-endpoint.md)).
+([ADR 0052](https://github.com/BTLabsUK/lepic/blob/main/docs/adr/0052-legacy-at-the-edge-native-between-lepic-wallets.md)).
 Every other wallet gets the slate as every Epic wallet takes it. The setting is stored in the
 wallet's directory and applies when the wallet next opens; `nativeDirectInUse()` says what the
 session does. `sendHttpDialect(..., legacy: true)`, `sendTorDialect` and the matching resend calls
@@ -626,7 +627,10 @@ appears as two transactions over transport `self`. `SelfSentTx` holds both trans
 
 ### Inspecting slates
 
-`inspectSlate` reads a slate's text and describes it without storing anything. `finishedPayment`
+`inspectSlate(json:, chain:)` describes a V2 or V3 slate's text (`SlateInfo`) without a wallet, as
+`receiveSlate` and `finalizeAndPost` read it, and does not check signatures. Route a slate by its
+`stage`: an S1 to `receiveSlate`, an I1 to `payInvoiceSlate` once the user approved it, an S2 or I2
+to `finalizeAndPost`. `finishedPayment`
 returns the final slate of a finalized, posted or confirmed transaction as legacy V3 JSON, which
 `epic-wallet post -i` reads, to post from another device. `encodeUrSlate` and `decodeUrSlate`
 convert a slate to and from the parts of an animated QR code
@@ -682,9 +686,9 @@ The first event is `started`, `portInUse` or `bindFailed`. Events carry `txId`, 
 
 `startTor` starts the Tor binary at `torBinary` and, with `publishOnion`, publishes the wallet's
 onion service behind a listener of its own. The onion is the same on every start. Tor keeps its
-files in `tor` inside the data directory. Native builds with Tor and the Tor binary are described in
-[Native libraries](#native-libraries); a build without Tor is in [Without Tor](#without-tor). iOS
-starts nothing: the stream gets `Failed` with `Missing`, then `Stopped`.
+files in `tor` inside the data directory. A library built without Tor is described in
+[Without Tor](#without-tor). iOS starts nothing: the stream gets `failed` with `missing`, then
+`stopped`.
 
 ```dart
 wallet.expectTor(); // before startListener, so the relay waits for tor
@@ -765,3 +769,192 @@ than `expirySecs` are deleted and issued ones are cancelled, each with an `invoi
 `expirySecs` defaults to a day and is at most two days. `InvoiceSweep.cancellable` lists payments
 whose time to live passed with the transaction neither on chain nor in the pool; the app offers the
 user `cancelTransaction` for them.
+
+## Contacts and pairing
+
+A contact is a pairing between this wallet and another LEPIC wallet. The two exchange cards that
+name their keys and a mailbox each on an Epicbox relay. Payments, invoices and notices then travel
+sealed through those mailboxes, with no payments address needed. The app owns the address book;
+LEPIC holds the pairings and attaches each to an address-book entry by an id the app chooses.
+[LEPIC's pairing page](https://github.com/BTLabsUK/lepic/blob/main/docs/protocols/pairing.md)
+describes the protocol.
+
+Every call that may reach a relay takes a `ContactRelayMode`:
+
+| Mode | Effect |
+|---|---|
+| `online` | the call may use the relay |
+| `offline` | nothing is sent; what is queued waits for `contactsOutboxDeliver` |
+| `epicboxOff` | the user switched Epicbox off; calls that need the relay fail with `EpicboxOff` |
+
+Calls that need the relay fail with `ContactsOffline` in `offline` mode and with `EpicboxOff` in
+`epicboxOff` mode, with nothing sent. Calls that queue a message store it and return.
+
+### Pairing
+
+An invite starts a pairing. The other side answers it, the inviter's `contactsCollect` takes the
+answer, and both sides compare four emoji, the words check.
+
+| Way | Calls |
+|---|---|
+| Link | the inviter calls `pairingInvite(...)`, which returns an `epiccash://pair/1/...` link; the other side calls `pairingPreview(link:)`, then `pairingAccept(...)` |
+| Five words | `pairingInvite(offerWords: true, ...)` also posts the invite under five words, returned in `words`; the other side calls `pairingFindWords(...)`, which returns the link and its preview |
+| Request | one side calls `pairingRequestSend(toAddress:, ...)`; the other lists `pairingRequests()` and answers with `pairingAccept(expectAddress:, ...)` |
+| In person | each side calls `pairingShowCard(...)`, which returns a card link for a QR code, then `pairingScanCard(contactId:, link:, ...)` with the other phone's card |
+| By hand | `pairingAccept(byHand: true, ...)` returns a `replyLink` to paste to the inviter, who calls `pairingEnterLink(text:, ...)`; its confirmation goes back the same way |
+
+`pairingPreview` stores and sends nothing. It returns an `InvitePreview` with the claimed name, the
+expiry, the home relay and whether the invite comes from a service. The name is unverified: show it
+as what the other side calls itself.
+
+`pairingInvite` takes the `name` the invite carries, an `InviteExpiry` (`oneHour`, `oneDay`,
+`sevenDays`), `meetingRelays`, an optional `homeRelay` and a `PairingClass`. With `offerWords` the
+invite lasts 10 minutes and is posted on every meeting relay. The app supplies the meeting relays
+from its settings, each `domain[:port]` over TLS, at most 16; LEPIC has none of its own. Without
+`offerWords` nothing is sent, so an invite can be made offline. The `kind` argument of
+`pairingInvite` and `pairingShowCard` is required but ignored.
+
+`pairingStandingInvite(name:)` returns the wallet's one standing invite, valid for seven days on the
+wallet's own relay, and makes a fresh one when it is missing, answered, within a day of its expiry,
+names another relay than the wallet's or carries another name. It sends nothing. The link is
+returned on every call and is not stored by the app.
+
+`pairingRequestSend` asks a wallet that is known to run LEPIC to pair, by posting an invite that
+only that wallet can answer. It fails with `PeerNotProven` unless that address ran LEPIC lately and
+claimed pair requests. `pairingRequestDismiss(requestId:)` hides a request.
+
+The five-word lookup (`pairingFindWords`) asks all meeting relays at once, each for at most 20
+seconds. The first invite that opens wins and is taken off its relay.
+
+After a pairing, `pairingSas(contactId:, decision:, relayMode:)` records the words check:
+`SasDecision.match` marks the contact verified, `mismatch` removes the pairing and tells the other
+side when the mode allows, `skip` leaves it paired. Each `SasEntry` has an `emoji` and an English
+`name`; show both.
+
+`pairingsPending()` lists the pairings that wait (`PendingPairingView`: invites waiting for a reply
+and replies waiting for a confirmation). `pairingCancel(contactId:)` cancels one without telling the
+other side. Pairings that do not complete within their time end with a `pairingFailed` event.
+
+### Pairing classes
+
+| `PairingClass` | Carries | Listed by |
+|---|---|---|
+| `contact` | slates, invoices, notices and payloads | `contacts()` |
+| `private` | payloads only, between two wallets of one owner | `privatePairings()` |
+
+A private pairing is made with `pairingClass: PairingClass.private`. Its invite travels by QR code
+or paste, never as words, and its keys come from secrets the two wallets exchange, so the recovery
+phrase alone does not give access to it. `contactRemove` or `contactUnpair` removes one. A call with
+the wrong class fails with `WrongPairingClass`. With `expectAddress`, the reply must prove that
+Epicbox address, or the pairing fails with `AddressProofMissing` or `OtherAddress`.
+
+### Collecting
+
+`contactsCollect(trigger:, relayMode:, only:)` reads the mailboxes once and raises an event for each
+thing that arrived. It also delivers the outbox and ends pairings past their time.
+
+| `CollectTrigger` | Mailboxes read |
+|---|---|
+| `open` | every mailbox; the app opened or resumed, or the wallet unlocked |
+| `foreground` | those of contacts with something pending |
+| `pull` | every mailbox; the user pulled to refresh |
+| `push` | every mailbox; a push wake-up |
+
+`only` limits the call to at most 64 contact ids. The returned `ContactCollectReport` counts
+mailboxes and messages, completed pairings, delivered outbox entries and quarantined messages, and
+lists `unreachable` relays. A relay that does not answer is not an error: it raises
+`homeRelayUnreachable` and is tried again later. LEPIC takes a message off a relay only after its
+effect is stored.
+
+### The address book
+
+| Call | Use |
+|---|---|
+| `contacts()`, `contact(contactId:)` | the paired contacts, oldest first, as `ContactView` |
+| `contactAttach(contactId:, appContact:, appAddress:)` | attaches a pairing to an address-book entry, or detaches it with `null`; the id is at most 256 bytes |
+| `pairingsForAppContact(appContact:)` | the pairings of one entry; two while a key check runs |
+| `contactSetLabel(contactId:, label:)` | the user's name for the contact, at most 48 bytes; empty clears it |
+| `contactSetAllowInvoices`, `contactSetSeal` | the per-contact switches |
+| `contactCheck(contactId:)` | asks the contact for its current card |
+| `contactRemove(contactId:)` | removes the pairing here without telling the contact |
+| `contactUnpair(contactId:, relayMode:)` | removes it and tells the contact, best effort |
+| `contactsSetOwnName(name:)` | gives every live pairing this wallet's card again under a new name |
+
+`ContactView` holds no key. Its `status` (`PairingStatus`) is `waiting`, `paired`, `verified`,
+`keysChanged` or `ended`. `claimedName` is what the contact calls itself and is unverified, while
+`label` is the user's own name. `removedByPeer` is set when the contact removed the pairing and said
+so. `lapsed` is set when nothing sealed from the contact opened for 90 days. `paymentsAddress` is
+set only when an address proof verified.
+
+`contactDomainVerify(contactId:, file:)` checks a domain claim the contact made. The app fetches
+`https://<domain>/.well-known/epic-wallet.json` itself, at most 4096 bytes, and passes the body. The
+`DomainVerdict` says whether it proves the claim and, if not, why. LEPIC fetches nothing.
+
+### Sending to a contact
+
+| Call | Use |
+|---|---|
+| `contactSend(contactId:, amount:, minimumConfirmations:, ...)` | builds a send and queues its S1 sealed in the contact's mailbox |
+| `contactSealSlate(contactId:, txId:)` | seals the last slate of a transaction as text for a file or paste; sends nothing |
+| `contactPostSlate(contactId:, txId:, relayMode:)` | queues the slate of an existing transaction |
+| `contactPlainFallback(txId:)` | the slate as plain JSON, for a contact that cannot open sealed text |
+| `contactOutbox(contactId:)`, `contactOutboxResend` | the queued messages, and a repeat of one |
+| `contactsOutboxDeliver(relayMode:)` | posts every outbox entry that is due |
+
+`contactSend` checks the contact before it locks anything. The contact's answer arrives with
+`contactsCollect`, which finalizes and posts the payment and raises `contactPaymentFinalized`. A
+contact that never answers leaves the payment `Sent`: `cancelTransaction` gives it up. An outbox
+entry undelivered for a day raises `outboxStuck` and stops retrying; `contactOutboxResend` posts it
+again.
+
+`contactSealSlate` returns `BEGINEPICTX.` text for a native slate, which goes in a `.epictx` file,
+when `setNativeDirect` is on and the contact claims native slates. Otherwise it returns
+`BEGINEPICSEALED.` text for a `.epicsealed` file. The sealed text is opened with `sealedOpen` or
+`epictxOpen`, described in [epic1 links](#epic1-links).
+
+### Invoices between contacts
+
+`contactIssueInvoice` issues an invoice to a contact, which pays it only if it allows invoices from
+this wallet. `contactInvoices()` lists the invoices waiting for the user. `contactPayInvoice(...)`
+pays one after the user approved the amount, and `contactDeclineInvoice(slateId:)` declines it.
+Allowing invoices needs a verified contact: `contactSetAllowInvoices` fails with
+`ContactNotVerified` otherwise, and turning it off declines the contact's unpaid invoices.
+
+### Payloads
+
+`contactPostPayload(contactId:, payload:, relayMode:)` sends bytes, at most 64 KiB, to a contact or
+a private pairing, sealed and signed like a slate. LEPIC does not read them. The other wallet raises
+`contactPayload` and keeps the payload until `contactPayloadsAck(ids:)`. `contactPayloads()` lists
+the kept payloads: at most 256 from private pairings together and 32 from each contact. A contact
+pairing carries payloads once both sides have heard each other; a private one once both matched the
+words check.
+
+### Keys, relays and backups
+
+| Call | Use |
+|---|---|
+| `contactKeyCheck(new_:, old:, relayMode:)` | asks whether a contact that paired again holds its old keys |
+| `contactKeysResolve(new_:, decision:)` | `KeysDecision.keepOld` removes the new pairing, `useNew` removes the old one |
+| `contactApplyRelayMove(contactId:, relay:)` | follows the relay a contact asked to move to |
+| `contactsMoveHome(relay:, drainDays:)` | moves this wallet's home relay and tells every live contact |
+| `contactsExport()`, `contactsImport(document:)` | the pairings as a JSON document, without secrets, and the reverse; at most 32 MiB |
+
+Attach a new pairing to an address-book entry that already has one, then call `contactKeyCheck`. The
+answer arrives with `contactsCollect`: `contactKeysRestored` when the old keys are back and
+`contactKeysChanged` when they are not or nothing answers within a day. Until the user decides, the
+new pairing seals nothing and takes no invoices. `contactKeyCheck` returns `KeyCheckStart.sent` or
+`keysChanged`.
+
+A contact that asks to move relays raises `contactRelayMoveRequested` and sets
+`ContactView.requestedRelay`; which relays to follow is the app's choice. `contactsMoveHome` keeps
+reading the old mailboxes for `drainDays` (0 to 365).
+
+`contactsExport` leaves out pairings in progress. The keys come from the recovery phrase, so the
+document holds no secret. `contactsImport` keeps pairings the wallet already has and skips a pairing
+whose keys the seed does not derive.
+
+### Quarantine
+
+A contact message that cannot be handled yet stays in quarantine. `contactQuarantine()` lists the
+messages without their envelopes, `contactQuarantineDiscard(id:)` forgets one and
+`contactQuarantineRetry(id:, relayMode:)` handles one or all again. LEPIC never retries on its own.
