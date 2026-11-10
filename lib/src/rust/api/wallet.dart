@@ -5,6 +5,7 @@
 
 import '../frb_generated.dart';
 import 'at_rest.dart';
+import 'epic1.dart';
 import 'error.dart';
 import 'http.dart';
 
@@ -751,6 +752,20 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required ContactRelayMode relayMode,
   });
 
+  /// Whether the listener `socket` takes payments sealed to the wallet's epic1 addresses from
+  /// its next start, as [`EpicWallet::set_epic1_at_listener`] last saved it.
+  bool epic1AtListener({required ListenerSocket socket});
+
+  /// Makes this restored install the one that issues new numbered epic1 addresses. Call it
+  /// once no other install on the same recovery phrase issues them: two installs that both
+  /// issue hand the same address to two payers. Calling it again changes nothing.
+  Future<void> epic1IssueHere();
+
+  /// Whether this install issues new numbered epic1 addresses. A wallet created fresh does;
+  /// one restored from its recovery phrase does once [`EpicWallet::epic1_issue_here`] made it
+  /// the issuer. The address [`EpicWallet::epic1_address`] shows is there either way.
+  Future<bool> epic1Issuing();
+
   /// Issues a link to the wallet's epic1 address, asking `amount` atomic units or, with
   /// `None`, any amount the payer chooses. The link names its mailbox on each of `relays`,
   /// `domain[:port]`, at most three, or on the wallet's own relay when `relays` is empty. It
@@ -796,7 +811,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   ///
   /// Fails as [`EpicWallet::epic1_link_read`] does, with `InvalidArgument` for a zero amount
   /// or none when the link asks none, `RelayNotConfirmed` when `hosts_ok` is false,
-  /// `OwnRelayLocal` when the wallet's own relay is on this device, and as `send` fails.
+  /// `OwnRelayLocal` when the wallet's own relay is on this device, `Epic1PaymentPending`
+  /// while an earlier payment to the link waits for its answer, and as `send` fails.
   Future<Epic1Paid> epic1Pay({
     required String link,
     BigInt? amount,
@@ -1059,8 +1075,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Pays a scanned in-person invoice of `amount`, the amount [`EpicWallet::in_person_read`]
   /// showed, as `pay_invoice` pays one, and seals the answer to the code. The payment and
   /// the answer are stored; the inputs stay locked until the code expires or the payment is
-  /// cancelled. Show `check_code` to the user, then post the answer with
-  /// [`EpicWallet::in_person_post`] or show it back.
+  /// cancelled. Post the answer with [`EpicWallet::in_person_post`], which returns the check
+  /// code to show, or show the answer back.
   ///
   /// Fails as [`EpicWallet::in_person_read`] does, with `InvalidArgument` for a zero amount,
   /// and as `pay_invoice` fails.
@@ -1083,8 +1099,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `ContactsOffline` or `EpicboxOff` before connecting, and `TransportFailed` when the
   /// post failed.
   ///
-  /// Returns the format the answer went out in, always `Native`.
-  Future<SlateWire> inPersonPost({
+  /// Returns the answer's check code, to show the user now and not before, and the format
+  /// the answer went out in, always `Native`.
+  Future<InPersonPosted> inPersonPost({
     required String slateId,
     required bool relayOk,
     required ContactRelayMode relayMode,
@@ -1104,8 +1121,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   });
 
   /// Receives a scanned in-person send as `receive` receives a slate, and seals the answer to
-  /// the code. The transaction and the answer are stored. Show `check_code` to the user, then
-  /// post the answer with [`EpicWallet::in_person_post`] or show it back.
+  /// the code. The transaction and the answer are stored. Post the answer with
+  /// [`EpicWallet::in_person_post`], which returns the check code to show, or show the answer
+  /// back.
   ///
   /// Fails as [`EpicWallet::in_person_read`] does, and as `receive` fails.
   Future<InPersonReply> inPersonReceive({
@@ -1936,6 +1954,20 @@ abstract class EpicWallet implements RustOpaqueInterface {
     String? message,
     SendOptions? options,
     required bool legacy,
+  });
+
+  /// Turns on or off, for the listener `socket`, taking payments sealed to the wallet's epic1
+  /// addresses at its native endpoint. It is off for both sockets until this turns it on:
+  /// the listener then answers such a payment as one sealed to a key it does not hold, so
+  /// whoever has one of the wallet's epic1 addresses cannot tell that the listener is the same
+  /// wallet. The setting is kept in the wallet's directory and takes effect when the listener
+  /// next starts. It matters only with native slates on ([`EpicWallet::set_native_direct`]).
+  /// Deleting the wallet removes it.
+  ///
+  /// Fails with `Io` when the setting cannot be written.
+  void setEpic1AtListener({
+    required ListenerSocket socket,
+    required bool enabled,
   });
 
   /// Turns Epicbox over Tor on or off (ADR 0021); it is on when the wallet opens. While it is
