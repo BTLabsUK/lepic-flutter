@@ -123,6 +123,8 @@ enum WalletErrorKind {
   /// The transaction was finalized and stored, but the node did not accept it. Post it again
   /// with `repost_transaction`.
   notPosted,
+
+  /// The operation, or the transaction it was for, was cancelled.
   cancelled,
 
   /// The operation is not available in this build or for this configuration.
@@ -472,7 +474,11 @@ enum WalletErrorKind {
 
   /// The wallet's database was written by a newer LEPIC or app version than this one reads.
   /// Nothing was changed; update the app to open the wallet. Do not delete or restore it.
-  walletTooNew;
+  walletTooNew,
+
+  /// A payment to the epic1 link waits for its answer: finalize or cancel it first, or post
+  /// it to the link's next relay.
+  epic1PaymentPending;
 
   /// The stable number of this kind.
   Future<int> code() =>

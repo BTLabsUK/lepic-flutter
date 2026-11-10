@@ -6,6 +6,7 @@
 import 'api/at_rest.dart';
 import 'api/contact.dart';
 import 'api/diagnostics.dart';
+import 'api/epic1.dart';
 import 'api/error.dart';
 import 'api/http.dart';
 import 'api/in_person.dart';
@@ -601,6 +602,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ListenerEventKind dco_decode_listener_event_kind(dynamic raw);
+
+  @protected
+  ListenerSocket dco_decode_listener_socket(dynamic raw);
 
   @protected
   ListingRef dco_decode_listing_ref(dynamic raw);
@@ -1602,6 +1606,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ListenerEventKind sse_decode_listener_event_kind(
     SseDeserializer deserializer,
   );
+
+  @protected
+  ListenerSocket sse_decode_listener_socket(SseDeserializer deserializer);
 
   @protected
   ListingRef sse_decode_listing_ref(SseDeserializer deserializer);
@@ -2839,6 +2846,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_listener_event_kind(
     ListenerEventKind self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_listener_socket(
+    ListenerSocket self,
     SseSerializer serializer,
   );
 
