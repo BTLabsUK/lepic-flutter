@@ -611,10 +611,14 @@ class Epic1Attempt {
   /// Why the post failed; `None` when it went through.
   final String? error;
 
-  const Epic1Attempt({required this.host, this.error});
+  /// The post failed after the payment was sent: the relay may hold it, and the payee may
+  /// still take it from there.
+  final bool uncertain;
+
+  const Epic1Attempt({required this.host, this.error, required this.uncertain});
 
   @override
-  int get hashCode => host.hashCode ^ error.hashCode;
+  int get hashCode => host.hashCode ^ error.hashCode ^ uncertain.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -622,7 +626,8 @@ class Epic1Attempt {
       other is Epic1Attempt &&
           runtimeType == other.runtimeType &&
           host == other.host &&
-          error == other.error;
+          error == other.error &&
+          uncertain == other.uncertain;
 }
 
 /// A relay an epic1 payment or answer would be posted to: show it before the user confirms.
@@ -794,6 +799,11 @@ class Epic1Paid {
   /// The transport, from 0, the payment was posted to.
   final int? posted;
 
+  /// The first transport, from 0, whose relay may hold the payment though its post failed.
+  /// Show that the payment may still arrive and do not offer to pay again;
+  /// `EpicWallet::epic1_post_next` posts the same payment to the next relay.
+  final int? uncertain;
+
   /// How the payment is written: always `Native`, a sealed `lepic.v1` slate.
   final SlateWire format;
 
@@ -803,6 +813,7 @@ class Epic1Paid {
     required this.address,
     required this.attempts,
     this.posted,
+    this.uncertain,
     required this.format,
   });
 
@@ -813,6 +824,7 @@ class Epic1Paid {
       address.hashCode ^
       attempts.hashCode ^
       posted.hashCode ^
+      uncertain.hashCode ^
       format.hashCode;
 
   @override
@@ -825,6 +837,7 @@ class Epic1Paid {
           address == other.address &&
           attempts == other.attempts &&
           posted == other.posted &&
+          uncertain == other.uncertain &&
           format == other.format;
 }
 
