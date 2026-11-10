@@ -7,7 +7,7 @@ import '../frb_generated.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `engine_kind`, `epic1_kind`, `from_inner`, `from_send`, `hex`, `in_person_kind`, `native_to_this_computer`, `new`, `refused_offline`, `schema_too_new`, `with_tx`
+// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `contact_encode_kind`, `engine_kind`, `epic1_kind`, `from_inner`, `from_send`, `hex`, `in_person_kind`, `native_to_this_computer`, `new`, `refused_offline`, `retry_after`, `schema_too_new`, `with_tx`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// The error of every fallible call. `message` is English for logs and bug reports; it never
@@ -37,6 +37,11 @@ class WalletError implements FrbException {
   /// For `PinChanged`: the key the listener shows, 64 hex digits.
   final String? shownKey;
 
+  /// For `NativeExchangeFailed`: the seconds the listener asked the sender to wait before it
+  /// posts again, when it answered that it is not ready or takes no more payments for now.
+  /// A longer wait than `u32` holds reads as `u32::MAX`.
+  final int? retryAfterSecs;
+
   const WalletError({
     required this.kind,
     required this.code,
@@ -45,6 +50,7 @@ class WalletError implements FrbException {
     this.origin,
     this.pinnedKey,
     this.shownKey,
+    this.retryAfterSecs,
   });
 
   @override
@@ -58,7 +64,8 @@ class WalletError implements FrbException {
       txId.hashCode ^
       origin.hashCode ^
       pinnedKey.hashCode ^
-      shownKey.hashCode;
+      shownKey.hashCode ^
+      retryAfterSecs.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -71,7 +78,8 @@ class WalletError implements FrbException {
           txId == other.txId &&
           origin == other.origin &&
           pinnedKey == other.pinnedKey &&
-          shownKey == other.shownKey;
+          shownKey == other.shownKey &&
+          retryAfterSecs == other.retryAfterSecs;
 }
 
 /// What went wrong, in terms the app can act on. The numbers in [`WalletErrorKind::code`] are
@@ -115,6 +123,8 @@ enum WalletErrorKind {
   /// The transaction was finalized and stored, but the node did not accept it. Post it again
   /// with `repost_transaction`.
   notPosted,
+
+  /// The operation, or the transaction it was for, was cancelled.
   cancelled,
 
   /// The operation is not available in this build or for this configuration.
@@ -439,8 +449,8 @@ enum WalletErrorKind {
   /// All printed epic1 links are in use: retire one first.
   printedLinksFull,
 
-  /// No printed link with that number is in use, or the wallet holds no epic1 payment or
-  /// answer for the slate.
+  /// No printed link with that number is in use, the wallet holds no epic1 payment or answer
+  /// for the slate, or the address was never handed out by this wallet.
   epic1NotFound,
 
   /// The wallet's relay is on this device, so no other device reaches a link to it.
@@ -464,7 +474,11 @@ enum WalletErrorKind {
 
   /// The wallet's database was written by a newer LEPIC or app version than this one reads.
   /// Nothing was changed; update the app to open the wallet. Do not delete or restore it.
-  walletTooNew;
+  walletTooNew,
+
+  /// A payment to the epic1 link waits for its answer: finalize or cancel it first, or post
+  /// it to the link's next relay.
+  epic1PaymentPending;
 
   /// The stable number of this kind.
   Future<int> code() =>
