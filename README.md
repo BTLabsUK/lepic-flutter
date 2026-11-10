@@ -16,62 +16,63 @@ Source: [GitHub](https://github.com/BTLabsUK/lepic-flutter)
 
 `lepic` is a Dart package that lets a Flutter app run an Epic Cash wallet in its own process. It
 wraps the FFI API of [LEPIC](https://github.com/BTLabsUK/lepic) (`crates/lepic-ffi`) through
-[flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge) 2.13.0. Epic Cash Desktop
-and Epic Cash Mobile use it.
+[flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge) 2.13.0. BT Wallet, the app
+that embeds LEPIC, uses it.
 
 The app creates one `LepicRuntime` and calls `EpicWallet` methods, which return Futures and
-Streams. Every failure is a thrown `WalletError` with a stable numeric code. A build hook bundles
-the native library into the app, so the app needs no Rust toolchain.
+Streams. A failed call throws a `WalletError` that carries a stable numeric code. A build hook
+bundles the native library into the app, so the app needs no Rust toolchain.
 
-> **Status: beta.** It runs in production in Epic Cash Desktop and Epic Cash Mobile. The API may
-> still change before 1.0.
+The package is at version 0.1.0 and is not published on pub.dev.
 
 ## Requirements
 
 To use the package in an app:
 
-- Flutter 3.47.5 (Dart 3.13 or later; `pubspec.yaml` asks for `sdk: ^3.13.0`).
-- The native library for each target, from `tool/lepic.sh build` (see below), or your own build of
-  the pinned LEPIC.
+- Flutter 3.47.5. `pubspec.yaml` asks for Dart `^3.13.0` and Flutter `>=3.47.0`.
+- A native library for each target, built with `tool/lepic.sh build` (below).
 
-To build the native library or change the bindings:
+To build the native library or regenerate the bindings:
 
-- Rust, at the version LEPIC pins in its `rust-toolchain.toml` (1.99.0 now). `rustup` installs it
-  when you run a command inside the LEPIC checkout.
-- `flutter_rust_bridge_codegen` 2.13.0: `cargo install flutter_rust_bridge_codegen --version 2.13.0 --locked`.
+- Rust, at the version `rust-toolchain.toml` in LEPIC pins (1.99.0). `rustup` installs it when a
+  command runs inside the LEPIC checkout.
+- `flutter_rust_bridge_codegen` 2.13.0:
+  `cargo install flutter_rust_bridge_codegen --version 2.13.0 --locked`.
 - Android: the Android NDK and `cargo-ndk`. The libraries target Android API 24.
 - iOS: Xcode, on macOS.
 - Windows: Visual Studio Build Tools with the C++ workload.
 
 ## Build from scratch
 
-LEPIC is cloned at the commit in `lepic.rev`, so the library always matches the generated Dart.
-From the package root:
+`lepic.rev` holds the LEPIC commit this package is generated from. `tool/lepic.sh` clones LEPIC
+at that commit, so the library and the generated Dart always match. From the package root:
 
 ```sh
-tool/lepic.sh sync                     # clone LEPIC at the pin into third_party/lepic
-tool/lepic.sh build all                # every target this host can build
-tool/lepic.sh build linux android      # or windows, or Rust target triples
+tool/lepic.sh sync                  # clone LEPIC at the pin into third_party/lepic
+tool/lepic.sh build all             # every target this host can build
+tool/lepic.sh build linux android   # or windows, or Rust target triples
 ```
 
-Libraries land in `native/<rust triple>/` with a `SHA256SUMS` file. `hook/build.dart` checks that
-file, and that the library was built from the pinned LEPIC, then bundles it as a Flutter native
-asset for the target being built. See [Native libraries](doc/guide.md#native-libraries).
+Libraries land in `native/<rust triple>/` with a `SHA256SUMS` file. At app build time,
+`hook/build.dart` checks that file and that the library was built from the pinned LEPIC, then
+bundles the library as a Flutter native asset. See [Native libraries](doc/guide.md#native-libraries).
 
-| Platform | Built on | What is tested |
+| Target | Built on | Command |
 |---|---|---|
-| Linux x86_64 | Linux x86_64 | the host tests and the bridge check, before every merge |
-| Android arm64, armv7, x86_64 | Linux or macOS, with NDK and `cargo-ndk` | an integration test on an Android emulator, run by hand |
-| Windows x86_64 | Windows x86_64 | through Epic Cash Desktop's Windows builds |
-| iOS device and simulator, arm64 | macOS with Xcode | through Epic Cash Mobile's iOS preview builds |
-| macOS | none | the hook bundles no library yet |
+| Linux x86_64 | Linux | `tool/lepic.sh build linux` |
+| Android arm64, armv7, x86_64 | Linux, Windows or macOS, with the NDK and `cargo-ndk` | `tool/lepic.sh build android` |
+| Windows x86_64 | Windows | `tool/lepic.sh build windows` |
+| iOS arm64, device and simulator | macOS with Xcode | `tool/lepic.sh build aarch64-apple-ios aarch64-apple-ios-sim` |
 
-Libraries are built with Tor. Set `WFE_TOR=0` to build without it
+The hook bundles a library for Android, iOS, Linux and Windows targets. A macOS app build gets no
+library from it.
+
+Libraries are built with Tor. `WFE_TOR=0 tool/lepic.sh build all` builds without it
 ([guide](doc/guide.md#without-tor)).
 
 ## Quick start
 
-Add the package from git (it is not on pub.dev):
+Add the package from git:
 
 ```yaml
 dependencies:
@@ -85,43 +86,52 @@ Create a wallet:
 ```dart
 import 'package:lepic/lepic.dart';
 
-await RustLib.init();
-final runtime = LepicRuntime(logLevel: LogLevel.info);
+Future<EpicWallet> createWallet(String dir, String password) async {
+  await RustLib.init();
+  final runtime = LepicRuntime(logLevel: LogLevel.info);
 
-// Your adapter over the platform's secure storage; it implements SecretStore.
-final store = lepicSecretStore(myFlutterSecureStorageAdapter);
-final wallet = await EpicWallet.create(
-  runtime: runtime,
-  config: WalletConfig(
-    dataDir: dir.path,
-    chain: Chain.mainnet,
-    nodeUrl: 'https://node.example:3413',
-    epicboxDomain: 'relay.example.org', // the first [epicbox] server of the app's settings.toml
-    epicboxPort: 443,
-    onionRoutes: const [],
-    tuning: appConfigTuning, // the [node], [epicbox], [http] and [tor] keys of app-config.toml
-    offline: false, // true opens a cold wallet: no node or relay call (doc/guide.md)
-    torWanted: false, // true when the app starts tor: the session waits for it from the start
-  ),
-  store: store,
-  password: password,
-);
+  // mySecretStore implements SecretStore over the platform's secure storage.
+  final store = lepicSecretStore(mySecretStore);
+  return EpicWallet.create(
+    runtime: runtime,
+    config: WalletConfig(
+      dataDir: dir, // an existing directory that only this wallet uses
+      chain: Chain.mainnet,
+      nodeUrl: 'https://node.example:3413',
+      epicboxDomain: 'relay.example.org',
+      epicboxPort: 443,
+      onionRoutes: const [],
+      tuning: appTuning, // a NetTuning built from the app's settings
+      offline: false,
+      torWanted: false,
+      hostFeatures: 0,
+      profile: 0,
+      policy: const HostPolicy(),
+    ),
+    store: store,
+    password: password,
+  );
+}
 ```
 
-The [usage guide](doc/guide.md) covers the rest: sending and receiving, invoices, errors, Tor,
-and moving from an earlier binding.
+`EpicWallet.create` writes the encrypted vault into `store` and returns the open wallet.
+`wallet.mnemonic(password: ...)` returns the recovery phrase for the backup screen.
+
+The [usage guide](doc/guide.md) covers the rest: opening and restoring wallets, sending and
+receiving, invoices, contacts, errors and Tor.
 
 ## Project structure
 
 | Path | Holds |
 |---|---|
 | `lepic.rev` | the LEPIC commit this package is generated from and built against |
-| `lib/` | the public Dart API (`lepic.dart`) |
+| `lib/` | the public Dart API (`lepic.dart`) and the test helpers (`testing.dart`) |
 | `lib/src/rust/` | the generated Dart half of the bridge; never edited by hand |
 | `hook/build.dart` | the build hook that bundles the native library into an app |
 | `tool/` | `lepic.sh` (sync, build, test, generate, check) and `generate.dart` (codegen settings) |
-| `test/` | host tests, run against a library with a scripted node |
+| `test/` | host tests, run against a library with a scripted node and relay |
 | `emulator_test/` | an app with no UI that runs an integration test on an Android device |
+| `.github/workflows/check.yml` | the checks below, run on every pull request |
 
 The Rust half of the bridge, `frb_generated.rs`, lives in LEPIC. Both halves come from one codegen
 run, and `tool/lepic.sh check` fails if either differs from what the pinned LEPIC generates.
@@ -135,27 +145,25 @@ tool/lepic.sh test             # builds the scripted-node library, runs flutter 
 tool/lepic.sh emulator-test    # on an attached Android device or emulator
 ```
 
-`check`, `flutter analyze` and `test` run on our own machines before every merge; there is no
-hosted CI, so run them yourself before you send a change. The
-emulator test and the local-chain test are run by hand; see the
-[guide](doc/guide.md#develop).
+`check`, `flutter analyze` and `test` run in the `check` workflow on every pull request. The
+emulator test and the local-chain test run by hand; see [Testing](doc/guide.md#testing).
 
 ## Security
 
-Secrets stay at the boundary: only secrets the user types or configures enter Rust, and only the
-recovery phrase and the PIN key (for the app's secret store) leave it ([LEPIC ADR
-0014](https://github.com/BTLabsUK/lepic/blob/main/docs/adr/0014-secrets-at-the-flutter-boundary.md)).
-Please do not open public issues for vulnerabilities; [SECURITY.md](SECURITY.md) explains how to
-report one privately.
+Only secrets the user types or configures enter Rust. The recovery phrase and the PIN key (for the
+app's secret store) are the only secrets that leave it
+([LEPIC ADR 0014](https://github.com/BTLabsUK/lepic/blob/main/docs/adr/0014-secrets-at-the-flutter-boundary.md)).
+[SECURITY.md](SECURITY.md) explains how to report a vulnerability privately.
 
 ## Contributing
 
-Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first. This project follows the
+Read [CONTRIBUTING.md](CONTRIBUTING.md) first. The project follows the
 [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Documentation
 
 - Usage guide: [doc/guide.md](doc/guide.md)
+- LEPIC's FFI reference: [docs/ffi.md](https://github.com/BTLabsUK/lepic/blob/main/docs/ffi.md)
 - Developer documentation: https://docs.btlabs.uk/developers/lepic-flutter/
 - Source: https://github.com/BTLabsUK/lepic-flutter
 
