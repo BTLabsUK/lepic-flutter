@@ -7,11 +7,14 @@ import '../frb_generated.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `engine_kind`, `from_inner`, `from_send`, `new`, `refused_offline`, `with_tx`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
+// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `contact_encode_kind`, `engine_kind`, `epic1_kind`, `from_inner`, `from_send`, `hex`, `in_person_kind`, `native_to_this_computer`, `new`, `refused_offline`, `retry_after`, `schema_too_new`, `with_tx`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// The error of every fallible call. `message` is English for logs and bug reports; it never
 /// holds a secret.
+///
+/// In Dart `toString` prints the kind, the code and the message, so a log line or an
+/// unhandled exception names the failure.
 class WalletError implements FrbException {
   final WalletErrorKind kind;
 
@@ -24,16 +27,45 @@ class WalletError implements FrbException {
   /// `cancel_transaction`, or try its step again. `None` when nothing was left behind.
   final int? txId;
 
+  /// The listener's origin, `scheme://host:port`, for `PinnedNoAdvert`, `PinChanged`,
+  /// `PeerProbeFailed` and a `ThisComputer` refused before anything was stored: the one `EpicWallet::forget_peer_pin` takes.
+  final String? origin;
+
+  /// For `PinChanged`: the pinned key, 64 hex digits.
+  final String? pinnedKey;
+
+  /// For `PinChanged`: the key the listener shows, 64 hex digits.
+  final String? shownKey;
+
+  /// For `NativeExchangeFailed`: the seconds the listener asked the sender to wait before it
+  /// posts again, when it answered that it is not ready or takes no more payments for now.
+  /// A longer wait than `u32` holds reads as `u32::MAX`.
+  final int? retryAfterSecs;
+
   const WalletError({
     required this.kind,
     required this.code,
     required this.message,
     this.txId,
+    this.origin,
+    this.pinnedKey,
+    this.shownKey,
+    this.retryAfterSecs,
   });
 
   @override
+  String toString() => 'WalletError(${kind.name}, $code): $message';
+
+  @override
   int get hashCode =>
-      kind.hashCode ^ code.hashCode ^ message.hashCode ^ txId.hashCode;
+      kind.hashCode ^
+      code.hashCode ^
+      message.hashCode ^
+      txId.hashCode ^
+      origin.hashCode ^
+      pinnedKey.hashCode ^
+      shownKey.hashCode ^
+      retryAfterSecs.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -43,7 +75,11 @@ class WalletError implements FrbException {
           kind == other.kind &&
           code == other.code &&
           message == other.message &&
-          txId == other.txId;
+          txId == other.txId &&
+          origin == other.origin &&
+          pinnedKey == other.pinnedKey &&
+          shownKey == other.shownKey &&
+          retryAfterSecs == other.retryAfterSecs;
 }
 
 /// What went wrong, in terms the app can act on. The numbers in [`WalletErrorKind::code`] are
@@ -354,7 +390,89 @@ enum WalletErrorKind {
   /// The relay given to `EpicWallet::contact_apply_relay_move` is not the one the contact
   /// asked to move to (`ContactView::requested_relay`), or the contact asked for no move.
   /// Nothing changed.
-  relayMoveNotRequested;
+  relayMoveNotRequested,
+
+  /// This wallet holds no in-person code or answer for the slate, or no answer with that
+  /// number was taken for the code.
+  inPersonNotFound,
+
+  /// `EpicWallet::in_person_post` was called without the user confirming the relay the
+  /// answer goes to. Nothing was posted.
+  relayNotConfirmed,
+
+  /// The in-person code named no reply mailbox: show the answer instead of posting it.
+  inPersonNoMailbox,
+
+  /// The QR parts scanned do not make a whole code yet: keep scanning and pass every part
+  /// scanned so far.
+  urCodeIncomplete,
+
+  /// The listener's origin (`WalletError::origin`) is pinned and it no longer advertises a
+  /// native endpoint. Nothing was stored; a send that asks for the legacy dialect goes out.
+  pinnedNoAdvert,
+
+  /// The listener's origin (`WalletError::origin`) shows another key
+  /// (`WalletError::shown_key`) than the pinned one (`WalletError::pinned_key`). Nothing
+  /// was stored. Once the receiver confirms the new key, `EpicWallet::forget_peer_pin`
+  /// takes it at the next send; a send that asks for the legacy dialect goes out as well.
+  pinChanged,
+
+  /// The listener of a pinned origin (`WalletError::origin`) could not be asked for its
+  /// endpoint. Nothing was stored.
+  peerProbeFailed,
+
+  /// The send was stored (`WalletError::tx_id`; its slate is in `transaction`) and its native
+  /// exchange failed; nothing went through the legacy dialect. The inputs stay locked:
+  /// deliver it again, in either dialect, or cancel it.
+  nativeExchangeFailed,
+
+  /// The native endpoint's address is one of this device's own; a native slate goes only
+  /// to other devices. A send to `localhost` or an address literal of this device fails
+  /// before it stores anything, with `WalletError::origin` set and no `tx_id`: ask for the
+  /// legacy dialect. A name that only resolves to this device fails after the send was
+  /// stored, as `NativeExchangeFailed` describes (`WalletError::tx_id` is set): deliver it
+  /// again in the legacy dialect or cancel it.
+  thisComputer,
+
+  /// The text is a record another Epic wallet keeps in its `saved_txs` directory, not a
+  /// payment file.
+  savedTransaction,
+
+  /// The epic1 link names no transport this wallet can use.
+  epic1CannotPay,
+
+  /// The payment went to every relay of the link: none is left to try.
+  epic1NoMoreRelays,
+
+  /// All printed epic1 links are in use: retire one first.
+  printedLinksFull,
+
+  /// No printed link with that number is in use, the wallet holds no epic1 payment or answer
+  /// for the slate, or the address was never handed out by this wallet.
+  epic1NotFound,
+
+  /// The wallet's relay is on this device, so no other device reaches a link to it.
+  ownRelayLocal,
+
+  /// A relay named for a link is not a domain with an optional port, is on this device, or
+  /// there are more than three.
+  epic1RelayInvalid,
+
+  /// The message is longer than a link carries or holds control characters.
+  epic1MessageInvalid,
+
+  /// The epic1 payment was finalized already.
+  epic1Finalized,
+
+  /// The epic1 link or its slate is for another network than the wallet.
+  epic1WrongNetwork,
+
+  /// The text is not an epic1 link.
+  notAnEpic1Link,
+
+  /// The wallet's database was written by a newer LEPIC or app version than this one reads.
+  /// Nothing was changed; update the app to open the wallet. Do not delete or restore it.
+  walletTooNew;
 
   /// The stable number of this kind.
   Future<int> code() =>

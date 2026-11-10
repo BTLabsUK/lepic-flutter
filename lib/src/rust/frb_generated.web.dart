@@ -7,9 +7,11 @@
 // ignore_for_file: argument_type_not_assignable
 
 import 'api/at_rest.dart';
+import 'api/contact.dart';
 import 'api/diagnostics.dart';
 import 'api/error.dart';
 import 'api/http.dart';
+import 'api/in_person.dart';
 import 'api/policy.dart';
 import 'api/runtime.dart';
 import 'api/secret_store.dart';
@@ -233,6 +235,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactKind dco_decode_box_autoadd_contact_kind(dynamic raw);
 
   @protected
+  Epic1Host dco_decode_box_autoadd_epic_1_host(dynamic raw);
+
+  @protected
   HttpExposure dco_decode_box_autoadd_http_exposure(dynamic raw);
 
   @protected
@@ -246,6 +251,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImportedTx dco_decode_box_autoadd_imported_tx(dynamic raw);
+
+  @protected
+  InPersonHost dco_decode_box_autoadd_in_person_host(dynamic raw);
 
   @protected
   KernelLocation dco_decode_box_autoadd_kernel_location(dynamic raw);
@@ -361,7 +369,34 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   EndedPairing dco_decode_ended_pairing(dynamic raw);
 
   @protected
+  Epic1AnswerView dco_decode_epic_1_answer_view(dynamic raw);
+
+  @protected
+  Epic1Attempt dco_decode_epic_1_attempt(dynamic raw);
+
+  @protected
+  Epic1Host dco_decode_epic_1_host(dynamic raw);
+
+  @protected
+  Epic1Link dco_decode_epic_1_link(dynamic raw);
+
+  @protected
+  Epic1LinkKind dco_decode_epic_1_link_kind(dynamic raw);
+
+  @protected
+  Epic1LinkRead dco_decode_epic_1_link_read(dynamic raw);
+
+  @protected
+  Epic1LinkView dco_decode_epic_1_link_view(dynamic raw);
+
+  @protected
+  Epic1Paid dco_decode_epic_1_paid(dynamic raw);
+
+  @protected
   EpicboxTuning dco_decode_epicbox_tuning(dynamic raw);
+
+  @protected
+  EpictxView dco_decode_epictx_view(dynamic raw);
 
   @protected
   FailedPairing dco_decode_failed_pairing(dynamic raw);
@@ -377,6 +412,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   FoundInvite dco_decode_found_invite(dynamic raw);
+
+  @protected
+  HostClassView dco_decode_host_class_view(dynamic raw);
 
   @protected
   HostPolicy dco_decode_host_policy(dynamic raw);
@@ -419,6 +457,33 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImportedTxKind dco_decode_imported_tx_kind(dynamic raw);
+
+  @protected
+  InPersonAnswerView dco_decode_in_person_answer_view(dynamic raw);
+
+  @protected
+  InPersonCode dco_decode_in_person_code(dynamic raw);
+
+  @protected
+  InPersonCodeView dco_decode_in_person_code_view(dynamic raw);
+
+  @protected
+  InPersonHost dco_decode_in_person_host(dynamic raw);
+
+  @protected
+  InPersonPosted dco_decode_in_person_posted(dynamic raw);
+
+  @protected
+  InPersonQrProgress dco_decode_in_person_qr_progress(dynamic raw);
+
+  @protected
+  InPersonRead dco_decode_in_person_read(dynamic raw);
+
+  @protected
+  InPersonReply dco_decode_in_person_reply(dynamic raw);
+
+  @protected
+  InPersonTaken dco_decode_in_person_taken(dynamic raw);
 
   @protected
   InboxReport dco_decode_inbox_report(dynamic raw);
@@ -469,7 +534,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<EndedPairing> dco_decode_list_ended_pairing(dynamic raw);
 
   @protected
+  List<Epic1AnswerView> dco_decode_list_epic_1_answer_view(dynamic raw);
+
+  @protected
+  List<Epic1Attempt> dco_decode_list_epic_1_attempt(dynamic raw);
+
+  @protected
+  List<Epic1Host> dco_decode_list_epic_1_host(dynamic raw);
+
+  @protected
+  List<Epic1LinkView> dco_decode_list_epic_1_link_view(dynamic raw);
+
+  @protected
   List<FailedPairing> dco_decode_list_failed_pairing(dynamic raw);
+
+  @protected
+  List<InPersonAnswerView> dco_decode_list_in_person_answer_view(dynamic raw);
 
   @protected
   List<LogField> dco_decode_list_log_field(dynamic raw);
@@ -482,6 +562,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<PairRequestView> dco_decode_list_pair_request_view(dynamic raw);
+
+  @protected
+  List<PeerPinView> dco_decode_list_peer_pin_view(dynamic raw);
 
   @protected
   List<PendingPairingView> dco_decode_list_pending_pairing_view(dynamic raw);
@@ -561,6 +644,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactKind? dco_decode_opt_box_autoadd_contact_kind(dynamic raw);
 
   @protected
+  Epic1Host? dco_decode_opt_box_autoadd_epic_1_host(dynamic raw);
+
+  @protected
   HttpExposure? dco_decode_opt_box_autoadd_http_exposure(dynamic raw);
 
   @protected
@@ -574,6 +660,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImportedTx? dco_decode_opt_box_autoadd_imported_tx(dynamic raw);
+
+  @protected
+  InPersonHost? dco_decode_opt_box_autoadd_in_person_host(dynamic raw);
 
   @protected
   KernelLocation? dco_decode_opt_box_autoadd_kernel_location(dynamic raw);
@@ -703,6 +792,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PeerCompat dco_decode_peer_compat(dynamic raw);
 
   @protected
+  PeerPinView dco_decode_peer_pin_view(dynamic raw);
+
+  @protected
   PendingPairingView dco_decode_pending_pairing_view(dynamic raw);
 
   @protected
@@ -769,6 +861,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   SelfSentTx dco_decode_self_sent_tx(dynamic raw);
 
   @protected
+  SendDialect dco_decode_send_dialect(dynamic raw);
+
+  @protected
   SendOptions dco_decode_send_options(dynamic raw);
 
   @protected
@@ -794,6 +889,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SlateStage dco_decode_slate_stage(dynamic raw);
+
+  @protected
+  SlateWire dco_decode_slate_wire(dynamic raw);
 
   @protected
   StoreAtRest dco_decode_store_at_rest(dynamic raw);
@@ -1060,6 +1158,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactKind sse_decode_box_autoadd_contact_kind(SseDeserializer deserializer);
 
   @protected
+  Epic1Host sse_decode_box_autoadd_epic_1_host(SseDeserializer deserializer);
+
+  @protected
   HttpExposure sse_decode_box_autoadd_http_exposure(
     SseDeserializer deserializer,
   );
@@ -1077,6 +1178,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImportedTx sse_decode_box_autoadd_imported_tx(SseDeserializer deserializer);
+
+  @protected
+  InPersonHost sse_decode_box_autoadd_in_person_host(
+    SseDeserializer deserializer,
+  );
 
   @protected
   KernelLocation sse_decode_box_autoadd_kernel_location(
@@ -1224,7 +1330,34 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   EndedPairing sse_decode_ended_pairing(SseDeserializer deserializer);
 
   @protected
+  Epic1AnswerView sse_decode_epic_1_answer_view(SseDeserializer deserializer);
+
+  @protected
+  Epic1Attempt sse_decode_epic_1_attempt(SseDeserializer deserializer);
+
+  @protected
+  Epic1Host sse_decode_epic_1_host(SseDeserializer deserializer);
+
+  @protected
+  Epic1Link sse_decode_epic_1_link(SseDeserializer deserializer);
+
+  @protected
+  Epic1LinkKind sse_decode_epic_1_link_kind(SseDeserializer deserializer);
+
+  @protected
+  Epic1LinkRead sse_decode_epic_1_link_read(SseDeserializer deserializer);
+
+  @protected
+  Epic1LinkView sse_decode_epic_1_link_view(SseDeserializer deserializer);
+
+  @protected
+  Epic1Paid sse_decode_epic_1_paid(SseDeserializer deserializer);
+
+  @protected
   EpicboxTuning sse_decode_epicbox_tuning(SseDeserializer deserializer);
+
+  @protected
+  EpictxView sse_decode_epictx_view(SseDeserializer deserializer);
 
   @protected
   FailedPairing sse_decode_failed_pairing(SseDeserializer deserializer);
@@ -1240,6 +1373,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   FoundInvite sse_decode_found_invite(SseDeserializer deserializer);
+
+  @protected
+  HostClassView sse_decode_host_class_view(SseDeserializer deserializer);
 
   @protected
   HostPolicy sse_decode_host_policy(SseDeserializer deserializer);
@@ -1286,6 +1422,37 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImportedTxKind sse_decode_imported_tx_kind(SseDeserializer deserializer);
+
+  @protected
+  InPersonAnswerView sse_decode_in_person_answer_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  InPersonCode sse_decode_in_person_code(SseDeserializer deserializer);
+
+  @protected
+  InPersonCodeView sse_decode_in_person_code_view(SseDeserializer deserializer);
+
+  @protected
+  InPersonHost sse_decode_in_person_host(SseDeserializer deserializer);
+
+  @protected
+  InPersonPosted sse_decode_in_person_posted(SseDeserializer deserializer);
+
+  @protected
+  InPersonQrProgress sse_decode_in_person_qr_progress(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  InPersonRead sse_decode_in_person_read(SseDeserializer deserializer);
+
+  @protected
+  InPersonReply sse_decode_in_person_reply(SseDeserializer deserializer);
+
+  @protected
+  InPersonTaken sse_decode_in_person_taken(SseDeserializer deserializer);
 
   @protected
   InboxReport sse_decode_inbox_report(SseDeserializer deserializer);
@@ -1344,7 +1511,30 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  List<Epic1AnswerView> sse_decode_list_epic_1_answer_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<Epic1Attempt> sse_decode_list_epic_1_attempt(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<Epic1Host> sse_decode_list_epic_1_host(SseDeserializer deserializer);
+
+  @protected
+  List<Epic1LinkView> sse_decode_list_epic_1_link_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<FailedPairing> sse_decode_list_failed_pairing(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<InPersonAnswerView> sse_decode_list_in_person_answer_view(
     SseDeserializer deserializer,
   );
 
@@ -1363,6 +1553,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<PairRequestView> sse_decode_list_pair_request_view(
     SseDeserializer deserializer,
   );
+
+  @protected
+  List<PeerPinView> sse_decode_list_peer_pin_view(SseDeserializer deserializer);
 
   @protected
   List<PendingPairingView> sse_decode_list_pending_pairing_view(
@@ -1456,6 +1649,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  Epic1Host? sse_decode_opt_box_autoadd_epic_1_host(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   HttpExposure? sse_decode_opt_box_autoadd_http_exposure(
     SseDeserializer deserializer,
   );
@@ -1475,6 +1673,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImportedTx? sse_decode_opt_box_autoadd_imported_tx(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  InPersonHost? sse_decode_opt_box_autoadd_in_person_host(
     SseDeserializer deserializer,
   );
 
@@ -1638,6 +1841,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PeerCompat sse_decode_peer_compat(SseDeserializer deserializer);
 
   @protected
+  PeerPinView sse_decode_peer_pin_view(SseDeserializer deserializer);
+
+  @protected
   PendingPairingView sse_decode_pending_pairing_view(
     SseDeserializer deserializer,
   );
@@ -1712,6 +1918,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   SelfSentTx sse_decode_self_sent_tx(SseDeserializer deserializer);
 
   @protected
+  SendDialect sse_decode_send_dialect(SseDeserializer deserializer);
+
+  @protected
   SendOptions sse_decode_send_options(SseDeserializer deserializer);
 
   @protected
@@ -1737,6 +1946,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SlateStage sse_decode_slate_stage(SseDeserializer deserializer);
+
+  @protected
+  SlateWire sse_decode_slate_wire(SseDeserializer deserializer);
 
   @protected
   StoreAtRest sse_decode_store_at_rest(SseDeserializer deserializer);
@@ -2057,6 +2269,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_epic_1_host(
+    Epic1Host self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_http_exposure(
     HttpExposure self,
     SseSerializer serializer,
@@ -2083,6 +2301,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_imported_tx(
     ImportedTx self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_in_person_host(
+    InPersonHost self,
     SseSerializer serializer,
   );
 
@@ -2276,7 +2500,46 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_ended_pairing(EndedPairing self, SseSerializer serializer);
 
   @protected
+  void sse_encode_epic_1_answer_view(
+    Epic1AnswerView self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_epic_1_attempt(Epic1Attempt self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_epic_1_host(Epic1Host self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_epic_1_link(Epic1Link self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_epic_1_link_kind(
+    Epic1LinkKind self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_epic_1_link_read(
+    Epic1LinkRead self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_epic_1_link_view(
+    Epic1LinkView self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_epic_1_paid(Epic1Paid self, SseSerializer serializer);
+
+  @protected
   void sse_encode_epicbox_tuning(EpicboxTuning self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_epictx_view(EpictxView self, SseSerializer serializer);
 
   @protected
   void sse_encode_failed_pairing(FailedPairing self, SseSerializer serializer);
@@ -2292,6 +2555,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_found_invite(FoundInvite self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_host_class_view(HostClassView self, SseSerializer serializer);
 
   @protected
   void sse_encode_host_policy(HostPolicy self, SseSerializer serializer);
@@ -2346,6 +2612,45 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     ImportedTxKind self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_in_person_answer_view(
+    InPersonAnswerView self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_in_person_code(InPersonCode self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_in_person_code_view(
+    InPersonCodeView self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_in_person_host(InPersonHost self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_in_person_posted(
+    InPersonPosted self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_in_person_qr_progress(
+    InPersonQrProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_in_person_read(InPersonRead self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_in_person_reply(InPersonReply self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_in_person_taken(InPersonTaken self, SseSerializer serializer);
 
   @protected
   void sse_encode_inbox_report(InboxReport self, SseSerializer serializer);
@@ -2414,8 +2719,38 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_epic_1_answer_view(
+    List<Epic1AnswerView> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_epic_1_attempt(
+    List<Epic1Attempt> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_epic_1_host(
+    List<Epic1Host> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_epic_1_link_view(
+    List<Epic1LinkView> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_failed_pairing(
     List<FailedPairing> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_in_person_answer_view(
+    List<InPersonAnswerView> self,
     SseSerializer serializer,
   );
 
@@ -2437,6 +2772,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_pair_request_view(
     List<PairRequestView> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_peer_pin_view(
+    List<PeerPinView> self,
     SseSerializer serializer,
   );
 
@@ -2549,6 +2890,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_opt_box_autoadd_epic_1_host(
+    Epic1Host? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_http_exposure(
     HttpExposure? self,
     SseSerializer serializer,
@@ -2575,6 +2922,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_imported_tx(
     ImportedTx? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_in_person_host(
+    InPersonHost? self,
     SseSerializer serializer,
   );
 
@@ -2777,6 +3130,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_peer_compat(PeerCompat self, SseSerializer serializer);
 
   @protected
+  void sse_encode_peer_pin_view(PeerPinView self, SseSerializer serializer);
+
+  @protected
   void sse_encode_pending_pairing_view(
     PendingPairingView self,
     SseSerializer serializer,
@@ -2867,6 +3223,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_self_sent_tx(SelfSentTx self, SseSerializer serializer);
 
   @protected
+  void sse_encode_send_dialect(SendDialect self, SseSerializer serializer);
+
+  @protected
   void sse_encode_send_options(SendOptions self, SseSerializer serializer);
 
   @protected
@@ -2892,6 +3251,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_slate_stage(SlateStage self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_slate_wire(SlateWire self, SseSerializer serializer);
 
   @protected
   void sse_encode_store_at_rest(StoreAtRest self, SseSerializer serializer);
