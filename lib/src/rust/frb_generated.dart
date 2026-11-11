@@ -1250,6 +1250,7 @@ abstract class RustLibApi extends BaseApi {
   Future<List<String>> crateApiWalletEncodeUrSlate({
     required String json,
     required Chain chain,
+    required bool native,
     required int maxFragmentLen,
     int? singleCodeMaxLen,
   });
@@ -9914,6 +9915,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Future<List<String>> crateApiWalletEncodeUrSlate({
     required String json,
     required Chain chain,
+    required bool native,
     required int maxFragmentLen,
     int? singleCodeMaxLen,
   }) {
@@ -9923,6 +9925,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(json, serializer);
           sse_encode_chain(chain, serializer);
+          sse_encode_bool(native, serializer);
           sse_encode_u_32(maxFragmentLen, serializer);
           sse_encode_opt_box_autoadd_u_32(singleCodeMaxLen, serializer);
           pdeCallFfi(
@@ -9937,7 +9940,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEncodeUrSlateConstMeta,
-        argValues: [json, chain, maxFragmentLen, singleCodeMaxLen],
+        argValues: [json, chain, native, maxFragmentLen, singleCodeMaxLen],
         apiImpl: this,
       ),
     );
@@ -9946,7 +9949,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiWalletEncodeUrSlateConstMeta =>
       const TaskConstMeta(
         debugName: "encode_ur_slate",
-        argNames: ["json", "chain", "maxFragmentLen", "singleCodeMaxLen"],
+        argNames: [
+          "json",
+          "chain",
+          "native",
+          "maxFragmentLen",
+          "singleCodeMaxLen",
+        ],
       );
 
   @override

@@ -996,7 +996,7 @@ directions are available for in-person bytes and for slate text.
 
 | Direction | In-person bytes | Slate text |
 |---|---|---|
-| Parts to show | `inPersonQrParts(bytes:, maxFragmentLen:, singleCodeMaxLen:)` | `encodeUrSlate(json:, chain:, maxFragmentLen:, singleCodeMaxLen:)` |
+| Parts to show | `inPersonQrParts(bytes:, maxFragmentLen:, singleCodeMaxLen:)` | `encodeUrSlate(json:, chain:, native:, maxFragmentLen:, singleCodeMaxLen:)` |
 | Parts scanned | `inPersonQrRead(parts:)` returns `InPersonQrProgress` | `decodeUrSlate(parts:)` returns `UrSlateProgress` |
 
 `maxFragmentLen` bounds the payload of each part, 16 to 1024 bytes; 200 suits most screens at
@@ -1013,9 +1013,11 @@ yet checked. Pass in-person bytes to `inPersonRead` or `inPersonTake`, or
 
 `encodeUrSlate` writes the slate file's text of `chain` as `ur:epic-slate` codes
 ([format](https://github.com/BTLabsUK/lepic/blob/main/docs/compat/ur-epic-slate.md)), uppercase for
-the QR alphanumeric mode. The codes carry the slate's `lepic.v1` bytes (payload version 2), about
-half the parts of the text; a slate `lepic.v1` cannot carry, such as one whose range proofs are not
-single bulletproofs, goes as deflated text (version 1). `decodeUrSlate` reads both versions and
+the QR alphanumeric mode. With `native: false` the codes carry the deflated text (payload version
+1), which every reader takes. With `native: true` they carry the slate's `lepic.v1` bytes (version
+2), about half the parts, which only a reader of LEPIC 0.5.0 or later takes; a slate `lepic.v1`
+cannot carry, such as one whose range proofs are not single bulletproofs, goes as deflated text
+either way. Write version 2 once the wallets that scan the codes read it. `decodeUrSlate` reads both versions and
 returns a `lepic.v1` slate as V3 text without the proposal's body: only the wallet that made the
 proposal finalizes the answer, from what it stored. Nothing is encrypted: anyone who sees the
 screen can read the slate.
