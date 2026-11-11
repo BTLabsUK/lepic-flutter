@@ -996,11 +996,16 @@ directions are available for in-person bytes and for slate text.
 
 | Direction | In-person bytes | Slate text |
 |---|---|---|
-| Parts to show | `inPersonQrParts(bytes:, maxFragmentLen:)` | `encodeUrSlate(json:, maxFragmentLen:)` |
+| Parts to show | `inPersonQrParts(bytes:, maxFragmentLen:, singleCodeMaxLen:)` | `encodeUrSlate(json:, maxFragmentLen:, singleCodeMaxLen:)` |
 | Parts scanned | `inPersonQrRead(parts:)` returns `InPersonQrProgress` | `decodeUrSlate(parts:)` returns `UrSlateProgress` |
 
-`maxFragmentLen` bounds the payload of each part, 16 to 1024 bytes; 200 suits most screens. Bytes
-of at most 360 fit one single-part code. Pass every distinct text scanned so far on each read, in
+`maxFragmentLen` bounds the payload of each part, 16 to 1024 bytes; 200 suits most screens at
+error correction level L. The optional `singleCodeMaxLen`, 0 to 1024 bytes, is the longest payload
+that stays one single-part code; without it, in-person bytes of at most 360 (with their framing)
+and slate text that fits one part are a single code. One code or many is the app's display choice:
+a code drawn at level H with a logo in its centre needs smaller values, for example
+`singleCodeMaxLen: 80` and `maxFragmentLen: 64`, which keep every part within a version 11 symbol
+(61 modules). The reader takes either. Pass every distinct text scanned so far on each read, in
 any order and case; the functions hold no state. Once `complete`, `bytes` (or `json`) holds the
 payload, which is not yet checked. Pass in-person bytes to `inPersonRead` or `inPersonTake`, or
 `inPersonTakeQr(parts:)` takes the parts directly. Pass slate text to `inspectSlate`.
@@ -1009,7 +1014,7 @@ payload, which is not yet checked. Pass in-person bytes to `inPersonRead` or `in
 ([format](https://github.com/BTLabsUK/lepic/blob/main/docs/compat/ur-epic-slate.md)), uppercase for
 the QR alphanumeric mode. Nothing is encrypted: anyone who sees the screen can read the slate.
 Encoding fails with `UrCodeTooLarge` for text over 64 KiB or more than 256 parts, and
-`InvalidArgument` for a fragment length outside the limits. `inPersonQrParts` fails with
+`InvalidArgument` for a fragment length or single-code limit outside the limits. `inPersonQrParts` fails with
 `UrCodeTooLarge` for more than 67,648 bytes or 256 parts.
 
 Decoding fails with `NotUrCode` or `ForeignUrCode` for a scan that is not a slate code (drop that

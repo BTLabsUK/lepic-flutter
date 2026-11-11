@@ -11,16 +11,21 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'types.dart';
 
 /// The parts of an animated QR code for the `bytes` of an in-person code or the `envelope` of
-/// an answer, to show in a loop, in order. Bytes of at most 360 fit one single-part code.
-/// `max_fragment_len` bounds each part's payload in bytes, 16 to 1024; 200 suits most screens.
-/// Fails with `InvalidSlate` for bytes that are neither, `InvalidArgument` for a fragment length
-/// outside the limits, and `UrCodeTooLarge` for more than 67,648 bytes or 256 fragments.
+/// an answer, to show in a loop, in order. A payload (the bytes and up to 7 bytes of framing)
+/// of at most `single_code_max_len` bytes, 0 to 1024, is one single-part code; a
+/// longer one is split into parts that each carry at most `max_fragment_len` bytes, 16 to 1024.
+/// Without `single_code_max_len` the limit is 360. Which to pass is the caller's display
+/// choice: smaller values give smaller codes and more of them. Fails with `InvalidSlate` for
+/// bytes that are neither, `InvalidArgument` for a length outside its limits, and
+/// `UrCodeTooLarge` for more than 67,648 bytes or 256 fragments.
 List<String> inPersonQrParts({
   required List<int> bytes,
   required int maxFragmentLen,
+  int? singleCodeMaxLen,
 }) => RustLib.instance.api.crateApiInPersonInPersonQrParts(
   bytes: bytes,
   maxFragmentLen: maxFragmentLen,
+  singleCodeMaxLen: singleCodeMaxLen,
 );
 
 /// Reads the distinct QR texts of an in-person code or answer scanned so far, in any order and
