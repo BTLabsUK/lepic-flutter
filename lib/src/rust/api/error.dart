@@ -301,7 +301,7 @@ enum WalletErrorKind {
   /// No invite was found for these words: they are wrong, expired, or were used.
   pairingWordsNotFound,
 
-  /// A word is not in the pairing words table, or there are not five.
+  /// No longer produced; kept for its number.
   invalidPairingWords,
 
   /// The contact's wallet says it does not pay invoices. Nothing was sent.
