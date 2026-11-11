@@ -1138,59 +1138,35 @@ void main() {
           .readAsStringSync(),
     ) as Map<String, dynamic>;
     final text = vector['expected']['json'] as String;
-    final parts = await encodeUrSlate(
-      json: text,
-      chain: Chain.floonet,
-      native: true,
-      maxFragmentLen: 200,
-    );
-    // A native code carries the slate's lepic.v1 bytes: fewer parts than the 12 of the text.
-    final count = int.parse(
-      RegExp(r'^UR:EPIC-SLATE/1-(\d+)/').firstMatch(parts.first)![1]!,
-    );
-    expect(count, lessThan(12));
+    final parts = await encodeUrSlate(json: text, maxFragmentLen: 200);
+    expect(parts.first, startsWith('UR:EPIC-SLATE/1-12/'));
+    expect(parts, hasLength(36));
     // A scanner that missed the second frame completes from the fountain parts.
     final scanned = [...parts]..removeAt(1);
-    final partial = await decodeUrSlate(parts: scanned.take(count - 1).toList());
+    final partial = await decodeUrSlate(parts: scanned.take(5).toList());
     expect(partial.complete, isFalse);
-    expect(partial.receivedFragments, count - 1);
-    expect(partial.fragmentCount, count);
+    expect(partial.receivedFragments, 5);
+    expect(partial.fragmentCount, 12);
     final progress = await decodeUrSlate(parts: scanned);
     expect(progress.complete, isTrue);
+    expect(progress.json, text);
     final info = await inspectSlate(json: progress.json!, chain: Chain.floonet);
-    final shown = await inspectSlate(json: text, chain: Chain.floonet);
-    expect(info.slateId, shown.slateId);
-    expect(info.amount, shown.amount);
-    expect(info.version, 3);
     expect(info.stage, SlateStage.s2);
   });
 
   test('the caller picks the single-code limit of a slate code', () async {
     const text = '{"id":"slate-1","pad":"abcdefghijklmnopqrstuvwxyz"}';
-    final one = await encodeUrSlate(
-      json: text,
-      chain: Chain.floonet,
-      native: false,
-      maxFragmentLen: 200,
-    );
+    final one = await encodeUrSlate(json: text, maxFragmentLen: 200);
     expect(one, hasLength(1));
     final split = await encodeUrSlate(
       json: text,
-      chain: Chain.floonet,
-      native: false,
       maxFragmentLen: 16,
       singleCodeMaxLen: 0,
     );
     expect(split.length, greaterThan(1));
     expect((await decodeUrSlate(parts: split)).json, text);
     await expectLater(
-      encodeUrSlate(
-        json: text,
-        chain: Chain.floonet,
-        native: false,
-        maxFragmentLen: 200,
-        singleCodeMaxLen: 1025,
-      ),
+      encodeUrSlate(json: text, maxFragmentLen: 200, singleCodeMaxLen: 1025),
       throwsWalletError(WalletErrorKind.invalidArgument),
     );
   });
@@ -1198,18 +1174,8 @@ void main() {
   test(
     'decode_ur_slate tells foreign, mixed and damaged codes apart',
     () async {
-      final short = await encodeUrSlate(
-        json: '{"a":1}',
-        chain: Chain.floonet,
-        native: false,
-        maxFragmentLen: 200,
-      );
-      final other = await encodeUrSlate(
-        json: '{"b":2}',
-        chain: Chain.floonet,
-        native: false,
-        maxFragmentLen: 200,
-      );
+      final short = await encodeUrSlate(json: '{"a":1}', maxFragmentLen: 200);
+      final other = await encodeUrSlate(json: '{"b":2}', maxFragmentLen: 200);
       final cases = {
         'esgxyz@epicbox.epiccash.com': WalletErrorKind.notUrCode,
         'UR:BYTES/AEAEAEAE': WalletErrorKind.foreignUrCode,
@@ -1231,7 +1197,7 @@ void main() {
         throwsWalletError(WalletErrorKind.urCodeTooLarge),
       );
       await expectLater(
-        encodeUrSlate(json: 'not json', chain: Chain.floonet, native: false, maxFragmentLen: 200),
+        encodeUrSlate(json: 'not json', maxFragmentLen: 200),
         throwsWalletError(WalletErrorKind.invalidSlate),
       );
     },
