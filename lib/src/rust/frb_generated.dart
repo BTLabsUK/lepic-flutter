@@ -84,12 +84,13 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   @override
   int get rustContentHash => 212612741;
 
-  static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
-    stem: 'lepic_ffi',
-    ioDirectory: null,
-    webPrefix: 'pkg/',
-    wasmBindgenName: 'wasm_bindgen',
-  );
+  static const kDefaultExternalLibraryLoaderConfig =
+      ExternalLibraryLoaderConfig(
+        stem: 'lepic_ffi',
+        ioDirectory: null,
+        webPrefix: 'pkg/',
+        wasmBindgenName: 'wasm_bindgen',
+      );
 }
 
 abstract class RustLibApi extends BaseApi {
@@ -1248,6 +1249,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<List<String>> crateApiWalletEncodeUrSlate({
     required String json,
+    required Chain chain,
     required int maxFragmentLen,
     int? singleCodeMaxLen,
   });
@@ -9911,6 +9913,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @override
   Future<List<String>> crateApiWalletEncodeUrSlate({
     required String json,
+    required Chain chain,
     required int maxFragmentLen,
     int? singleCodeMaxLen,
   }) {
@@ -9919,6 +9922,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: (port_) {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(json, serializer);
+          sse_encode_chain(chain, serializer);
           sse_encode_u_32(maxFragmentLen, serializer);
           sse_encode_opt_box_autoadd_u_32(singleCodeMaxLen, serializer);
           pdeCallFfi(
@@ -9933,7 +9937,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEncodeUrSlateConstMeta,
-        argValues: [json, maxFragmentLen, singleCodeMaxLen],
+        argValues: [json, chain, maxFragmentLen, singleCodeMaxLen],
         apiImpl: this,
       ),
     );
@@ -9942,7 +9946,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiWalletEncodeUrSlateConstMeta =>
       const TaskConstMeta(
         debugName: "encode_ur_slate",
-        argNames: ["json", "maxFragmentLen", "singleCodeMaxLen"],
+        argNames: ["json", "chain", "maxFragmentLen", "singleCodeMaxLen"],
       );
 
   @override

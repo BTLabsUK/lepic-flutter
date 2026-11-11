@@ -996,7 +996,7 @@ directions are available for in-person bytes and for slate text.
 
 | Direction | In-person bytes | Slate text |
 |---|---|---|
-| Parts to show | `inPersonQrParts(bytes:, maxFragmentLen:, singleCodeMaxLen:)` | `encodeUrSlate(json:, maxFragmentLen:, singleCodeMaxLen:)` |
+| Parts to show | `inPersonQrParts(bytes:, maxFragmentLen:, singleCodeMaxLen:)` | `encodeUrSlate(json:, chain:, maxFragmentLen:, singleCodeMaxLen:)` |
 | Parts scanned | `inPersonQrRead(parts:)` returns `InPersonQrProgress` | `decodeUrSlate(parts:)` returns `UrSlateProgress` |
 
 `maxFragmentLen` bounds the payload of each part, 16 to 1024 bytes; 200 suits most screens at
@@ -1004,21 +1004,26 @@ error correction level L. The optional `singleCodeMaxLen`, 0 to 1024 bytes, is t
 that stays one single-part code; without it, in-person bytes of at most 360 (with their framing)
 and slate text that fits one part are a single code. One code or many is the app's display choice:
 a code drawn at level H with a logo in its centre needs smaller values, for example
-`singleCodeMaxLen: 80` and `maxFragmentLen: 64`, which keep every part within a version 11 symbol
-(61 modules). The reader takes either. Pass every distinct text scanned so far on each read, in
-any order and case; the functions hold no state. Once `complete`, `bytes` (or `json`) holds the
-payload, which is not yet checked. Pass in-person bytes to `inPersonRead` or `inPersonTake`, or
+`maxFragmentLen: 125`, which keeps every part within a version 15 symbol (77 modules). The
+reader takes either. Pass every distinct text scanned so far on each read, in any order and case;
+the functions hold no state. Once `complete`, `bytes` (or `json`) holds the payload, which is not
+yet checked. Pass in-person bytes to `inPersonRead` or `inPersonTake`, or
 `inPersonTakeQr(parts:)` takes the parts directly. Pass slate text to `inspectSlate`.
 
-`encodeUrSlate` writes the legacy slate JSON as `ur:epic-slate` codes
+`encodeUrSlate` writes the slate file's text of `chain` as `ur:epic-slate` codes
 ([format](https://github.com/BTLabsUK/lepic/blob/main/docs/compat/ur-epic-slate.md)), uppercase for
-the QR alphanumeric mode. Nothing is encrypted: anyone who sees the screen can read the slate.
+the QR alphanumeric mode. The codes carry the slate's `lepic.v1` bytes (payload version 2), about
+half the parts of the text; a slate `lepic.v1` cannot carry, such as one whose range proofs are not
+single bulletproofs, goes as deflated text (version 1). `decodeUrSlate` reads both versions and
+returns a `lepic.v1` slate as V3 text without the proposal's body: only the wallet that made the
+proposal finalizes the answer, from what it stored. Nothing is encrypted: anyone who sees the
+screen can read the slate.
 Encoding fails with `UrCodeTooLarge` for text over 64 KiB or more than 256 parts, and
 `InvalidArgument` for a fragment length or single-code limit outside the limits. `inPersonQrParts` fails with
 `UrCodeTooLarge` for more than 67,648 bytes or 256 parts.
 
-Decoding fails with `NotUrCode` or `ForeignUrCode` for a scan that is not a slate code (drop that
-scan and keep the others), `MixedUrCodes` for parts of two codes (start over with the newest scan),
+Decoding fails with `NotUrCode` or `ForeignUrCode` for a scan that is not a payment-file code, an
+in-person code or answer included (drop that scan and keep the others), `MixedUrCodes` for parts of two codes (start over with the newest scan),
 `InvalidUrCode` for a damaged code or an unknown version, and `UrCodeTooLarge`. `inPersonTakeQr`
 fails with `UrCodeIncomplete` while parts are missing.
 
