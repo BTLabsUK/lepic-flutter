@@ -58,41 +58,32 @@ bool verifyAddressSignatureAt({
 Future<SlateInfo> inspectSlate({required String json, required Chain chain}) =>
     RustLib.instance.api.crateApiWalletInspectSlate(json: json, chain: chain);
 
-/// The slate text `json` of `chain` as the QR texts of an animated `ur:epic-slate` code
-/// (`docs/compat/ur-epic-slate.md`), uppercase for the QR alphanumeric mode. Show them in a
-/// loop, in order. Without `native` the code carries the deflated text (payload version 1),
-/// which every reader takes. With it the code carries the slate's `lepic.v1` bytes (version 2),
-/// about half the parts, which leave out what the other wallet already has; only a reader of
-/// LEPIC 0.5.0 or later takes them. A slate `lepic.v1` cannot carry, such as one whose range
-/// proofs are not single bulletproofs, goes as deflated text either way.
-/// `max_fragment_len` bounds each part's payload in bytes, 16 to 1024. A payload of at most
-/// `single_code_max_len` bytes, 0 to 1024, is a single code; without it, one that fits one
-/// fragment is. Which to pass is the caller's display choice: smaller values give smaller codes
-/// and more of them. Nothing is encrypted: whoever sees the screen can read the slate. Fails
-/// with `InvalidSlate` for empty or non-JSON text, `InvalidArgument` for a length outside its
-/// limits, and `UrCodeTooLarge` for a payload over 64 KiB or more than 256 fragments.
+/// The slate text `json` as the QR texts of an animated `ur:epic-slate` code
+/// (`docs/compat/ur-epic-slate.md`): the deflated text, payload version 1, uppercase for the QR
+/// alphanumeric mode. Show them in a loop, in order. `max_fragment_len` bounds each part's
+/// payload in bytes, 16 to 1024. A compressed slate of at most `single_code_max_len` bytes, 0
+/// to 1024, is a single code; without it, one that fits one fragment is. Which to pass is the
+/// caller's display choice: smaller values give smaller codes and more of them. Nothing is
+/// encrypted: whoever sees the screen can read the slate. Fails with `InvalidSlate` for empty
+/// or non-JSON text, `InvalidArgument` for a length outside its limits, and `UrCodeTooLarge`
+/// for text over 64 KiB or more than 256 fragments.
 Future<List<String>> encodeUrSlate({
   required String json,
-  required Chain chain,
-  required bool native,
   required int maxFragmentLen,
   int? singleCodeMaxLen,
 }) => RustLib.instance.api.crateApiWalletEncodeUrSlate(
   json: json,
-  chain: chain,
-  native: native,
   maxFragmentLen: maxFragmentLen,
   singleCodeMaxLen: singleCodeMaxLen,
 );
 
 /// Reads the distinct QR texts scanned so far, in any order and case; pass all of them on each
-/// call. Holds no state. Reads both payload versions: deflated text, and `lepic.v1` bytes,
-/// which come back as V3 slate text for the network the slate names. Once `complete`, `json`
-/// is the slate text, not yet checked as a slate; pass it on as a slate file's text. Fails with
-/// `NotUrCode` or `ForeignUrCode` when a scan is not a payment-file code, an in-person code or
-/// answer included (drop that scan and keep the others), `MixedUrCodes` for parts of two codes
-/// (start over with the newest scan), `InvalidUrCode` for a damaged code or an unknown
-/// version, and `UrCodeTooLarge` for more than 1024 parts or a payload past the limits.
+/// call. Holds no state. Once `complete`, `json` is the slate text, not yet checked as a slate;
+/// pass it on as a slate file's text. Fails with `NotUrCode` or `ForeignUrCode` when a scan is
+/// not a payment-file code, an in-person code or answer included (drop that scan and keep the
+/// others), `MixedUrCodes` for parts of two codes (start over with the newest scan),
+/// `InvalidUrCode` for a damaged code or an unknown version, and `UrCodeTooLarge` for more than
+/// 1024 parts or text past the limits.
 Future<UrSlateProgress> decodeUrSlate({required List<String> parts}) =>
     RustLib.instance.api.crateApiWalletDecodeUrSlate(parts: parts);
 

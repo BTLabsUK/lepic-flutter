@@ -996,7 +996,7 @@ directions are available for in-person bytes and for slate text.
 
 | Direction | In-person bytes | Slate text |
 |---|---|---|
-| Parts to show | `inPersonQrParts(bytes:, maxFragmentLen:, singleCodeMaxLen:)` | `encodeUrSlate(json:, chain:, native:, maxFragmentLen:, singleCodeMaxLen:)` |
+| Parts to show | `inPersonQrParts(bytes:, maxFragmentLen:, singleCodeMaxLen:)` | `encodeUrSlate(json:, maxFragmentLen:, singleCodeMaxLen:)` |
 | Parts scanned | `inPersonQrRead(parts:)` returns `InPersonQrProgress` | `decodeUrSlate(parts:)` returns `UrSlateProgress` |
 
 `maxFragmentLen` bounds the payload of each part, 16 to 1024 bytes; 200 suits most screens at
@@ -1011,22 +1011,18 @@ the functions hold no state. Once `complete`, `bytes` (or `json`) holds the payl
 yet checked. Pass in-person bytes to `inPersonRead` or `inPersonTake`, or
 `inPersonTakeQr(parts:)` takes the parts directly. Pass slate text to `inspectSlate`.
 
-`encodeUrSlate` writes the slate file's text of `chain` as `ur:epic-slate` codes
+`encodeUrSlate` writes the slate JSON as `ur:epic-slate` codes
 ([format](https://github.com/BTLabsUK/lepic/blob/main/docs/compat/ur-epic-slate.md)), uppercase for
-the QR alphanumeric mode. With `native: false` the codes carry the deflated text (payload version
-1), which every reader takes. With `native: true` they carry the slate's `lepic.v1` bytes (version
-2), about half the parts, which only a reader of LEPIC 0.5.0 or later takes; a slate `lepic.v1`
-cannot carry, such as one whose range proofs are not single bulletproofs, goes as deflated text
-either way. Write version 2 once the wallets that scan the codes read it. `decodeUrSlate` reads both versions and
-returns a `lepic.v1` slate as V3 text without the proposal's body: only the wallet that made the
-proposal finalizes the answer, from what it stored. Nothing is encrypted: anyone who sees the
-screen can read the slate.
+the QR alphanumeric mode. The codes carry the deflated text (payload version 1), which every
+reader takes; `decodeUrSlate` returns that text. Nothing is encrypted: anyone who sees the screen
+can read the slate.
 Encoding fails with `UrCodeTooLarge` for text over 64 KiB or more than 256 parts, and
 `InvalidArgument` for a fragment length or single-code limit outside the limits. `inPersonQrParts` fails with
 `UrCodeTooLarge` for more than 67,648 bytes or 256 parts.
 
 Decoding fails with `NotUrCode` or `ForeignUrCode` for a scan that is not a payment-file code, an
-in-person code or answer included (drop that scan and keep the others), `MixedUrCodes` for parts of two codes (start over with the newest scan),
+in-person code or answer included (drop that scan and keep the others), `MixedUrCodes` for parts
+of two codes (start over with the newest scan),
 `InvalidUrCode` for a damaged code or an unknown version, and `UrCodeTooLarge`. `inPersonTakeQr`
 fails with `UrCodeIncomplete` while parts are missing.
 
