@@ -412,9 +412,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   FoundDuring dco_decode_found_during(dynamic raw);
 
   @protected
-  FoundInvite dco_decode_found_invite(dynamic raw);
-
-  @protected
   HostClassView dco_decode_host_class_view(dynamic raw);
 
   @protected
@@ -764,9 +761,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PairingAnswer dco_decode_pairing_answer(dynamic raw);
-
-  @protected
-  PairingCard dco_decode_pairing_card(dynamic raw);
 
   @protected
   PairingClass dco_decode_pairing_class(dynamic raw);
@@ -1376,9 +1370,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   FoundDuring sse_decode_found_during(SseDeserializer deserializer);
 
   @protected
-  FoundInvite sse_decode_found_invite(SseDeserializer deserializer);
-
-  @protected
   HostClassView sse_decode_host_class_view(SseDeserializer deserializer);
 
   @protected
@@ -1810,9 +1801,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PairingAnswer sse_decode_pairing_answer(SseDeserializer deserializer);
-
-  @protected
-  PairingCard sse_decode_pairing_card(SseDeserializer deserializer);
 
   @protected
   PairingClass sse_decode_pairing_class(SseDeserializer deserializer);
@@ -2561,9 +2549,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_found_during(FoundDuring self, SseSerializer serializer);
 
   @protected
-  void sse_encode_found_invite(FoundInvite self, SseSerializer serializer);
-
-  @protected
   void sse_encode_host_class_view(HostClassView self, SseSerializer serializer);
 
   @protected
@@ -3099,9 +3084,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_pairing_answer(PairingAnswer self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_pairing_card(PairingCard self, SseSerializer serializer);
 
   @protected
   void sse_encode_pairing_class(PairingClass self, SseSerializer serializer);

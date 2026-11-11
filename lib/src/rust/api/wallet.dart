@@ -802,9 +802,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// The link mailboxes of the default account in use, by kind and number.
   Future<List<Epic1LinkView>> epic1Links();
 
-  /// Pays an epic1 link `amount` atomic units, or with `None` the amount the link asks. With
-  /// `proof` the payee is asked for a payment proof signed with the address's epic1 proof
-  /// key. The payment names a reply mailbox on the wallet's own relay, is stored, then posted
+  /// Pays an epic1 link `amount` atomic units, or with `None` the amount the link asks. The payment names a reply mailbox on the wallet's own relay, is stored, then posted
   /// to the link's first relay, and to the next when a post fails, at most three.
   /// `hosts_ok` says the user confirmed every relay [`EpicWallet::epic1_link_read`] showed.
   /// Collecting takes the answer and finalizes it.
@@ -819,7 +817,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required BigInt minimumConfirmations,
     String? message,
     SendOptions? options,
-    required bool proof,
     required bool hostsOk,
     required ContactRelayMode relayMode,
   });
@@ -1382,54 +1379,24 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required ContactRelayMode relayMode,
   });
 
-  /// Finds the invite that five pairing words name, typed as names or emoji, on the
-  /// meeting relays, and returns its link with its preview, for
-  /// [`EpicWallet::pairing_accept`]. The meeting relays are `meeting_relays`, each
-  /// `domain[:port]` over TLS, which the app takes from its settings; all are asked at once,
-  /// each for at most 20 seconds, and
-  /// the first invite that opens wins. That copy is taken off its relay, so nobody else finds
-  /// it; copies on other relays expire.
-  ///
-  /// Fails with `InvalidPairingWords` for words not in the table, `PairingWordsNotFound`
-  /// when no relay holds the invite, `TransportFailed` when no meeting relay could be
-  /// reached, `PairingWordsUnavailable` when `meeting_relays` is empty, `InvalidArgument`
-  /// for a meeting relay that is not `domain[:port]` or more than 16 of them, and
-  /// `ContactsOffline` or `EpicboxOff`.
-  Future<FoundInvite> pairingFindWords({
-    required List<String> words,
-    required ContactRelayMode relayMode,
-    required List<String> meetingRelays,
-  });
-
   /// Makes an invite to pair, valid for `expiry`, whose messages go through this wallet's
   /// relay. The pending pairing is stored and listed by [`EpicWallet::pairings_pending`];
-  /// [`EpicWallet::contacts_collect`] takes the reply and raises `PairingReplied`. Without
-  /// words nothing is sent, so this works offline.
-  ///
-  /// With `offer_words` the invite lasts 10 minutes and is also posted under five pairing
-  /// words, returned in `words`, for the other side to type, on every meeting relay whatever
-  /// relay the wallet uses: the `meeting_relays`, each `domain[:port]` over TLS, which the
-  /// app takes from its settings; LEPIC has none of its own. The other side must look on at
-  /// least one of them. That needs `Online` and fails with `ContactsOffline` or `EpicboxOff`
-  /// before anything is stored, with `PairingWordsUnavailable` when `meeting_relays` is
-  /// empty, and with `TransportFailed` when no meeting relay takes the post, the invite then
-  /// withdrawn. Without `offer_words`, `meeting_relays` is ignored and may be empty.
-  ///
+  /// [`EpicWallet::contacts_collect`] takes the reply and raises `PairingReplied`. Nothing
+  /// is sent, so this works offline.
   /// The pairing's mailboxes live on `home_relay`, `domain[:port]` reached over TLS, or with
   /// `None` on the wallet's own Epicbox relay; the other side reaches them there whatever
   /// relay it uses.
   ///
   /// `pairing_class` `Private` makes a private pairing with another wallet of the user's
-  /// ([`PairingClass`]): its invite must travel by QR or paste, so `offer_words` is refused
-  /// with `WrongPairingClass`.
+  /// ([`PairingClass`]): its invite must travel by QR or paste.
   ///
   /// With `expect_address` set, the reply must prove that Epicbox address, compared by key:
   /// a reply without the proof fails `AddressProofMissing`, one proving another key
   /// `OtherAddress`, with nothing stored, as `PairingFailed` in the collect or as the error
   /// of `pairing_enter_link`. A reply that proves it completes the pairing Verified.
   ///
-  /// Fails with `InvalidArgument` for a meeting or home relay that is not `domain[:port]`,
-  /// for more than 16 meeting relays or an `expect_address` that is not an Epicbox address of
+  /// Fails with `InvalidArgument` for a home relay that is not `domain[:port]`
+  /// or an `expect_address` that is not an Epicbox address of
   /// this network, with `InvalidContactName` for a `name` a card cannot carry, and with `Io`
   /// when 64 pairings are pending.
   ///
@@ -1438,9 +1405,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required String name,
     required ContactKind kind,
     required InviteExpiry expiry,
-    required bool offerWords,
     required ContactRelayMode relayMode,
-    required List<String> meetingRelays,
     String? homeRelay,
     required PairingClass pairingClass,
     String? expectAddress,
@@ -1486,34 +1451,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required String contactId,
     required SasDecision decision,
     required ContactRelayMode relayMode,
-  });
-
-  /// Finishes an in-person pairing with the card `link` scanned from the other phone:
-  /// "Scan theirs". The contact is paired, not verified; show the words check from the
-  /// returned view. Works offline.
-  ///
-  /// Fails with `ContactNotFound` when `contact_id` is not a card this wallet shows,
-  /// `InvalidPairingText` for a link that is not a card on the wallet's network, and
-  /// `AlreadyPaired` for a contact this wallet holds or its own card.
-  Future<ContactView> pairingScanCard({
-    required String contactId,
-    required String link,
-    required ContactRelayMode relayMode,
-  });
-
-  /// Shows a card to pair in person: "Show my code". Its `link` goes in a QR code for the
-  /// other phone; [`EpicWallet::pairing_scan_card`] with the same `contact_id` finishes the
-  /// pairing with theirs. Nothing is sent, so this works offline. The pairing's mailboxes
-  /// live on `home_relay` as [`EpicWallet::pairing_invite`] describes.
-  ///
-  /// Fails as [`EpicWallet::pairing_invite`] does.
-  ///
-  /// `kind` is deprecated and ignored: a new pairing writes a person (docs/adr/0041).
-  Future<PairingCard> pairingShowCard({
-    required String name,
-    required ContactKind kind,
-    required ContactRelayMode relayMode,
-    String? homeRelay,
   });
 
   /// The standing invite (one per wallet, seven days, the wallet's own relay), made anew when

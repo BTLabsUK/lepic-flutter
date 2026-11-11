@@ -798,9 +798,7 @@ answer, and both sides compare four emoji, the words check.
 | Way | Calls |
 |---|---|
 | Link | the inviter calls `pairingInvite(...)`, which returns an `epiccash://pair/1/...` link; the other side calls `pairingPreview(link:)`, then `pairingAccept(...)` |
-| Five words | `pairingInvite(offerWords: true, ...)` also posts the invite under five words, returned in `words`; the other side calls `pairingFindWords(...)`, which returns the link and its preview |
 | Request | one side calls `pairingRequestSend(toAddress:, ...)`; the other lists `pairingRequests()` and answers with `pairingAccept(expectAddress:, ...)` |
-| In person | each side calls `pairingShowCard(...)`, which returns a card link for a QR code, then `pairingScanCard(contactId:, link:, ...)` with the other phone's card |
 | By hand | `pairingAccept(byHand: true, ...)` returns a `replyLink` to paste to the inviter, who calls `pairingEnterLink(text:, ...)`; its confirmation goes back the same way |
 
 `pairingPreview` stores and sends nothing. It returns an `InvitePreview` with the claimed name, the
@@ -808,11 +806,8 @@ expiry, the home relay and whether the invite comes from a service. The name is 
 as what the other side calls itself.
 
 `pairingInvite` takes the `name` the invite carries, an `InviteExpiry` (`oneHour`, `oneDay`,
-`sevenDays`), `meetingRelays`, an optional `homeRelay` and a `PairingClass`. With `offerWords` the
-invite lasts 10 minutes and is posted on every meeting relay. The app supplies the meeting relays
-from its settings, each `domain[:port]` over TLS, at most 16; LEPIC has none of its own. Without
-`offerWords` nothing is sent, so an invite can be made offline. The `kind` argument of
-`pairingInvite` and `pairingShowCard` is required but ignored.
+`sevenDays`), an optional `homeRelay` and a `PairingClass`. Nothing is sent, so an invite can be
+made offline. The `kind` argument of `pairingInvite` is required but ignored.
 
 `pairingStandingInvite(name:)` returns the wallet's one standing invite, valid for seven days on the
 wallet's own relay, and makes a fresh one when it is missing, answered, within a day of its expiry,
@@ -822,9 +817,6 @@ returned on every call and is not stored by the app.
 `pairingRequestSend` asks a wallet that is known to run LEPIC to pair, by posting an invite that
 only that wallet can answer. It fails with `PeerNotProven` unless that address ran LEPIC lately and
 claimed pair requests. `pairingRequestDismiss(requestId:)` hides a request.
-
-The five-word lookup (`pairingFindWords`) asks all meeting relays at once, each for at most 20
-seconds. The first invite that opens wins and is taken off its relay.
 
 After a pairing, `pairingSas(contactId:, decision:, relayMode:)` records the words check:
 `SasDecision.match` marks the contact verified, `mismatch` removes the pairing and tells the other
@@ -1044,7 +1036,7 @@ describes the address and the link.
 | Payee | `epic1Answers(relayMode:)`, `epic1PostAnswer(slateId:, relayOk:, relayMode:)` | the answers made for payments taken, and a post of one |
 | Payee | `epic1Restore(relayMode:)` | after a restore from the phrase, drains the link mailboxes once |
 | Payer | `epic1LinkRead(link:, relayMode:)` | shows the payee, amount, message and relays; stores nothing |
-| Payer | `epic1Pay(link:, amount:, minimumConfirmations:, proof:, hostsOk:, ...)` | pays the link |
+| Payer | `epic1Pay(link:, amount:, minimumConfirmations:, hostsOk:, ...)` | pays the link |
 | Payer | `epic1PostNext(slateId:, hostsOk:, relayMode:)` | posts the payment again to the next relay of the link |
 
 `Epic1LinkKind` picks the mailbox lifetime. An `onScreen` link takes the next mailbox of a ring of
@@ -1060,8 +1052,7 @@ is on this device, `OwnRelayLocal` when the wallet's own relay is on this device
 The payer reads the link first and shows the user every relay in `Epic1LinkRead.hosts`. The user
 confirms them, and `epic1Pay` takes `hostsOk: true`. Without it the call fails with
 `RelayNotConfirmed`. The payment goes to the first relay of the link, to the next when a post fails,
-at most three, and `Epic1Paid.attempts` lists the posts. With `proof` the payee is asked for a
-payment proof signed with the address's epic1 proof key. The payment's answer arrives with
+at most three, and `Epic1Paid.attempts` lists the posts. The payment's answer arrives with
 `contactsCollect`, which finalizes it. `epic1PostNext` fails with `Epic1Finalized` once the payment
 is finalized and `Epic1NoMoreRelays` when every relay was tried. `epic1LinkRead` fails with
 `NotAnEpic1Link`, `Epic1WrongNetwork` or `Epic1CannotPay` for a link that names no relay this wallet
@@ -1133,7 +1124,7 @@ each crossing is listed here. Nothing else crosses
 | Into Rust | the node API secret | `WalletConfig.nodeApiSecret` |
 | Out of Rust | the recovery phrase | `mnemonic(password:)`, `mnemonicWithPin(...)`, after the credential is checked |
 | Out of Rust, into the app's `SecretStore` only | the vault, the PIN key, the PIN attempt count | the keys in [Secret store, password and PIN](#secret-store-password-and-pin) |
-| Both ways | an invite link (`epiccash://pair/1/...`) and its five pairing words | `pairingInvite`, `pairingFindWords`, `pairingPreview`, `pairingAccept` |
+| Both ways | an invite link (`epiccash://pair/1/...`) | `pairingInvite`, `pairingPreview`, `pairingAccept` |
 
 A new wallet is created without a phrase; the app asks for it with `mnemonic` for the backup screen.
 Seed bytes, private keys, blinding factors, nonces and vault keys never leave Rust. For a PIN
