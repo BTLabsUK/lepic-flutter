@@ -1004,7 +1004,8 @@ error correction level L. The optional `singleCodeMaxLen`, 0 to 1024 bytes, is t
 that stays one single-part code; without it, in-person bytes of at most 360 (with their framing)
 and slate text that fits one part are a single code. One code or many is the app's display choice:
 a code drawn at level H with a logo in its centre needs smaller values, for example
-`maxFragmentLen: 125`, which keeps every part within a version 15 symbol (77 modules). The
+`maxFragmentLen: 107`, which keeps every part within a version 14 symbol (73 modules). The
+`qr` package (3.0.2) cannot draw version 15 at level H, so a longer part takes version 16. The
 reader takes either. Pass every distinct text scanned so far on each read, in any order and case;
 the functions hold no state. Once `complete`, `bytes` (or `json`) holds the payload, which is not
 yet checked. Pass in-person bytes to `inPersonRead` or `inPersonTake`, or
