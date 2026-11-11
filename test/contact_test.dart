@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-// Pairing with contacts between wallets on the mock chain and the mock relay: by link, by hand,
-// in person and by pairing words, the words check, sealed slates, the events and the backup.
+// Pairing with contacts between wallets on the mock chain and the mock relay: by link and by hand,
+// the words check, sealed slates, the events and the backup.
 // Runs as wallet_test.dart does; from the repository root:
 //   tool/lepic.sh test
 
@@ -18,11 +18,8 @@ import 'invoice_test.dart' show eventWhere;
 import 'wallet_test.dart'
     show MemoryStore, epic, libraryPath, password, scanToEnd, throwsWalletError;
 
-/// The wallets' relay and their meeting relay for pairing words; the mock relay serves it.
+/// The wallets' relay; the mock relay serves it.
 const relayDomain = 'relay.example.invalid';
-
-/// The meeting relays every pairing call names, as the app's settings would.
-const meeting = [relayDomain];
 
 const online = ContactRelayMode.online;
 const offline = ContactRelayMode.offline;
@@ -37,9 +34,7 @@ Future<({String annaSide, String benSide})> pairContacts(
     name: 'Anna',
     kind: ContactKind.person,
     expiry: InviteExpiry.oneDay,
-    offerWords: false,
     relayMode: online,
-    meetingRelays: meeting,
     pairingClass: PairingClass.contact,
   );
   final answer = await ben.pairingAccept(
@@ -143,13 +138,10 @@ void main() {
         // Deprecated and ignored: the pairing writes person.
         kind: ContactKind.shop,
         expiry: InviteExpiry.oneHour,
-        offerWords: false,
         relayMode: online,
-        meetingRelays: meeting,
         pairingClass: PairingClass.contact,
       );
       expect(invite.link, startsWith('epiccash://pair/1/'));
-      expect(invite.words, isEmpty);
       final pending = await anna.pairingsPending();
       expect(pending.single.contactId, invite.contactId);
       expect(pending.single.inviter, isTrue);
@@ -221,16 +213,14 @@ void main() {
     },
   );
 
-  test('a pairing by hand and one in person need no relay', () async {
+  test('a pairing by hand needs no relay', () async {
     final anna = await wallet();
     final ben = await wallet();
     final invite = await anna.pairingInvite(
       name: 'Anna',
       kind: ContactKind.person,
       expiry: InviteExpiry.sevenDays,
-      offerWords: false,
       relayMode: offline,
-      meetingRelays: meeting,
       pairingClass: PairingClass.contact,
     );
     final answer = await ben.pairingAccept(
@@ -253,29 +243,6 @@ void main() {
     expect(paired.outcome, PairingLinkOutcome.paired);
     expect(paired.contactId, answer.contactId);
 
-    final carl = await wallet();
-    final annaCard = await anna.pairingShowCard(
-      name: 'Anna',
-      kind: ContactKind.person,
-      relayMode: offline,
-    );
-    final carlCard = await carl.pairingShowCard(
-      name: 'Carl',
-      kind: ContactKind.person,
-      relayMode: offline,
-    );
-    final annaView = await anna.pairingScanCard(
-      contactId: annaCard.contactId,
-      link: carlCard.link,
-      relayMode: offline,
-    );
-    final carlView = await carl.pairingScanCard(
-      contactId: carlCard.contactId,
-      link: annaCard.link,
-      relayMode: offline,
-    );
-    expect(annaView.claimedName, 'Carl');
-    expect(annaView.sas, carlView.sas);
     await expectLater(
       anna.contactsCollect(trigger: CollectTrigger.open, relayMode: offline),
       throwsWalletError(WalletErrorKind.contactsOffline),
@@ -289,66 +256,14 @@ void main() {
     );
   });
 
-  test('pairing words find the invite once', () async {
-    final anna = await wallet();
-    final ben = await wallet();
-    final invite = await anna.pairingInvite(
-      name: 'Anna',
-      kind: ContactKind.person,
-      expiry: InviteExpiry.oneDay,
-      offerWords: true,
-      relayMode: online,
-      meetingRelays: meeting,
-      pairingClass: PairingClass.contact,
-    );
-    expect(invite.words, hasLength(5));
-    final words = [for (final word in invite.words) word.name];
-    final found = await ben.pairingFindWords(
-      words: words,
-      relayMode: online,
-      meetingRelays: meeting,
-    );
-    expect(found.preview.claimedName, 'Anna');
-    await expectLater(
-      ben.pairingFindWords(
-        words: words,
-        relayMode: online,
-        meetingRelays: meeting,
-      ),
-      throwsWalletError(WalletErrorKind.pairingWordsNotFound),
-    );
-    await expectLater(
-      ben.pairingFindWords(
-        words: List.filled(5, 'nonsense'),
-        relayMode: online,
-        meetingRelays: meeting,
-      ),
-      throwsWalletError(WalletErrorKind.invalidPairingWords),
-    );
-  });
-
   test('two wallets pair privately and pass payloads both ways', () async {
     final phone = await wallet();
     final desk = await wallet();
-    await expectLater(
-      phone.pairingInvite(
-        name: 'Phone',
-        kind: ContactKind.person,
-        expiry: InviteExpiry.oneDay,
-        offerWords: true,
-        relayMode: online,
-        meetingRelays: meeting,
-        pairingClass: PairingClass.private,
-      ),
-      throwsWalletError(WalletErrorKind.wrongPairingClass),
-    );
     final invite = await phone.pairingInvite(
       name: 'Phone',
       kind: ContactKind.person,
       expiry: InviteExpiry.oneDay,
-      offerWords: false,
       relayMode: online,
-      meetingRelays: meeting,
       pairingClass: PairingClass.private,
     );
     final preview = await desk.pairingPreview(link: invite.link);
