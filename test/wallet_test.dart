@@ -1154,6 +1154,23 @@ void main() {
     expect(info.stage, SlateStage.s2);
   });
 
+  test('the caller picks the single-code limit of a slate code', () async {
+    const text = '{"id":"slate-1","pad":"abcdefghijklmnopqrstuvwxyz"}';
+    final one = await encodeUrSlate(json: text, maxFragmentLen: 200);
+    expect(one, hasLength(1));
+    final split = await encodeUrSlate(
+      json: text,
+      maxFragmentLen: 16,
+      singleCodeMaxLen: 0,
+    );
+    expect(split.length, greaterThan(1));
+    expect((await decodeUrSlate(parts: split)).json, text);
+    await expectLater(
+      encodeUrSlate(json: text, maxFragmentLen: 200, singleCodeMaxLen: 1025),
+      throwsWalletError(WalletErrorKind.invalidArgument),
+    );
+  });
+
   test(
     'decode_ur_slate tells foreign, mixed and damaged codes apart',
     () async {

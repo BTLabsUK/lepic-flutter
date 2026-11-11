@@ -84,13 +84,12 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   @override
   int get rustContentHash => 212612741;
 
-  static const kDefaultExternalLibraryLoaderConfig =
-      ExternalLibraryLoaderConfig(
-        stem: 'lepic_ffi',
-        ioDirectory: null,
-        webPrefix: 'pkg/',
-        wasmBindgenName: 'wasm_bindgen',
-      );
+  static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
+    stem: 'lepic_ffi',
+    ioDirectory: null,
+    webPrefix: 'pkg/',
+    wasmBindgenName: 'wasm_bindgen',
+  );
 }
 
 abstract class RustLibApi extends BaseApi {
@@ -1250,6 +1249,7 @@ abstract class RustLibApi extends BaseApi {
   Future<List<String>> crateApiWalletEncodeUrSlate({
     required String json,
     required int maxFragmentLen,
+    int? singleCodeMaxLen,
   });
 
   Future<HostPolicy> crateApiPolicyHostPolicyDefault();
@@ -1257,6 +1257,7 @@ abstract class RustLibApi extends BaseApi {
   List<String> crateApiInPersonInPersonQrParts({
     required List<int> bytes,
     required int maxFragmentLen,
+    int? singleCodeMaxLen,
   });
 
   InPersonQrProgress crateApiInPersonInPersonQrRead({
@@ -9911,6 +9912,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Future<List<String>> crateApiWalletEncodeUrSlate({
     required String json,
     required int maxFragmentLen,
+    int? singleCodeMaxLen,
   }) {
     return handler.executeNormal(
       NormalTask(
@@ -9918,6 +9920,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(json, serializer);
           sse_encode_u_32(maxFragmentLen, serializer);
+          sse_encode_opt_box_autoadd_u_32(singleCodeMaxLen, serializer);
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
@@ -9930,7 +9933,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEncodeUrSlateConstMeta,
-        argValues: [json, maxFragmentLen],
+        argValues: [json, maxFragmentLen, singleCodeMaxLen],
         apiImpl: this,
       ),
     );
@@ -9939,7 +9942,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiWalletEncodeUrSlateConstMeta =>
       const TaskConstMeta(
         debugName: "encode_ur_slate",
-        argNames: ["json", "maxFragmentLen"],
+        argNames: ["json", "maxFragmentLen", "singleCodeMaxLen"],
       );
 
   @override
@@ -9973,6 +9976,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   List<String> crateApiInPersonInPersonQrParts({
     required List<int> bytes,
     required int maxFragmentLen,
+    int? singleCodeMaxLen,
   }) {
     return handler.executeSync(
       SyncTask(
@@ -9980,6 +9984,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_list_prim_u_8_loose(bytes, serializer);
           sse_encode_u_32(maxFragmentLen, serializer);
+          sse_encode_opt_box_autoadd_u_32(singleCodeMaxLen, serializer);
           return pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
@@ -9991,7 +9996,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiInPersonInPersonQrPartsConstMeta,
-        argValues: [bytes, maxFragmentLen],
+        argValues: [bytes, maxFragmentLen, singleCodeMaxLen],
         apiImpl: this,
       ),
     );
@@ -10000,7 +10005,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiInPersonInPersonQrPartsConstMeta =>
       const TaskConstMeta(
         debugName: "in_person_qr_parts",
-        argNames: ["bytes", "maxFragmentLen"],
+        argNames: ["bytes", "maxFragmentLen", "singleCodeMaxLen"],
       );
 
   @override
