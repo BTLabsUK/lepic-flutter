@@ -253,6 +253,12 @@ keep the wallet's `dataDir`, `chain` and `offline` value, and cannot switch Epic
 `nodeTip(runtime:, config:, route:)` asks a node for its tip and version without a wallet; the
 route says whether the request goes directly or through a SOCKS5 proxy on a loopback address.
 
+`dropNodeConnections()` closes an open wallet's pooled node connections, those its
+`nodeTipFor(config:)` keeps included, so the next node call opens a fresh one. Call it when the
+network changes or the app returns from the background. It is synchronous, does no I/O and waits
+for no call or node switch; calls in flight end on their own connection. A locked wallet fails it
+with `Locked`.
+
 ## Wallet lifecycle
 
 One `EpicWallet` handle is one open wallet. Four static methods produce a handle, and each takes
