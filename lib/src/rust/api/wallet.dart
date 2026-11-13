@@ -190,6 +190,17 @@ Future<NodeTip> nodeTip({
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<EpicWallet>>
 abstract class EpicWallet implements RustOpaqueInterface {
+  /// Runs `poller` at most every `interval_secs` for `duration_secs` (ADR 0058) and returns
+  /// the boost's id for [`EpicWallet::end_boost`]. The interval is at least 5 s and the
+  /// window at most 10 min; a value outside is clamped. Several boosts of one poller run at
+  /// the shortest interval until the last one ends. It starts no loop: the app's loop asks
+  /// [`EpicWallet::poll_interval`] before each wait.
+  BigInt boost({
+    required Poller poller,
+    required int durationSecs,
+    required int intervalSecs,
+  });
+
   /// Stops a running scan: a node request in flight is abandoned at once and a page being
   /// stored is finished first, so the scan's stream ends with `Cancelled` within about the
   /// time one page takes to identify. Does nothing when no scan runs; a scan started later
@@ -754,6 +765,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// wait its timeout out on it. Calls in flight end on their connections. It does no I/O
   /// and waits for no call or node switch. Fails with `Locked` on a locked wallet.
   void dropNodeConnections();
+
+  /// Ends the boost `id` before its window does. False when it ended already.
+  bool endBoost({required BigInt id});
 
   /// The epic1 address of the default account: its seal key and its epic1 proof key on the
   /// wallet's network.
@@ -1541,6 +1555,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   ///
   /// Fails with `Locked` while the wallet is locked.
   List<PeerPinView> peerPins();
+
+  /// How long `poller` waits before its next run, in seconds: `base_secs` with no boost,
+  /// the boosts' interval while one runs, never more than `base_secs`.
+  int pollInterval({required Poller poller, required int baseSecs});
 
   /// The onion LEPIC 0.3.1 and earlier published: the payment-proof address in onion form,
   /// which `epic-wallet address` prints too. [`EpicWallet::start_tor`] publishes it as well

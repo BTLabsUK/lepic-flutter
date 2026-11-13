@@ -259,6 +259,11 @@ network changes or the app returns from the background. It is synchronous, does 
 for no call or node switch; calls in flight end on their own connection. A locked wallet fails it
 with `Locked`.
 
+`boost(poller:, durationSecs:, intervalSecs:)` runs the app's `Poller.relays` collect or
+`Poller.node` check at most every `intervalSecs` (5 at least) for `durationSecs` (600 at most)
+and returns an id; `endBoost(id:)` ends it early. It starts no loop: the app's loop asks
+`pollInterval(poller:, baseSecs:)` before each wait. All three are synchronous.
+
 ## Wallet lifecycle
 
 One `EpicWallet` handle is one open wallet. Four static methods produce a handle, and each takes

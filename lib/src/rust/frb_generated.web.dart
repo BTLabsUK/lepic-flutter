@@ -802,6 +802,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PinWallet dco_decode_pin_wallet(dynamic raw);
 
   @protected
+  Poller dco_decode_poller(dynamic raw);
+
+  @protected
   QuarantineRetryReport dco_decode_quarantine_retry_report(dynamic raw);
 
   @protected
@@ -1848,6 +1851,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PinWallet sse_decode_pin_wallet(SseDeserializer deserializer);
+
+  @protected
+  Poller sse_decode_poller(SseDeserializer deserializer);
 
   @protected
   QuarantineRetryReport sse_decode_quarantine_retry_report(
@@ -3138,6 +3144,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_pin_wallet(PinWallet self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_poller(Poller self, SseSerializer serializer);
 
   @protected
   void sse_encode_quarantine_retry_report(
