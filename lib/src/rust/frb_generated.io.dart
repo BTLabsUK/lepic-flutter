@@ -548,6 +548,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<InPersonAnswerView> dco_decode_list_in_person_answer_view(dynamic raw);
 
   @protected
+  List<InboxReport> dco_decode_list_inbox_report(dynamic raw);
+
+  @protected
+  List<ListingRef> dco_decode_list_listing_ref(dynamic raw);
+
+  @protected
   List<LogField> dco_decode_list_log_field(dynamic raw);
 
   @protected
@@ -1533,6 +1539,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<InPersonAnswerView> sse_decode_list_in_person_answer_view(
     SseDeserializer deserializer,
   );
+
+  @protected
+  List<InboxReport> sse_decode_list_inbox_report(SseDeserializer deserializer);
+
+  @protected
+  List<ListingRef> sse_decode_list_listing_ref(SseDeserializer deserializer);
 
   @protected
   List<LogField> sse_decode_list_log_field(SseDeserializer deserializer);
@@ -2747,6 +2759,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_in_person_answer_view(
     List<InPersonAnswerView> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_inbox_report(
+    List<InboxReport> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_listing_ref(
+    List<ListingRef> self,
     SseSerializer serializer,
   );
 
