@@ -86,6 +86,10 @@ class HostPolicy {
   /// new socket. From 1 to 64. Default none: the listener keeps its socket.
   final int? listenerHeldRounds;
 
+  /// A listener moves to a fresh socket when the relay sent no challenge for this many of its
+  /// challenge intervals, and so collects what waits for the address. From 2 to 10. Default 3.
+  final int? listenerChallengeRounds;
+
   /// Bytes of contact messages kept in local quarantine across the wallet, instead of being
   /// dropped once they cannot be taken. Over this, the contact's own oldest entry goes first,
   /// then the wallet's oldest; a larger message is not kept. From 1 to 67,108,864. Default
@@ -128,6 +132,7 @@ class HostPolicy {
     this.refuseUnsolicitedPayments,
     this.refuseUnsolicitedInvoices,
     this.listenerHeldRounds,
+    this.listenerChallengeRounds,
     this.quarantineMaxBytes,
     this.earlyNoticeMaxCount,
     this.earlyNoticeMaxAgeS,
@@ -157,6 +162,7 @@ class HostPolicy {
       refuseUnsolicitedPayments.hashCode ^
       refuseUnsolicitedInvoices.hashCode ^
       listenerHeldRounds.hashCode ^
+      listenerChallengeRounds.hashCode ^
       quarantineMaxBytes.hashCode ^
       earlyNoticeMaxCount.hashCode ^
       earlyNoticeMaxAgeS.hashCode ^
@@ -185,6 +191,7 @@ class HostPolicy {
           refuseUnsolicitedPayments == other.refuseUnsolicitedPayments &&
           refuseUnsolicitedInvoices == other.refuseUnsolicitedInvoices &&
           listenerHeldRounds == other.listenerHeldRounds &&
+          listenerChallengeRounds == other.listenerChallengeRounds &&
           quarantineMaxBytes == other.quarantineMaxBytes &&
           earlyNoticeMaxCount == other.earlyNoticeMaxCount &&
           earlyNoticeMaxAgeS == other.earlyNoticeMaxAgeS &&

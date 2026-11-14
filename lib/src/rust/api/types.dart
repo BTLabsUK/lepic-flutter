@@ -419,6 +419,11 @@ class ContactView {
   /// contact claims native slates and the pairing is not private.
   final bool nativeSlates;
 
+  /// Something is under way with this contact: a message waiting to go out, a payment not yet
+  /// finished, or an invoice from it waiting for an answer. A host checking contacts on a
+  /// timer may check only these.
+  final bool awaiting;
+
   const ContactView({
     required this.contactId,
     required this.label,
@@ -449,6 +454,7 @@ class ContactView {
     this.endedReason,
     this.endedAtMs,
     this.nativeSlates = false,
+    this.awaiting = false,
   });
 
   @override
@@ -481,7 +487,8 @@ class ContactView {
       peerEncKey.hashCode ^
       endedReason.hashCode ^
       endedAtMs.hashCode ^
-      nativeSlates.hashCode;
+      nativeSlates.hashCode ^
+      awaiting.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -516,7 +523,8 @@ class ContactView {
           peerEncKey == other.peerEncKey &&
           endedReason == other.endedReason &&
           endedAtMs == other.endedAtMs &&
-          nativeSlates == other.nativeSlates;
+          nativeSlates == other.nativeSlates &&
+          awaiting == other.awaiting;
 }
 
 /// Whether a contact's domain claim is proven by the well-known file its domain serves.

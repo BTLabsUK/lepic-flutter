@@ -239,6 +239,7 @@ HostPolicy()` leaves all of them to LEPIC, which applies the defaults below.
 | `refuseUnsolicitedPayments` | `false` | |
 | `refuseUnsolicitedInvoices` | `false` | |
 | `listenerHeldRounds` | none | 1 to 64 |
+| `listenerChallengeRounds` | 3 | 2 to 10 |
 | `quarantineMaxBytes` | none | 1 to 67,108,864 |
 | `earlyNoticeMaxCount` | none | 1 to 10,000 |
 | `earlyNoticeMaxAgeS` | none | 1 to 2,592,000 |
@@ -621,6 +622,16 @@ Payments over Epicbox, HTTP and Tor arrive through the [listeners](#listeners-an
 `InboxReport` with counts of what was received, finalized, repeated, rejected, held on the relay,
 noticed, bounced, dropped and buffered.
 
+`drainEpicboxListings(listings:)` drains up to 16 name-service listings (`ListingRef`) one after
+the other on one relay connection where it can, and returns one `InboxReport` per listing in the
+order given. A listing that ends quiet hands its connection to the next; after a kept message or a
+failed connection the rest continue on a new one. The first listing error fails the call, and what
+the other listings took stays taken.
+
+A listener moves to a fresh socket when its relay sent no challenge for
+`listenerChallengeRounds` of its challenge intervals, which it learns from the relay; the log line
+is `epicbox listener found no challenges, reconnecting`.
+
 ### Finishing a send
 
 `finalizeAndPost(slateJson:)` takes the recipient's answer to a send, or the payer's answer to an
@@ -887,7 +898,9 @@ effect is stored.
 `keysChanged` or `ended`. `claimedName` is what the contact calls itself and is unverified, while
 `label` is the user's own name. `removedByPeer` is set when the contact removed the pairing and said
 so. `lapsed` is set when nothing sealed from the contact opened for 90 days. `paymentsAddress` is
-set only when an address proof verified.
+set only when an address proof verified. `awaiting` is set while something is under way with the
+contact: a message waiting to go out, a payment not yet finished, or an invoice from it waiting
+for an answer. An app checking contacts on a timer may check only these.
 
 `contactDomainVerify(contactId:, file:)` checks a domain claim the contact made. The app fetches
 `https://<domain>/.well-known/epic-wallet.json` itself, at most 4096 bytes, and passes the body. The
