@@ -763,12 +763,13 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// hands its connection to the next. After a message the wallet kept, or a connection that
   /// failed, the listings still to come continue on a new connection. At most 16 listings,
   /// which keeps a call short; the whole call is bound by the drain timeout, and listings not
-  /// reached by then are left for the next drain. Returns one report per listing, in the
-  /// order given. Fails with `InvalidArgument` for more than 16 listings or a `service_key`
-  /// that is not a compressed secp256k1 key in hex, before any relay is contacted, and
-  /// otherwise as `drain_epicbox_at` does; the error of the first listing that failed is
-  /// returned, and what the others took stays taken.
-  Future<List<InboxReport>> drainEpicboxListings({
+  /// reached by then are left for the next drain. Returns one [`ListingDrain`] per listing, in
+  /// the order given: its report, or the error `drain_epicbox_at` would have failed with (a
+  /// listing not reached fails like a timeout); one listing failing does not hide what the
+  /// others took. The call itself fails with `InvalidArgument` for more than 16 listings or a
+  /// `service_key` that is not a compressed secp256k1 key in hex, before any relay is
+  /// contacted, and when the wallet has no Epicbox.
+  Future<List<ListingDrain>> drainEpicboxListings({
     required List<ListingRef> listings,
   });
 

@@ -257,6 +257,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   InPersonHost dco_decode_box_autoadd_in_person_host(dynamic raw);
 
   @protected
+  InboxReport dco_decode_box_autoadd_inbox_report(dynamic raw);
+
+  @protected
   KernelLocation dco_decode_box_autoadd_kernel_location(dynamic raw);
 
   @protected
@@ -326,6 +329,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   WalletConfig dco_decode_box_autoadd_wallet_config(dynamic raw);
+
+  @protected
+  WalletError dco_decode_box_autoadd_wallet_error(dynamic raw);
 
   @protected
   WalletSummary dco_decode_box_autoadd_wallet_summary(dynamic raw);
@@ -550,7 +556,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<InPersonAnswerView> dco_decode_list_in_person_answer_view(dynamic raw);
 
   @protected
-  List<InboxReport> dco_decode_list_inbox_report(dynamic raw);
+  List<ListingDrain> dco_decode_list_listing_drain(dynamic raw);
 
   @protected
   List<ListingRef> dco_decode_list_listing_ref(dynamic raw);
@@ -610,6 +616,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ListenerSocket dco_decode_listener_socket(dynamic raw);
+
+  @protected
+  ListingDrain dco_decode_listing_drain(dynamic raw);
 
   @protected
   ListingRef dco_decode_listing_ref(dynamic raw);
@@ -672,6 +681,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   InPersonHost? dco_decode_opt_box_autoadd_in_person_host(dynamic raw);
 
   @protected
+  InboxReport? dco_decode_opt_box_autoadd_inbox_report(dynamic raw);
+
+  @protected
   KernelLocation? dco_decode_opt_box_autoadd_kernel_location(dynamic raw);
 
   @protected
@@ -731,6 +743,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int? dco_decode_opt_box_autoadd_u_8(dynamic raw);
+
+  @protected
+  WalletError? dco_decode_opt_box_autoadd_wallet_error(dynamic raw);
 
   @protected
   WalletSummary? dco_decode_opt_box_autoadd_wallet_summary(dynamic raw);
@@ -1192,6 +1207,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  InboxReport sse_decode_box_autoadd_inbox_report(SseDeserializer deserializer);
+
+  @protected
   KernelLocation sse_decode_box_autoadd_kernel_location(
     SseDeserializer deserializer,
   );
@@ -1283,6 +1301,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   WalletConfig sse_decode_box_autoadd_wallet_config(
     SseDeserializer deserializer,
   );
+
+  @protected
+  WalletError sse_decode_box_autoadd_wallet_error(SseDeserializer deserializer);
 
   @protected
   WalletSummary sse_decode_box_autoadd_wallet_summary(
@@ -1543,7 +1564,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  List<InboxReport> sse_decode_list_inbox_report(SseDeserializer deserializer);
+  List<ListingDrain> sse_decode_list_listing_drain(
+    SseDeserializer deserializer,
+  );
 
   @protected
   List<ListingRef> sse_decode_list_listing_ref(SseDeserializer deserializer);
@@ -1619,6 +1642,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ListenerSocket sse_decode_listener_socket(SseDeserializer deserializer);
 
   @protected
+  ListingDrain sse_decode_listing_drain(SseDeserializer deserializer);
+
+  @protected
   ListingRef sse_decode_listing_ref(SseDeserializer deserializer);
 
   @protected
@@ -1691,6 +1717,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   InPersonHost? sse_decode_opt_box_autoadd_in_person_host(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  InboxReport? sse_decode_opt_box_autoadd_inbox_report(
     SseDeserializer deserializer,
   );
 
@@ -1778,6 +1809,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int? sse_decode_opt_box_autoadd_u_8(SseDeserializer deserializer);
+
+  @protected
+  WalletError? sse_decode_opt_box_autoadd_wallet_error(
+    SseDeserializer deserializer,
+  );
 
   @protected
   WalletSummary? sse_decode_opt_box_autoadd_wallet_summary(
@@ -2324,6 +2360,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_inbox_report(
+    InboxReport self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_kernel_location(
     KernelLocation self,
     SseSerializer serializer,
@@ -2446,6 +2488,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_wallet_config(
     WalletConfig self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_wallet_error(
+    WalletError self,
     SseSerializer serializer,
   );
 
@@ -2765,8 +2813,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_list_inbox_report(
-    List<InboxReport> self,
+  void sse_encode_list_listing_drain(
+    List<ListingDrain> self,
     SseSerializer serializer,
   );
 
@@ -2873,6 +2921,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_listing_drain(ListingDrain self, SseSerializer serializer);
+
+  @protected
   void sse_encode_listing_ref(ListingRef self, SseSerializer serializer);
 
   @protected
@@ -2956,6 +3007,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_in_person_host(
     InPersonHost? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_inbox_report(
+    InboxReport? self,
     SseSerializer serializer,
   );
 
@@ -3060,6 +3117,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_opt_box_autoadd_u_8(int? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_box_autoadd_wallet_error(
+    WalletError? self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_opt_box_autoadd_wallet_summary(
