@@ -34,7 +34,7 @@ To use the package in an app:
 
 To build the native library or regenerate the bindings:
 
-- Rust, at the version `rust-toolchain.toml` in LEPIC pins (1.99.0). `rustup` installs it when a
+- Rust, at the version `rust-toolchain.toml` in LEPIC pins (1.100.0). `rustup` installs it when a
   command runs inside the LEPIC checkout.
 - `flutter_rust_bridge_codegen` 2.13.0:
   `cargo install flutter_rust_bridge_codegen --version 2.13.0 --locked`.
