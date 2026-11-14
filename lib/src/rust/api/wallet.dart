@@ -649,6 +649,16 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required ContactRelayMode relayMode,
   });
 
+  /// Makes the contacts collect read the mailboxes of contacts on relays that offer mux/1
+  /// through push sessions of `via.group`, from the next collect on. Other relays keep their
+  /// sockets. Fails with `InvalidArgument` as [`EpicWallet::start_listener_via`] does and
+  /// with `Unsupported` when the configuration names no relay.
+  Future<void> contactsPushStart({required ListenVia via});
+
+  /// Makes the contacts collect use sockets again and lets go of its sessions. A session the
+  /// listener also uses stays for the listener.
+  Future<void> contactsPushStop();
+
   /// Gives every contact pairing that has not ended this wallet's card again, naming it
   /// `name`, as a contact update the next collect posts; private pairings are left alone.
   /// Returns how many were queued. Call it with `pairing_standing_invite(name)` when the
@@ -914,6 +924,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// Whether Epicbox over Tor is on, as [`EpicWallet::set_epicbox_over_tor`] set it.
   bool epicboxOverTor();
+
+  /// The push sessions of the relay in use, by relay and group; none without a relay.
+  List<EpicboxSessionView> epicboxSessions();
 
   /// Opens sealed text, `BEGINEPICTX.` or `BEGINEPICSEALED.`, with this wallet's keys and
   /// shows its slate as it arrived, as JSON. Nothing is stored and no contact is refreshed.
@@ -2072,6 +2085,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// a stream that ends at once.
   Stream<ListenerEvent> startListener();
 
+  /// Like [`EpicWallet::start_listener`], reading the relay through a push session. The
+  /// session is shared with a contacts collect that uses the same `via.group`. Fails with
+  /// `InvalidArgument` for an empty or too long group or an interval of 0 or over a day.
+  Stream<ListenerEvent> startListenerVia({required ListenVia via});
+
   /// Starts the wallet's tor from the binary at `tor_binary`, with `lib_dir` on the library
   /// path for the libraries the Tor Expert Bundle ships on Linux, and streams what it does
   /// until [`EpicWallet::stop_tor`], [`EpicWallet::lock`] or the wallet is dropped. Tor keeps
@@ -2152,6 +2170,12 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// Every transaction of the default account, newest first, from the store alone.
   Future<List<TransactionDetails>> transactions();
+
+  /// Streams what the push sessions do: each one's state when it appears and at every change,
+  /// and a note when mail was queued. The stream follows a relay switch, starting over with
+  /// the sessions of the new relay, and ends when the wallet is dropped. Counters are in
+  /// [`EpicWallet::epicbox_sessions`]. Ends with `Unsupported` when no relay is configured.
+  Stream<EpicboxSessionEvent> watchEpicboxSessions();
 }
 
 /// A wallet created by [`EpicWallet::create_with_pin`], and its wallet password sealed under the
