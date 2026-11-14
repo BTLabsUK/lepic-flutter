@@ -84,12 +84,13 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   @override
   int get rustContentHash => -945219321;
 
-  static const kDefaultExternalLibraryLoaderConfig = ExternalLibraryLoaderConfig(
-    stem: 'lepic_ffi',
-    ioDirectory: null,
-    webPrefix: 'pkg/',
-    wasmBindgenName: 'wasm_bindgen',
-  );
+  static const kDefaultExternalLibraryLoaderConfig =
+      ExternalLibraryLoaderConfig(
+        stem: 'lepic_ffi',
+        ioDirectory: null,
+        webPrefix: 'pkg/',
+        wasmBindgenName: 'wasm_bindgen',
+      );
 }
 
 abstract class RustLibApi extends BaseApi {
@@ -11657,8 +11658,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ContactView dco_decode_contact_view(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 30)
-      throw Exception('unexpected arr length: expect 30 but see ${arr.length}');
+    if (arr.length != 31)
+      throw Exception('unexpected arr length: expect 31 but see ${arr.length}');
     return ContactView(
       contactId: dco_decode_String(arr[0]),
       label: dco_decode_String(arr[1]),
@@ -11683,13 +11684,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       peerVerifiedAtMs: dco_decode_opt_box_autoadd_i_64(arr[20]),
       peerFeatures: dco_decode_u_32(arr[21]),
       peerProfile: dco_decode_u_32(arr[22]),
-      peerDomain: dco_decode_opt_String(arr[23]),
-      peerDomainAttestation: dco_decode_opt_list_prim_u_8_strict(arr[24]),
-      peerEncKey: dco_decode_opt_list_prim_u_8_strict(arr[25]),
-      endedReason: dco_decode_opt_box_autoadd_pairing_end_reason(arr[26]),
-      endedAtMs: dco_decode_opt_box_autoadd_i_64(arr[27]),
-      nativeSlates: dco_decode_bool(arr[28]),
-      awaiting: dco_decode_bool(arr[29]),
+      peerCaps: dco_decode_u_16(arr[23]),
+      peerDomain: dco_decode_opt_String(arr[24]),
+      peerDomainAttestation: dco_decode_opt_list_prim_u_8_strict(arr[25]),
+      peerEncKey: dco_decode_opt_list_prim_u_8_strict(arr[26]),
+      endedReason: dco_decode_opt_box_autoadd_pairing_end_reason(arr[27]),
+      endedAtMs: dco_decode_opt_box_autoadd_i_64(arr[28]),
+      nativeSlates: dco_decode_bool(arr[29]),
+      awaiting: dco_decode_bool(arr[30]),
     );
   }
 
@@ -14702,6 +14704,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_peerVerifiedAtMs = sse_decode_opt_box_autoadd_i_64(deserializer);
     var var_peerFeatures = sse_decode_u_32(deserializer);
     var var_peerProfile = sse_decode_u_32(deserializer);
+    var var_peerCaps = sse_decode_u_16(deserializer);
     var var_peerDomain = sse_decode_opt_String(deserializer);
     var var_peerDomainAttestation = sse_decode_opt_list_prim_u_8_strict(
       deserializer,
@@ -14737,6 +14740,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       peerVerifiedAtMs: var_peerVerifiedAtMs,
       peerFeatures: var_peerFeatures,
       peerProfile: var_peerProfile,
+      peerCaps: var_peerCaps,
       peerDomain: var_peerDomain,
       peerDomainAttestation: var_peerDomainAttestation,
       peerEncKey: var_peerEncKey,
@@ -18654,6 +18658,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_i_64(self.peerVerifiedAtMs, serializer);
     sse_encode_u_32(self.peerFeatures, serializer);
     sse_encode_u_32(self.peerProfile, serializer);
+    sse_encode_u_16(self.peerCaps, serializer);
     sse_encode_opt_String(self.peerDomain, serializer);
     sse_encode_opt_list_prim_u_8_strict(self.peerDomainAttestation, serializer);
     sse_encode_opt_list_prim_u_8_strict(self.peerEncKey, serializer);

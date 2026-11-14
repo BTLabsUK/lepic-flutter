@@ -402,6 +402,11 @@ class ContactView {
   /// came. LEPIC reads no bit of it.
   final int peerProfile;
 
+  /// The capability bits on the contact's card: bit 0 opens sealed files, 1 pays invoices,
+  /// 2 issues invoices, 3 asks for the fixed hint; 0 before a card arrives.
+  /// `contact_issue_invoice` fails with `ContactRefusesInvoices` without bit 1.
+  final int peerCaps;
+
   /// The domain the contact claimed in this pairing. Unverified until the app fetches the
   /// domain's well-known file and passes it to `contact_domain_verify`.
   final String? peerDomain;
@@ -449,6 +454,7 @@ class ContactView {
     this.peerVerifiedAtMs,
     required this.peerFeatures,
     required this.peerProfile,
+    required this.peerCaps,
     this.peerDomain,
     this.peerDomainAttestation,
     this.peerEncKey,
@@ -483,6 +489,7 @@ class ContactView {
       peerVerifiedAtMs.hashCode ^
       peerFeatures.hashCode ^
       peerProfile.hashCode ^
+      peerCaps.hashCode ^
       peerDomain.hashCode ^
       peerDomainAttestation.hashCode ^
       peerEncKey.hashCode ^
@@ -519,6 +526,7 @@ class ContactView {
           peerVerifiedAtMs == other.peerVerifiedAtMs &&
           peerFeatures == other.peerFeatures &&
           peerProfile == other.peerProfile &&
+          peerCaps == other.peerCaps &&
           peerDomain == other.peerDomain &&
           peerDomainAttestation == other.peerDomainAttestation &&
           peerEncKey == other.peerEncKey &&
