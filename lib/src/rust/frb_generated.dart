@@ -23498,7 +23498,8 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// Streams what the push sessions do: each one's state when it appears and at every change,
   /// and a note when mail was queued. The stream follows a relay switch, starting over with
   /// the sessions of the new relay, and ends when the wallet is dropped. Counters are in
-  /// [`EpicWallet::epicbox_sessions`]. Ends with `Unsupported` when no relay is configured.
+  /// [`EpicWallet::epicbox_sessions`]. Ends with `Unsupported` when no relay is configured, at
+  /// the start or after a relay switch.
   Stream<EpicboxSessionEvent> watchEpicboxSessions() => RustLib.instance.api
       .crateApiWalletEpicWalletWatchEpicboxSessions(that: this);
 }
