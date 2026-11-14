@@ -699,7 +699,7 @@ does not offer mux/1 keeps the socket behaviour above, and its session shows `no
 events and one-listener rule. `contactsPushStart(via:)` makes the contacts collect read the
 mailboxes of contacts on such relays through sessions, from the next collect on;
 `contactsPushStop()` returns it to sockets and lets go of its sessions (one the listener also
-uses stays for the listener). When the listener and the collect pass the same `ListenVia.group`
+uses stays for the listener); it does not wait for a session that is still opening. When the listener and the collect pass the same `ListenVia.group`
 they share one socket. `contactsPushStart` fails with `Unsupported` when the configuration names
 no relay.
 
@@ -710,6 +710,12 @@ no relay.
 
 A bad `ListenVia` fails with `InvalidArgument`.
 
+A mailbox the relay reports as replaced (another connection took it over) stays detached: the
+session does not attach it again by itself. It is attached again when the owner's claim no longer
+holds it and a later claim names it. A session that never attached ends as `notOffered` when the
+relay answers its greeting with an error, or when three greetings in a row get no answer; one that
+attached before keeps retrying.
+
 `lock()` ends the sessions and forgets the contacts setting. The host calls
 `contactsPushStart` again after each unlock; a listener is started again as before.
 A relay switch moves the contacts setting to the new relay.
@@ -718,7 +724,8 @@ A relay switch moves the contacts setting to the new relay.
 `relay` (`domain:port`), `group`, `state` and the counters `socketsOpened`, `attaches`,
 `resumes`, `mails`, `duplicates` and `stallReconnects`. It is empty without a relay.
 `watchEpicboxSessions()` streams `EpicboxSessionEvent`; it follows a relay switch and ends when
-the wallet is dropped, or with `Unsupported` when no relay is configured.
+the wallet is dropped, or with `Unsupported` when no relay is configured, also after a relay
+switch to a wallet without a relay.
 
 | `EpicboxSessionState` | Meaning |
 |---|---|

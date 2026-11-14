@@ -850,7 +850,7 @@ class Epic1Paid {
           format == other.format;
 }
 
-/// What [`crate::api::epicbox_sessions`] streams.
+/// What [`crate::api::wallet::EpicWallet::watch_epicbox_sessions`] streams.
 class EpicboxSessionEvent {
   final EpicboxSessionEventKind kind;
   final String relay;
