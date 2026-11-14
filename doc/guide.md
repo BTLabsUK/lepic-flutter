@@ -948,7 +948,10 @@ effect is stored.
 `ContactView` holds no key. Its `status` (`PairingStatus`) is `waiting`, `paired`, `verified`,
 `keysChanged` or `ended`. `claimedName` is what the contact calls itself and is unverified, while
 `label` is the user's own name. `removedByPeer` is set when the contact removed the pairing and said
-so. `lapsed` is set when nothing sealed from the contact opened for 90 days. `paymentsAddress` is
+so. `lapsed` is set when nothing sealed from the contact opened for 90 days. `peerCaps` holds the
+capability bits of the contact's card (bit 0 opens sealed, 1 pays invoices, 2 issues invoices, 3
+fixed hint, 4 sends withdrawals), 0 before its card arrives; `contactIssueInvoice` refuses a
+contact without bit 1 with `contactRefusesInvoices`. `paymentsAddress` is
 set only when an address proof verified. `awaiting` is set while something is under way with the
 contact: a message waiting to go out, a payment not yet finished, or an invoice from it waiting
 for an answer. An app checking contacts on a timer may check only these.
