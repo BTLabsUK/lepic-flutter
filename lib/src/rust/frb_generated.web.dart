@@ -187,6 +187,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  RustStreamSink<EpicboxSessionEvent>
+  dco_decode_StreamSink_epicbox_session_event_Sse(dynamic raw);
+
+  @protected
   RustStreamSink<HttpListenerEvent>
   dco_decode_StreamSink_http_listener_event_Sse(dynamic raw);
 
@@ -239,6 +243,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Epic1Host dco_decode_box_autoadd_epic_1_host(dynamic raw);
 
   @protected
+  EpicboxSessionState dco_decode_box_autoadd_epicbox_session_state(dynamic raw);
+
+  @protected
   HttpExposure dco_decode_box_autoadd_http_exposure(dynamic raw);
 
   @protected
@@ -261,6 +268,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   KernelLocation dco_decode_box_autoadd_kernel_location(dynamic raw);
+
+  @protected
+  ListenVia dco_decode_box_autoadd_listen_via(dynamic raw);
 
   @protected
   ListingRef dco_decode_box_autoadd_listing_ref(dynamic raw);
@@ -398,6 +408,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Epic1Paid dco_decode_epic_1_paid(dynamic raw);
+
+  @protected
+  EpicboxSessionEvent dco_decode_epicbox_session_event(dynamic raw);
+
+  @protected
+  EpicboxSessionEventKind dco_decode_epicbox_session_event_kind(dynamic raw);
+
+  @protected
+  EpicboxSessionState dco_decode_epicbox_session_state(dynamic raw);
+
+  @protected
+  EpicboxSessionView dco_decode_epicbox_session_view(dynamic raw);
 
   @protected
   EpicboxTuning dco_decode_epicbox_tuning(dynamic raw);
@@ -550,6 +572,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<Epic1LinkView> dco_decode_list_epic_1_link_view(dynamic raw);
 
   @protected
+  List<EpicboxSessionView> dco_decode_list_epicbox_session_view(dynamic raw);
+
+  @protected
   List<FailedPairing> dco_decode_list_failed_pairing(dynamic raw);
 
   @protected
@@ -609,6 +634,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<WalletOutput> dco_decode_list_wallet_output(dynamic raw);
 
   @protected
+  ListenVia dco_decode_listen_via(dynamic raw);
+
+  @protected
   ListenerEvent dco_decode_listener_event(dynamic raw);
 
   @protected
@@ -661,6 +689,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Epic1Host? dco_decode_opt_box_autoadd_epic_1_host(dynamic raw);
+
+  @protected
+  EpicboxSessionState? dco_decode_opt_box_autoadd_epicbox_session_state(
+    dynamic raw,
+  );
 
   @protected
   HttpExposure? dco_decode_opt_box_autoadd_http_exposure(dynamic raw);
@@ -1123,6 +1156,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  RustStreamSink<EpicboxSessionEvent>
+  sse_decode_StreamSink_epicbox_session_event_Sse(SseDeserializer deserializer);
+
+  @protected
   RustStreamSink<HttpListenerEvent>
   sse_decode_StreamSink_http_listener_event_Sse(SseDeserializer deserializer);
 
@@ -1183,6 +1220,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Epic1Host sse_decode_box_autoadd_epic_1_host(SseDeserializer deserializer);
 
   @protected
+  EpicboxSessionState sse_decode_box_autoadd_epicbox_session_state(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   HttpExposure sse_decode_box_autoadd_http_exposure(
     SseDeserializer deserializer,
   );
@@ -1213,6 +1255,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   KernelLocation sse_decode_box_autoadd_kernel_location(
     SseDeserializer deserializer,
   );
+
+  @protected
+  ListenVia sse_decode_box_autoadd_listen_via(SseDeserializer deserializer);
 
   @protected
   ListingRef sse_decode_box_autoadd_listing_ref(SseDeserializer deserializer);
@@ -1380,6 +1425,26 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Epic1Paid sse_decode_epic_1_paid(SseDeserializer deserializer);
+
+  @protected
+  EpicboxSessionEvent sse_decode_epicbox_session_event(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  EpicboxSessionEventKind sse_decode_epicbox_session_event_kind(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  EpicboxSessionState sse_decode_epicbox_session_state(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  EpicboxSessionView sse_decode_epicbox_session_view(
+    SseDeserializer deserializer,
+  );
 
   @protected
   EpicboxTuning sse_decode_epicbox_tuning(SseDeserializer deserializer);
@@ -1554,6 +1619,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  List<EpicboxSessionView> sse_decode_list_epicbox_session_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<FailedPairing> sse_decode_list_failed_pairing(
     SseDeserializer deserializer,
   );
@@ -1631,6 +1701,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ListenVia sse_decode_listen_via(SseDeserializer deserializer);
+
+  @protected
   ListenerEvent sse_decode_listener_event(SseDeserializer deserializer);
 
   @protected
@@ -1689,6 +1762,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Epic1Host? sse_decode_opt_box_autoadd_epic_1_host(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  EpicboxSessionState? sse_decode_opt_box_autoadd_epicbox_session_state(
     SseDeserializer deserializer,
   );
 
@@ -2249,6 +2327,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_StreamSink_epicbox_session_event_Sse(
+    RustStreamSink<EpicboxSessionEvent> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_StreamSink_http_listener_event_Sse(
     RustStreamSink<HttpListenerEvent> self,
     SseSerializer serializer,
@@ -2324,6 +2408,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_epicbox_session_state(
+    EpicboxSessionState self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_http_exposure(
     HttpExposure self,
     SseSerializer serializer,
@@ -2368,6 +2458,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_kernel_location(
     KernelLocation self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_listen_via(
+    ListenVia self,
     SseSerializer serializer,
   );
 
@@ -2597,6 +2693,30 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_epic_1_paid(Epic1Paid self, SseSerializer serializer);
 
   @protected
+  void sse_encode_epicbox_session_event(
+    EpicboxSessionEvent self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_epicbox_session_event_kind(
+    EpicboxSessionEventKind self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_epicbox_session_state(
+    EpicboxSessionState self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_epicbox_session_view(
+    EpicboxSessionView self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_epicbox_tuning(EpicboxTuning self, SseSerializer serializer);
 
   @protected
@@ -2801,6 +2921,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_epicbox_session_view(
+    List<EpicboxSessionView> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_failed_pairing(
     List<FailedPairing> self,
     SseSerializer serializer,
@@ -2906,6 +3032,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_listen_via(ListenVia self, SseSerializer serializer);
+
+  @protected
   void sse_encode_listener_event(ListenerEvent self, SseSerializer serializer);
 
   @protected
@@ -2971,6 +3100,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_epic_1_host(
     Epic1Host? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_epicbox_session_state(
+    EpicboxSessionState? self,
     SseSerializer serializer,
   );
 

@@ -689,6 +689,49 @@ retries with backoff. Without a relay in the configuration the stream fails with
 | `invoiceBounced` | a payer sent an invoice back unpaid, as a stock `epic-wallet` does; cancel it with `cancelTransaction` |
 | `error`, `stopped` | the listener failed (`stopped` follows) or ended |
 
+### Push sessions
+
+A relay that offers mux/1 can push mail over one shared socket instead of one socket per
+mailbox. The listener and the contacts collect can both read through such a session. A relay that
+does not offer mux/1 keeps the socket behaviour above, and its session shows `notOffered`.
+
+`startListenerVia(via:)` is `startListener()` reading through a session. It has the same stream,
+events and one-listener rule. `contactsPushStart(via:)` makes the contacts collect read the
+mailboxes of contacts on such relays through sessions, from the next collect on;
+`contactsPushStop()` returns it to sockets and lets go of its sessions (one the listener also
+uses stays for the listener). When the listener and the collect pass the same `ListenVia.group`
+they share one socket. `contactsPushStart` fails with `Unsupported` when the configuration names
+no relay.
+
+| `ListenVia` field | Meaning |
+|---|---|
+| `group` | the session's name, 1 to 64 bytes without control characters |
+| `waitingEveryS` | seconds between the session's asks whether mail waits, 1 to 86400; `null` never asks |
+
+A bad `ListenVia` fails with `InvalidArgument`.
+
+`lock()` ends the sessions and forgets the contacts setting. The host calls
+`contactsPushStart` again after each unlock; a listener is started again as before.
+A relay switch moves the contacts setting to the new relay.
+
+`epicboxSessions()` (synchronous) lists the sessions of the relay in use as `EpicboxSessionView`:
+`relay` (`domain:port`), `group`, `state` and the counters `socketsOpened`, `attaches`,
+`resumes`, `mails`, `duplicates` and `stallReconnects`. It is empty without a relay.
+`watchEpicboxSessions()` streams `EpicboxSessionEvent`; it follows a relay switch and ends when
+the wallet is dropped, or with `Unsupported` when no relay is configured.
+
+| `EpicboxSessionState` | Meaning |
+|---|---|
+| `connecting`, `attached` | the session is dialing, or reads mail |
+| `reconnecting` | the connection dropped; the session retries with backoff |
+| `notOffered` | the relay does not offer mux/1; nothing was started |
+| `stopped` | the session ended |
+
+| `EpicboxSessionEventKind` | Meaning |
+|---|---|
+| `state` | the session is in `state`: the first event of a session, then one per change |
+| `mailQueued` | the relay pushed mail for the collect or the listener; `state` is `null` |
+
 ### HTTP listener
 
 `startHttpListener` serves the foreign API on `port`; `epic-wallet` listens on 3415. Port 0 lets the
