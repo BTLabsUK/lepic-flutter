@@ -109,7 +109,7 @@ class HostPolicy {
   /// Whether `start_tor` with `publish_onion` also publishes the previous onion, the one
   /// LEPIC 0.3.1 and earlier published (ADR 0044), on its own listener, so senders that saved
   /// it still reach the wallet. Payment proofs asked for there are signed with the
-  /// payment-proof key, as before. While it is published it links the Tor and Epicbox
+  /// payment-proof key. While it is published it links the Tor and Epicbox
   /// identities. Default false.
   final bool? publishPreviousOnion;
 
