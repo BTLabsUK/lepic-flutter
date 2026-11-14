@@ -403,7 +403,7 @@ abstract class RustLibApi extends BaseApi {
     required int generation,
   });
 
-  Future<List<InboxReport>> crateApiWalletEpicWalletDrainEpicboxListings({
+  Future<List<ListingDrain>> crateApiWalletEpicWalletDrainEpicboxListings({
     required EpicWallet that,
     required List<ListingRef> listings,
   });
@@ -3559,7 +3559,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<List<InboxReport>> crateApiWalletEpicWalletDrainEpicboxListings({
+  Future<List<ListingDrain>> crateApiWalletEpicWalletDrainEpicboxListings({
     required EpicWallet that,
     required List<ListingRef> listings,
   }) {
@@ -3580,7 +3580,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_list_inbox_report,
+          decodeSuccessData: sse_decode_list_listing_drain,
           decodeErrorData: sse_decode_wallet_error,
         ),
         constMeta: kCrateApiWalletEpicWalletDrainEpicboxListingsConstMeta,
@@ -11155,6 +11155,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  InboxReport dco_decode_box_autoadd_inbox_report(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_inbox_report(raw);
+  }
+
+  @protected
   KernelLocation dco_decode_box_autoadd_kernel_location(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_kernel_location(raw);
@@ -11292,6 +11298,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   WalletConfig dco_decode_box_autoadd_wallet_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_wallet_config(raw);
+  }
+
+  @protected
+  WalletError dco_decode_box_autoadd_wallet_error(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_wallet_error(raw);
   }
 
   @protected
@@ -12170,9 +12182,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  List<InboxReport> dco_decode_list_inbox_report(dynamic raw) {
+  List<ListingDrain> dco_decode_list_listing_drain(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return (raw as List<dynamic>).map(dco_decode_inbox_report).toList();
+    return (raw as List<dynamic>).map(dco_decode_listing_drain).toList();
   }
 
   @protected
@@ -12301,6 +12313,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ListenerSocket dco_decode_listener_socket(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return ListenerSocket.values[raw as int];
+  }
+
+  @protected
+  ListingDrain dco_decode_listing_drain(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return ListingDrain(
+      report: dco_decode_opt_box_autoadd_inbox_report(arr[0]),
+      error: dco_decode_opt_box_autoadd_wallet_error(arr[1]),
+    );
   }
 
   @protected
@@ -12484,6 +12508,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  InboxReport? dco_decode_opt_box_autoadd_inbox_report(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_inbox_report(raw);
+  }
+
+  @protected
   KernelLocation? dco_decode_opt_box_autoadd_kernel_location(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_box_autoadd_kernel_location(raw);
@@ -12605,6 +12635,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   int? dco_decode_opt_box_autoadd_u_8(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_box_autoadd_u_8(raw);
+  }
+
+  @protected
+  WalletError? dco_decode_opt_box_autoadd_wallet_error(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_wallet_error(raw);
   }
 
   @protected
@@ -13979,6 +14015,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  InboxReport sse_decode_box_autoadd_inbox_report(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_inbox_report(deserializer));
+  }
+
+  @protected
   KernelLocation sse_decode_box_autoadd_kernel_location(
     SseDeserializer deserializer,
   ) {
@@ -14142,6 +14186,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_wallet_config(deserializer));
+  }
+
+  @protected
+  WalletError sse_decode_box_autoadd_wallet_error(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_wallet_error(deserializer));
   }
 
   @protected
@@ -15292,13 +15344,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  List<InboxReport> sse_decode_list_inbox_report(SseDeserializer deserializer) {
+  List<ListingDrain> sse_decode_list_listing_drain(
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     var len_ = sse_decode_i_32(deserializer);
-    var ans_ = <InboxReport>[];
+    var ans_ = <ListingDrain>[];
     for (var idx_ = 0; idx_ < len_; ++idx_) {
-      ans_.add(sse_decode_inbox_report(deserializer));
+      ans_.add(sse_decode_listing_drain(deserializer));
     }
     return ans_;
   }
@@ -15524,6 +15578,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_i_32(deserializer);
     return ListenerSocket.values[inner];
+  }
+
+  @protected
+  ListingDrain sse_decode_listing_drain(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_report = sse_decode_opt_box_autoadd_inbox_report(deserializer);
+    var var_error = sse_decode_opt_box_autoadd_wallet_error(deserializer);
+    return ListingDrain(report: var_report, error: var_error);
   }
 
   @protected
@@ -15779,6 +15841,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  InboxReport? sse_decode_opt_box_autoadd_inbox_report(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_inbox_report(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   KernelLocation? sse_decode_opt_box_autoadd_kernel_location(
     SseDeserializer deserializer,
   ) {
@@ -16010,6 +16085,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
     if (sse_decode_bool(deserializer)) {
       return (sse_decode_box_autoadd_u_8(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  WalletError? sse_decode_opt_box_autoadd_wallet_error(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_wallet_error(deserializer));
     } else {
       return null;
     }
@@ -17750,6 +17838,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_inbox_report(
+    InboxReport self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_inbox_report(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_kernel_location(
     KernelLocation self,
     SseSerializer serializer,
@@ -17942,6 +18039,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_wallet_config(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_wallet_error(
+    WalletError self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_wallet_error(self, serializer);
   }
 
   @protected
@@ -18760,14 +18866,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_list_inbox_report(
-    List<InboxReport> self,
+  void sse_encode_list_listing_drain(
+    List<ListingDrain> self,
     SseSerializer serializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
-      sse_encode_inbox_report(item, serializer);
+      sse_encode_listing_drain(item, serializer);
     }
   }
 
@@ -18987,6 +19093,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_listing_drain(ListingDrain self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_opt_box_autoadd_inbox_report(self.report, serializer);
+    sse_encode_opt_box_autoadd_wallet_error(self.error, serializer);
+  }
+
+  @protected
   void sse_encode_listing_ref(ListingRef self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.serviceKey, serializer);
@@ -19196,6 +19309,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_box_autoadd_in_person_host(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_inbox_report(
+    InboxReport? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_inbox_report(self, serializer);
     }
   }
 
@@ -19431,6 +19557,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_box_autoadd_u_8(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_wallet_error(
+    WalletError? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_wallet_error(self, serializer);
     }
   }
 
@@ -21060,12 +21199,13 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
   /// hands its connection to the next. After a message the wallet kept, or a connection that
   /// failed, the listings still to come continue on a new connection. At most 16 listings,
   /// which keeps a call short; the whole call is bound by the drain timeout, and listings not
-  /// reached by then are left for the next drain. Returns one report per listing, in the
-  /// order given. Fails with `InvalidArgument` for more than 16 listings or a `service_key`
-  /// that is not a compressed secp256k1 key in hex, before any relay is contacted, and
-  /// otherwise as `drain_epicbox_at` does; the error of the first listing that failed is
-  /// returned, and what the others took stays taken.
-  Future<List<InboxReport>> drainEpicboxListings({
+  /// reached by then are left for the next drain. Returns one [`ListingDrain`] per listing, in
+  /// the order given: its report, or the error `drain_epicbox_at` would have failed with (a
+  /// listing not reached fails like a timeout); one listing failing does not hide what the
+  /// others took. The call itself fails with `InvalidArgument` for more than 16 listings or a
+  /// `service_key` that is not a compressed secp256k1 key in hex, before any relay is
+  /// contacted, and when the wallet has no Epicbox.
+  Future<List<ListingDrain>> drainEpicboxListings({
     required List<ListingRef> listings,
   }) => RustLib.instance.api.crateApiWalletEpicWalletDrainEpicboxListings(
     that: this,

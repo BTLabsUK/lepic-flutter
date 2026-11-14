@@ -623,10 +623,11 @@ Payments over Epicbox, HTTP and Tor arrive through the [listeners](#listeners-an
 noticed, bounced, dropped and buffered.
 
 `drainEpicboxListings(listings:)` drains up to 16 name-service listings (`ListingRef`) one after
-the other on one relay connection where it can, and returns one `InboxReport` per listing in the
-order given. A listing that ends quiet hands its connection to the next; after a kept message or a
-failed connection the rest continue on a new one. The first listing error fails the call, and what
-the other listings took stays taken.
+the other on one relay connection where it can, and returns one result per listing in the
+order given, as a `ListingDrain`: its `report`, or its `error` when that listing failed. A listing
+that ends quiet hands its connection to the next; after a kept message or a failed connection the
+rest continue on a new one. Listings the call's deadline cut off fail with a timeout. The call
+itself fails, before any relay is contacted, for more than 16 listings or a bad `serviceKey`.
 
 A listener moves to a fresh socket when its relay sent no challenge for
 `listenerChallengeRounds` of its challenge intervals, which it learns from the relay; the log line
