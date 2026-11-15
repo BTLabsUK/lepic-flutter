@@ -871,6 +871,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RefreshProgress dco_decode_refresh_progress(dynamic raw);
 
   @protected
+  RelayCancelOutcome dco_decode_relay_cancel_outcome(dynamic raw);
+
+  @protected
   RetiredPlainStore dco_decode_retired_plain_store(dynamic raw);
 
   @protected
@@ -1996,6 +1999,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   RefreshProgress sse_decode_refresh_progress(SseDeserializer deserializer);
+
+  @protected
+  RelayCancelOutcome sse_decode_relay_cancel_outcome(
+    SseDeserializer deserializer,
+  );
 
   @protected
   RetiredPlainStore sse_decode_retired_plain_store(
@@ -3388,6 +3396,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_refresh_progress(
     RefreshProgress self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_relay_cancel_outcome(
+    RelayCancelOutcome self,
     SseSerializer serializer,
   );
 

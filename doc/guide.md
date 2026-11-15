@@ -578,6 +578,21 @@ stored as sent:
 | the send should not go ahead | `cancelTransaction(txId:)` |
 
 `cancelTransaction` fails with `OnChain` or `InPool` when the node holds the finalized transaction.
+
+With Epicbox 3.1.0 a wallet can also tell the relay to cancel a transaction, so the other wallet
+drops it too. `TransactionDetails.relayCancellable` is true when the transaction has a relay
+transaction id and is not finalized or posted. `relayCancelTransaction(txId:)` asks the relay and
+returns a `RelayCancelOutcome`: `cancelled`, `notFoundOrNotParticipant` (the relay does not say
+which), `noRelayId`, or `unsupported` (a relay before 3.1.0). It does not cancel locally: call
+`cancelTransaction` after it. A relay that cannot be reached throws; the local cancel can still
+go ahead.
+
+A cancel that arrives from the other wallet is applied by the wallet itself, with no notice. It
+cancels the transaction and unlocks its coins. For the receiver of a send and the payer of an
+invoice it sets `senderReportedCancelledAtMs`; for the sender of a send it sets
+`receiverDeclinedAtMs`. The events `paymentCancelled`, `paymentDeclined`, `invoiceDeclined` and
+`invoiceWithdrawn` report it once. It never finalizes: a transaction already in the pool or on the
+chain is kept and still lands.
 `releaseTransaction(txId:)` frees a finalized or posted send the network never took, once
 `TransactionDetails.releasable` says so; a node that mines it later spends the inputs after all.
 
@@ -1349,6 +1364,7 @@ locked, and `txId` is set.
 | 80 | `peerInputsSpent` | the other party spent the inputs it added; the transaction can never be mined |
 | 89 | `foreignProofAddress` | a payment proof was asked for a key this wallet does not sign, or for a listing address |
 | 102 | `savedTransaction` | the text is a record another Epic wallet keeps in its `saved_txs` directory |
+| 115 | `cancelledOnRelay` | the relay refused a send or an answer because the other party cancelled the transaction there; it is cancelled in this wallet as well, nothing is left to do with it |
 
 ### Invoice errors
 
