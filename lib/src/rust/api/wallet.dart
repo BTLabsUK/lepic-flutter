@@ -1635,6 +1635,18 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// started there is nothing to refresh and the call succeeds.
   Future<void> refreshTor({required bool networkChanged});
 
+  /// Asks the Epicbox relay to cancel transaction `tx_id`, as one of its parties, once
+  /// `TransactionDetails.relay_cancellable` says it can: the relay refuses further slates of
+  /// it and tells the other party, whose wallet cancels it too. Nothing changes in this
+  /// wallet: call `cancel_transaction` to cancel it here as well, after any outcome.
+  ///
+  /// Returns `NoRelayId` for a transaction never filed on the relay under an id, and
+  /// `Unsupported` when the relay cannot cancel transactions. Fails with `Unsupported` when
+  /// the wallet has no Epicbox relay configured, `InvalidArgument` for an unknown transaction, and
+  /// `TransportFailed` when the relay could not be asked; then nothing is known about the
+  /// cancellation there.
+  Future<RelayCancelOutcome> relayCancelTransaction({required int txId});
+
   /// Releases a finalized or posted send the network never took, once
   /// `TransactionDetails.releasable` says so: the send is cancelled, its inputs are unlocked
   /// and its change is dropped. The node is asked once more first.

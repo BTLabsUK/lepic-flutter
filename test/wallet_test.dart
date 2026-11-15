@@ -196,6 +196,7 @@ const errorCodes = {
   WalletErrorKind.notAnEpic1Link: 112,
   WalletErrorKind.walletTooNew: 113,
   WalletErrorKind.epic1PaymentPending: 114,
+  WalletErrorKind.cancelledOnRelay: 115,
 };
 
 Matcher throwsWalletError(WalletErrorKind kind) => throwsA(
