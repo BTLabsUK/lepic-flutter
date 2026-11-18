@@ -893,10 +893,10 @@ Every call that may reach a relay takes a `ContactRelayMode`:
 |---|---|
 | `online` | the call may use the relay |
 | `offline` | nothing is sent; what is queued waits until the [delivery loop](#delivery) runs `online` |
-| `epicboxOff` | the user switched Epicbox off; calls that need the relay fail with `EpicboxOff` |
 
-Calls that need the relay fail with `ContactsOffline` in `offline` mode and with `EpicboxOff` in
-`epicboxOff` mode, with nothing sent. Calls that queue a message store it and return. The calls
+Calls that need the relay fail with `ContactsOffline` in `offline` mode, with nothing sent. Contact,
+device, epic1, in-person and pairing calls go through mailboxes; a switch for the classic Epicbox
+address does not reach them, so the app keeps them `online` while that switch is off. Calls that queue a message store it and return. The calls
 reach the relays of the wallet's relay list, its own Epicbox relay and then the meeting relays
 ([The relay list](#the-relay-list)), and the home relays of contacts.
 
@@ -1071,18 +1071,17 @@ The app calls `setDelivery` again when what the loop may do changes:
 |---|---|
 | the device has no network, or the app keeps it off the network | `setDelivery(mode: ContactRelayMode.offline)` |
 | the network is back | `setDelivery(mode: ContactRelayMode.online)` |
-| the user switched Epicbox off | `setDelivery(mode: ContactRelayMode.epicboxOff)` |
 
-`offline` and `epicboxOff` end the loop and let go of the contacts' push sessions. What is queued
+`offline` ends the loop and lets go of the contacts' push sessions. What is queued
 waits until the loop runs `online` again.
 
 `deliveryWake()` runs one tick now, after any tick under way, in the mode `setDelivery` set, or
 `online` when none was set. Use it for a pull to refresh. A relay that does not answer raises
 `homeRelayUnreachable` and is tried again later; the call does not fail for it. A message is taken
-off a relay only once its effect is stored, so a tick cut short loses nothing. In `offline` and
-`epicboxOff` mode the call fails with `ContactsOffline` or `EpicboxOff` before connecting. In
+off a relay only once its effect is stored, so a tick cut short loses nothing. In `offline` mode
+the call fails with `ContactsOffline` before connecting. In
 `online` mode the tick opens the contacts' push sessions. They stay open after the call, with no
-loop running, until `setDelivery` with `offline` or `epicboxOff` or a lock ends them; a switch of
+loop running, until `setDelivery` with `offline` or a lock ends them; a switch of
 the Epicbox relay ends those on the old relay.
 
 `deliveryState()` (synchronous) lists the relays the loop uses, in order: the wallet's own Epicbox
@@ -1136,7 +1135,7 @@ mailbox is a loopback or unspecified host fails with `InvalidSlate`.
 `InPersonRead.mailbox` is an `InPersonHost` (`host`, `port`, `inRelayList`, `localNetwork`) and is
 null when the answer goes back by scan. `inPersonPost` posts to that mailbox from a key made for
 that slate, goes through Tor when Epicbox over Tor is on, and is safe to repeat. It fails with
-`InPersonNotFound`, `InPersonNoMailbox`, `ContactsOffline` or `EpicboxOff`, and `TransportFailed`.
+`InPersonNotFound`, `InPersonNoMailbox`, `ContactsOffline` and `TransportFailed`.
 
 `InPersonPosted.checkCode` is four digits. The scanning side shows it only after posting, and the
 showing side finalizes only the answer that carries the same code. `InPersonAnswerView.sameCode`
@@ -1477,7 +1476,6 @@ locked, and `txId` is set.
 | Code | Kind | Meaning |
 |---|---|---|
 | 56 | `contactsOffline` | the user chose Offline; the contact call reached no relay |
-| 57 | `epicboxOff` | Epicbox is switched off; the contact call reached no relay |
 | 58 | `invalidPairingText` | the link, card, reply or sealed text is damaged, is not one, or is for the other network |
 | 59 | `invalidContactName` | the name cannot go in a contact card |
 | 60 | `inviteExpired` | the invite expired |
