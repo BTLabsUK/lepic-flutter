@@ -10,7 +10,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'types.dart';
 
 // These functions are ignored because they are not marked as `pub`: `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
 
 /// Who the HTTP listener builds block rewards for.
 enum HttpCoinbase {
@@ -152,9 +152,6 @@ class HttpResentTx {
   /// As in [`HttpSentTx::posted`].
   final bool posted;
 
-  /// The dialect the resend took to the other wallet.
-  final SendDialect dialect;
-
   /// How the S1 went out this time, as [`HttpSentTx::format`] says.
   final SlateWire format;
 
@@ -162,17 +159,12 @@ class HttpResentTx {
     required this.txId,
     required this.slateId,
     required this.posted,
-    required this.dialect,
     required this.format,
   });
 
   @override
   int get hashCode =>
-      txId.hashCode ^
-      slateId.hashCode ^
-      posted.hashCode ^
-      dialect.hashCode ^
-      format.hashCode;
+      txId.hashCode ^ slateId.hashCode ^ posted.hashCode ^ format.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -182,7 +174,6 @@ class HttpResentTx {
           txId == other.txId &&
           slateId == other.slateId &&
           posted == other.posted &&
-          dialect == other.dialect &&
           format == other.format;
 }
 
@@ -197,10 +188,7 @@ class HttpSentTx {
   /// refused it: post it again with `repost_transaction`.
   final bool posted;
 
-  /// The dialect the send took to the other wallet.
-  final SendDialect dialect;
-
-  /// How the S1 went out: `Native` for the native dialect, else `Legacy`.
+  /// How the S1 went out.
   final SlateWire format;
 
   const HttpSentTx({
@@ -209,7 +197,6 @@ class HttpSentTx {
     required this.amount,
     required this.fee,
     required this.posted,
-    required this.dialect,
     required this.format,
   });
 
@@ -220,7 +207,6 @@ class HttpSentTx {
       amount.hashCode ^
       fee.hashCode ^
       posted.hashCode ^
-      dialect.hashCode ^
       format.hashCode;
 
   @override
@@ -233,42 +219,5 @@ class HttpSentTx {
           amount == other.amount &&
           fee == other.fee &&
           posted == other.posted &&
-          dialect == other.dialect &&
           format == other.format;
-}
-
-/// The key a listener's native endpoint showed for an origin, kept once it answered a native
-/// exchange (ADR 0052). Later sends to the origin take the native dialect only under that key.
-class PeerPinView {
-  /// `scheme://host:port`, or the onion host alone.
-  final String origin;
-
-  /// The pinned seal key, as 64 lowercase hex characters.
-  final String sealKey;
-  final PlatformInt64 firstSeenMs;
-  final PlatformInt64 lastSeenMs;
-
-  const PeerPinView({
-    required this.origin,
-    required this.sealKey,
-    required this.firstSeenMs,
-    required this.lastSeenMs,
-  });
-
-  @override
-  int get hashCode =>
-      origin.hashCode ^
-      sealKey.hashCode ^
-      firstSeenMs.hashCode ^
-      lastSeenMs.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is PeerPinView &&
-          runtimeType == other.runtimeType &&
-          origin == other.origin &&
-          sealKey == other.sealKey &&
-          firstSeenMs == other.firstSeenMs &&
-          lastSeenMs == other.lastSeenMs;
 }

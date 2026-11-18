@@ -241,6 +241,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactKind dco_decode_box_autoadd_contact_kind(dynamic raw);
 
   @protected
+  DeliveryState dco_decode_box_autoadd_delivery_state(dynamic raw);
+
+  @protected
+  DeliveryView dco_decode_box_autoadd_delivery_view(dynamic raw);
+
+  @protected
   EpicboxSessionState dco_decode_box_autoadd_epicbox_session_state(dynamic raw);
 
   @protected
@@ -275,6 +281,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ListingRef dco_decode_box_autoadd_listing_ref(dynamic raw);
+
+  @protected
+  NodePostView dco_decode_box_autoadd_node_post_view(dynamic raw);
 
   @protected
   NodeRoute dco_decode_box_autoadd_node_route(dynamic raw);
@@ -363,13 +372,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ChainCheck dco_decode_chain_check(dynamic raw);
 
   @protected
-  CollectTrigger dco_decode_collect_trigger(dynamic raw);
-
-  @protected
   ContactChange dco_decode_contact_change(dynamic raw);
-
-  @protected
-  ContactCollectReport dco_decode_contact_collect_report(dynamic raw);
 
   @protected
   ContactImportSummary dco_decode_contact_import_summary(dynamic raw);
@@ -390,10 +393,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactView dco_decode_contact_view(dynamic raw);
 
   @protected
-  DomainVerdict dco_decode_domain_verdict(dynamic raw);
+  DeliveryState dco_decode_delivery_state(dynamic raw);
 
   @protected
-  EndedPairing dco_decode_ended_pairing(dynamic raw);
+  DeliveryView dco_decode_delivery_view(dynamic raw);
+
+  @protected
+  DomainVerdict dco_decode_domain_verdict(dynamic raw);
 
   @protected
   Epic1AnswerView dco_decode_epic_1_answer_view(dynamic raw);
@@ -412,9 +418,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Epic1Paid dco_decode_epic_1_paid(dynamic raw);
-
-  @protected
-  Epic1RelayStatus dco_decode_epic_1_relay_status(dynamic raw);
 
   @protected
   EpicboxSessionEvent dco_decode_epicbox_session_event(dynamic raw);
@@ -436,9 +439,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ExpiredReason dco_decode_expired_reason(dynamic raw);
-
-  @protected
-  FailedPairing dco_decode_failed_pairing(dynamic raw);
 
   @protected
   FeeEstimate dco_decode_fee_estimate(dynamic raw);
@@ -564,9 +564,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<ContactView> dco_decode_list_contact_view(dynamic raw);
 
   @protected
-  List<EndedPairing> dco_decode_list_ended_pairing(dynamic raw);
-
-  @protected
   List<Epic1AnswerView> dco_decode_list_epic_1_answer_view(dynamic raw);
 
   @protected
@@ -576,13 +573,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<Epic1LinkView> dco_decode_list_epic_1_link_view(dynamic raw);
 
   @protected
-  List<Epic1RelayStatus> dco_decode_list_epic_1_relay_status(dynamic raw);
-
-  @protected
   List<EpicboxSessionView> dco_decode_list_epicbox_session_view(dynamic raw);
-
-  @protected
-  List<FailedPairing> dco_decode_list_failed_pairing(dynamic raw);
 
   @protected
   List<InPersonAnswerView> dco_decode_list_in_person_answer_view(dynamic raw);
@@ -603,9 +594,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<OutboxEntryView> dco_decode_list_outbox_entry_view(dynamic raw);
 
   @protected
-  List<PeerPinView> dco_decode_list_peer_pin_view(dynamic raw);
-
-  @protected
   List<PendingPairingView> dco_decode_list_pending_pairing_view(dynamic raw);
 
   @protected
@@ -624,6 +612,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<QuarantinedMessageView> dco_decode_list_quarantined_message_view(
     dynamic raw,
   );
+
+  @protected
+  List<RelayDelivery> dco_decode_list_relay_delivery(dynamic raw);
 
   @protected
   List<SasEntry> dco_decode_list_sas_entry(dynamic raw);
@@ -668,6 +659,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   NetTuning dco_decode_net_tuning(dynamic raw);
 
   @protected
+  NodePostOutcome dco_decode_node_post_outcome(dynamic raw);
+
+  @protected
+  NodePostView dco_decode_node_post_view(dynamic raw);
+
+  @protected
   NodeRoute dco_decode_node_route(dynamic raw);
 
   @protected
@@ -693,6 +690,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ContactKind? dco_decode_opt_box_autoadd_contact_kind(dynamic raw);
+
+  @protected
+  DeliveryState? dco_decode_opt_box_autoadd_delivery_state(dynamic raw);
+
+  @protected
+  DeliveryView? dco_decode_opt_box_autoadd_delivery_view(dynamic raw);
 
   @protected
   EpicboxSessionState? dco_decode_opt_box_autoadd_epicbox_session_state(
@@ -728,6 +731,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ListingRef? dco_decode_opt_box_autoadd_listing_ref(dynamic raw);
+
+  @protected
+  NodePostView? dco_decode_opt_box_autoadd_node_post_view(dynamic raw);
 
   @protected
   OutputCategory? dco_decode_opt_box_autoadd_output_category(dynamic raw);
@@ -799,16 +805,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   WalletSummary? dco_decode_opt_box_autoadd_wallet_summary(dynamic raw);
 
   @protected
-  List<String>? dco_decode_opt_list_String(dynamic raw);
-
-  @protected
   Uint8List? dco_decode_opt_list_prim_u_8_strict(dynamic raw);
 
   @protected
   OutboxEntryView dco_decode_outbox_entry_view(dynamic raw);
-
-  @protected
-  OutboxReport dco_decode_outbox_report(dynamic raw);
 
   @protected
   OutboxState dco_decode_outbox_state(dynamic raw);
@@ -853,12 +853,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PairingStatus dco_decode_pairing_status(dynamic raw);
 
   @protected
-  PeerCompat dco_decode_peer_compat(dynamic raw);
-
-  @protected
-  PeerPinView dco_decode_peer_pin_view(dynamic raw);
-
-  @protected
   PendingPairingView dco_decode_pending_pairing_view(dynamic raw);
 
   @protected
@@ -887,6 +881,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   RelayCancelOutcome dco_decode_relay_cancel_outcome(dynamic raw);
+
+  @protected
+  RelayDelivery dco_decode_relay_delivery(dynamic raw);
 
   @protected
   RetiredPlainStore dco_decode_retired_plain_store(dynamic raw);
@@ -932,9 +929,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SelfSentTx dco_decode_self_sent_tx(dynamic raw);
-
-  @protected
-  SendDialect dco_decode_send_dialect(dynamic raw);
 
   @protected
   SendOptions dco_decode_send_options(dynamic raw);
@@ -1243,6 +1237,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactKind sse_decode_box_autoadd_contact_kind(SseDeserializer deserializer);
 
   @protected
+  DeliveryState sse_decode_box_autoadd_delivery_state(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  DeliveryView sse_decode_box_autoadd_delivery_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   EpicboxSessionState sse_decode_box_autoadd_epicbox_session_state(
     SseDeserializer deserializer,
   );
@@ -1289,6 +1293,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ListingRef sse_decode_box_autoadd_listing_ref(SseDeserializer deserializer);
+
+  @protected
+  NodePostView sse_decode_box_autoadd_node_post_view(
+    SseDeserializer deserializer,
+  );
 
   @protected
   NodeRoute sse_decode_box_autoadd_node_route(SseDeserializer deserializer);
@@ -1403,15 +1412,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ChainCheck sse_decode_chain_check(SseDeserializer deserializer);
 
   @protected
-  CollectTrigger sse_decode_collect_trigger(SseDeserializer deserializer);
-
-  @protected
   ContactChange sse_decode_contact_change(SseDeserializer deserializer);
-
-  @protected
-  ContactCollectReport sse_decode_contact_collect_report(
-    SseDeserializer deserializer,
-  );
 
   @protected
   ContactImportSummary sse_decode_contact_import_summary(
@@ -1438,10 +1439,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactView sse_decode_contact_view(SseDeserializer deserializer);
 
   @protected
-  DomainVerdict sse_decode_domain_verdict(SseDeserializer deserializer);
+  DeliveryState sse_decode_delivery_state(SseDeserializer deserializer);
 
   @protected
-  EndedPairing sse_decode_ended_pairing(SseDeserializer deserializer);
+  DeliveryView sse_decode_delivery_view(SseDeserializer deserializer);
+
+  @protected
+  DomainVerdict sse_decode_domain_verdict(SseDeserializer deserializer);
 
   @protected
   Epic1AnswerView sse_decode_epic_1_answer_view(SseDeserializer deserializer);
@@ -1460,9 +1464,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Epic1Paid sse_decode_epic_1_paid(SseDeserializer deserializer);
-
-  @protected
-  Epic1RelayStatus sse_decode_epic_1_relay_status(SseDeserializer deserializer);
 
   @protected
   EpicboxSessionEvent sse_decode_epicbox_session_event(
@@ -1492,9 +1493,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ExpiredReason sse_decode_expired_reason(SseDeserializer deserializer);
-
-  @protected
-  FailedPairing sse_decode_failed_pairing(SseDeserializer deserializer);
 
   @protected
   FeeEstimate sse_decode_fee_estimate(SseDeserializer deserializer);
@@ -1634,11 +1632,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<ContactView> sse_decode_list_contact_view(SseDeserializer deserializer);
 
   @protected
-  List<EndedPairing> sse_decode_list_ended_pairing(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   List<Epic1AnswerView> sse_decode_list_epic_1_answer_view(
     SseDeserializer deserializer,
   );
@@ -1654,17 +1647,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  List<Epic1RelayStatus> sse_decode_list_epic_1_relay_status(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   List<EpicboxSessionView> sse_decode_list_epicbox_session_view(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  List<FailedPairing> sse_decode_list_failed_pairing(
     SseDeserializer deserializer,
   );
 
@@ -1693,9 +1676,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  List<PeerPinView> sse_decode_list_peer_pin_view(SseDeserializer deserializer);
-
-  @protected
   List<PendingPairingView> sse_decode_list_pending_pairing_view(
     SseDeserializer deserializer,
   );
@@ -1714,6 +1694,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<QuarantinedMessageView> sse_decode_list_quarantined_message_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<RelayDelivery> sse_decode_list_relay_delivery(
     SseDeserializer deserializer,
   );
 
@@ -1768,6 +1753,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   NetTuning sse_decode_net_tuning(SseDeserializer deserializer);
 
   @protected
+  NodePostOutcome sse_decode_node_post_outcome(SseDeserializer deserializer);
+
+  @protected
+  NodePostView sse_decode_node_post_view(SseDeserializer deserializer);
+
+  @protected
   NodeRoute sse_decode_node_route(SseDeserializer deserializer);
 
   @protected
@@ -1797,6 +1788,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ContactKind? sse_decode_opt_box_autoadd_contact_kind(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  DeliveryState? sse_decode_opt_box_autoadd_delivery_state(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  DeliveryView? sse_decode_opt_box_autoadd_delivery_view(
     SseDeserializer deserializer,
   );
 
@@ -1850,6 +1851,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ListingRef? sse_decode_opt_box_autoadd_listing_ref(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  NodePostView? sse_decode_opt_box_autoadd_node_post_view(
     SseDeserializer deserializer,
   );
 
@@ -1949,16 +1955,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  List<String>? sse_decode_opt_list_String(SseDeserializer deserializer);
-
-  @protected
   Uint8List? sse_decode_opt_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
   OutboxEntryView sse_decode_outbox_entry_view(SseDeserializer deserializer);
-
-  @protected
-  OutboxReport sse_decode_outbox_report(SseDeserializer deserializer);
 
   @protected
   OutboxState sse_decode_outbox_state(SseDeserializer deserializer);
@@ -2009,12 +2009,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PairingStatus sse_decode_pairing_status(SseDeserializer deserializer);
 
   @protected
-  PeerCompat sse_decode_peer_compat(SseDeserializer deserializer);
-
-  @protected
-  PeerPinView sse_decode_peer_pin_view(SseDeserializer deserializer);
-
-  @protected
   PendingPairingView sse_decode_pending_pairing_view(
     SseDeserializer deserializer,
   );
@@ -2051,6 +2045,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RelayCancelOutcome sse_decode_relay_cancel_outcome(
     SseDeserializer deserializer,
   );
+
+  @protected
+  RelayDelivery sse_decode_relay_delivery(SseDeserializer deserializer);
 
   @protected
   RetiredPlainStore sse_decode_retired_plain_store(
@@ -2098,9 +2095,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   SelfSentTx sse_decode_self_sent_tx(SseDeserializer deserializer);
-
-  @protected
-  SendDialect sse_decode_send_dialect(SseDeserializer deserializer);
 
   @protected
   SendOptions sse_decode_send_options(SseDeserializer deserializer);
@@ -2468,6 +2462,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_delivery_state(
+    DeliveryState self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_delivery_view(
+    DeliveryView self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_epicbox_session_state(
     EpicboxSessionState self,
     SseSerializer serializer,
@@ -2536,6 +2542,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_listing_ref(
     ListingRef self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_node_post_view(
+    NodePostView self,
     SseSerializer serializer,
   );
 
@@ -2690,19 +2702,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_chain_check(ChainCheck self, SseSerializer serializer);
 
   @protected
-  void sse_encode_collect_trigger(
-    CollectTrigger self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_contact_change(ContactChange self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_contact_collect_report(
-    ContactCollectReport self,
-    SseSerializer serializer,
-  );
 
   @protected
   void sse_encode_contact_import_summary(
@@ -2735,10 +2735,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_contact_view(ContactView self, SseSerializer serializer);
 
   @protected
-  void sse_encode_domain_verdict(DomainVerdict self, SseSerializer serializer);
+  void sse_encode_delivery_state(DeliveryState self, SseSerializer serializer);
 
   @protected
-  void sse_encode_ended_pairing(EndedPairing self, SseSerializer serializer);
+  void sse_encode_delivery_view(DeliveryView self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_domain_verdict(DomainVerdict self, SseSerializer serializer);
 
   @protected
   void sse_encode_epic_1_answer_view(
@@ -2766,12 +2769,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_epic_1_paid(Epic1Paid self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_epic_1_relay_status(
-    Epic1RelayStatus self,
-    SseSerializer serializer,
-  );
 
   @protected
   void sse_encode_epicbox_session_event(
@@ -2805,9 +2802,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_expired_reason(ExpiredReason self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_failed_pairing(FailedPairing self, SseSerializer serializer);
 
   @protected
   void sse_encode_fee_estimate(FeeEstimate self, SseSerializer serializer);
@@ -2972,12 +2966,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_list_ended_pairing(
-    List<EndedPairing> self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_list_epic_1_answer_view(
     List<Epic1AnswerView> self,
     SseSerializer serializer,
@@ -2996,20 +2984,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_list_epic_1_relay_status(
-    List<Epic1RelayStatus> self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_list_epicbox_session_view(
     List<EpicboxSessionView> self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_list_failed_pairing(
-    List<FailedPairing> self,
     SseSerializer serializer,
   );
 
@@ -3047,12 +3023,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_list_peer_pin_view(
-    List<PeerPinView> self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_list_pending_pairing_view(
     List<PendingPairingView> self,
     SseSerializer serializer,
@@ -3082,6 +3052,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_quarantined_message_view(
     List<QuarantinedMessageView> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_relay_delivery(
+    List<RelayDelivery> self,
     SseSerializer serializer,
   );
 
@@ -3143,6 +3119,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_net_tuning(NetTuning self, SseSerializer serializer);
 
   @protected
+  void sse_encode_node_post_outcome(
+    NodePostOutcome self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_node_post_view(NodePostView self, SseSerializer serializer);
+
+  @protected
   void sse_encode_node_route(NodeRoute self, SseSerializer serializer);
 
   @protected
@@ -3175,6 +3160,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_contact_kind(
     ContactKind? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_delivery_state(
+    DeliveryState? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_delivery_view(
+    DeliveryView? self,
     SseSerializer serializer,
   );
 
@@ -3241,6 +3238,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_listing_ref(
     ListingRef? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_node_post_view(
+    NodePostView? self,
     SseSerializer serializer,
   );
 
@@ -3359,9 +3362,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_opt_list_String(List<String>? self, SseSerializer serializer);
-
-  @protected
   void sse_encode_opt_list_prim_u_8_strict(
     Uint8List? self,
     SseSerializer serializer,
@@ -3372,9 +3372,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     OutboxEntryView self,
     SseSerializer serializer,
   );
-
-  @protected
-  void sse_encode_outbox_report(OutboxReport self, SseSerializer serializer);
 
   @protected
   void sse_encode_outbox_state(OutboxState self, SseSerializer serializer);
@@ -3437,12 +3434,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_pairing_status(PairingStatus self, SseSerializer serializer);
 
   @protected
-  void sse_encode_peer_compat(PeerCompat self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_peer_pin_view(PeerPinView self, SseSerializer serializer);
-
-  @protected
   void sse_encode_pending_pairing_view(
     PendingPairingView self,
     SseSerializer serializer,
@@ -3486,6 +3477,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     RelayCancelOutcome self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_relay_delivery(RelayDelivery self, SseSerializer serializer);
 
   @protected
   void sse_encode_retired_plain_store(
@@ -3543,9 +3537,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_self_sent_tx(SelfSentTx self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_send_dialect(SendDialect self, SseSerializer serializer);
 
   @protected
   void sse_encode_send_options(SendOptions self, SseSerializer serializer);

@@ -12,7 +12,7 @@ import 'policy.dart';
 import 'tor.dart';
 
 // These functions are ignored because they are not marked as `pub`: `engine`, `network`, `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Why the wallet ended a transaction `Cancelled`. Values are only added, at the end.
 enum CancelledReason {
@@ -41,21 +41,6 @@ enum ChainCheck {
   unspentNotOnChain,
 }
 
-/// What started a collecting cycle.
-enum CollectTrigger {
-  /// The app opened or resumed, or the wallet was unlocked: every mailbox.
-  open,
-
-  /// The foreground tick: the mailboxes of contacts with something pending.
-  foreground,
-
-  /// The user pulled to refresh: every mailbox.
-  pull,
-
-  /// A push wake-up: every mailbox.
-  push,
-}
-
 /// What changed, for `ContactUpdated`.
 enum ContactChange {
   /// Newer details, same keys.
@@ -72,124 +57,6 @@ enum ContactChange {
 
   /// The pairing ended; `ended_reason` says why.
   ended,
-}
-
-/// What one `EpicWallet::contacts_collect` did.
-class ContactCollectReport {
-  final int mailboxes;
-
-  /// Mailboxes whose drain stopped at the per-mailbox message limit.
-  final int capped;
-
-  /// Mailboxes whose drain stopped because a message was kept for later.
-  final int kept;
-
-  /// Mailboxes whose drain stopped because the relay refused an acknowledgement.
-  final int refused;
-
-  /// Mailboxes the drain's time ran out on.
-  final int timedOut;
-
-  /// Mailboxes the drain ended before, including those of a relay that failed.
-  final int notReached;
-  final int messages;
-
-  /// Pairings that completed.
-  final int paired;
-
-  /// Pairings in progress that ended with nothing stored in this cycle; each also raised
-  /// `PairingFailed`.
-  final List<FailedPairing> failed;
-
-  /// Outbox entries that reached their relay in this cycle.
-  final int delivered;
-
-  /// `domain:port` of the relays that did not answer; collecting from them backs off.
-  final List<String> unreachable;
-
-  /// Pairings that ended in this cycle; their records are kept.
-  final List<EndedPairing> ended;
-
-  /// Contact messages kept in quarantine in this cycle.
-  final int quarantined;
-
-  /// Contact messages lost to `HostPolicy::quarantine_max_bytes` in this cycle: entries that
-  /// went to make room, and messages too large to keep.
-  final int quarantineDropped;
-
-  /// Notices for a slate this wallet does not hold yet, kept to apply when it arrives.
-  final int buffered;
-
-  /// Answers taken from the reply mailboxes of in-person codes; each also raised
-  /// `InPersonAnswer`.
-  final int inPerson;
-
-  /// Payments taken at the delivery mailboxes of this wallet's open epic1 addresses, and
-  /// answers to its epic1 payments finalized.
-  final int epic1;
-
-  const ContactCollectReport({
-    required this.mailboxes,
-    required this.capped,
-    required this.kept,
-    required this.refused,
-    required this.timedOut,
-    required this.notReached,
-    required this.messages,
-    required this.paired,
-    required this.failed,
-    required this.delivered,
-    required this.unreachable,
-    required this.ended,
-    required this.quarantined,
-    required this.quarantineDropped,
-    required this.buffered,
-    this.inPerson = 0,
-    this.epic1 = 0,
-  });
-
-  @override
-  int get hashCode =>
-      mailboxes.hashCode ^
-      capped.hashCode ^
-      kept.hashCode ^
-      refused.hashCode ^
-      timedOut.hashCode ^
-      notReached.hashCode ^
-      messages.hashCode ^
-      paired.hashCode ^
-      failed.hashCode ^
-      delivered.hashCode ^
-      unreachable.hashCode ^
-      ended.hashCode ^
-      quarantined.hashCode ^
-      quarantineDropped.hashCode ^
-      buffered.hashCode ^
-      inPerson.hashCode ^
-      epic1.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ContactCollectReport &&
-          runtimeType == other.runtimeType &&
-          mailboxes == other.mailboxes &&
-          capped == other.capped &&
-          kept == other.kept &&
-          refused == other.refused &&
-          timedOut == other.timedOut &&
-          notReached == other.notReached &&
-          messages == other.messages &&
-          paired == other.paired &&
-          failed == other.failed &&
-          delivered == other.delivered &&
-          unreachable == other.unreachable &&
-          ended == other.ended &&
-          quarantined == other.quarantined &&
-          quarantineDropped == other.quarantineDropped &&
-          buffered == other.buffered &&
-          inPerson == other.inPerson &&
-          epic1 == other.epic1;
 }
 
 /// What `EpicWallet::contacts_import` restored.
@@ -428,10 +295,6 @@ class ContactView {
   final PairingEndReason? endedReason;
   final PlatformInt64? endedAtMs;
 
-  /// New slates to the contact go as native slates (RFC 0003): `native_direct` is on, the
-  /// contact claims native slates and the pairing is not private.
-  final bool nativeSlates;
-
   /// Something is under way with this contact: a message waiting to go out, a payment not yet
   /// finished, or an invoice from it waiting for an answer. A host checking contacts on a
   /// timer may check only these.
@@ -467,7 +330,6 @@ class ContactView {
     this.peerEncKey,
     this.endedReason,
     this.endedAtMs,
-    this.nativeSlates = false,
     this.awaiting = false,
   });
 
@@ -502,7 +364,6 @@ class ContactView {
       peerEncKey.hashCode ^
       endedReason.hashCode ^
       endedAtMs.hashCode ^
-      nativeSlates.hashCode ^
       awaiting.hashCode;
 
   @override
@@ -539,8 +400,51 @@ class ContactView {
           peerEncKey == other.peerEncKey &&
           endedReason == other.endedReason &&
           endedAtMs == other.endedAtMs &&
-          nativeSlates == other.nativeSlates &&
           awaiting == other.awaiting;
+}
+
+/// Where the post of a payment's slate stands.
+enum DeliveryState {
+  /// Waiting to be posted.
+  queued,
+
+  /// A route took it.
+  sent,
+
+  /// The post went unanswered and is posted again on the same route; it may have arrived.
+  uncertain,
+
+  /// No route took it, or its time or cutoff ran out.
+  failed,
+}
+
+/// The post of a payment's slate, from `TransactionDetails.delivery`.
+class DeliveryView {
+  final DeliveryState state;
+
+  /// When the state was last written.
+  final PlatformInt64 updatedAtMs;
+
+  /// Why the post is uncertain or failed, as the route or the wallet gave it.
+  final String? error;
+
+  const DeliveryView({
+    required this.state,
+    required this.updatedAtMs,
+    this.error,
+  });
+
+  @override
+  int get hashCode => state.hashCode ^ updatedAtMs.hashCode ^ error.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DeliveryView &&
+          runtimeType == other.runtimeType &&
+          state == other.state &&
+          updatedAtMs == other.updatedAtMs &&
+          error == other.error;
 }
 
 /// Whether a contact's domain claim is proven by the well-known file its domain serves.
@@ -565,25 +469,6 @@ class DomainVerdict {
           runtimeType == other.runtimeType &&
           proven == other.proven &&
           refused == other.refused;
-}
-
-/// A pairing that ended in a collecting cycle; its record is kept.
-class EndedPairing {
-  final String contactId;
-  final PairingEndReason reason;
-
-  const EndedPairing({required this.contactId, required this.reason});
-
-  @override
-  int get hashCode => contactId.hashCode ^ reason.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is EndedPairing &&
-          runtimeType == other.runtimeType &&
-          contactId == other.contactId &&
-          reason == other.reason;
 }
 
 /// An answer this wallet made for a payment taken at one of its delivery mailboxes, as
@@ -618,7 +503,7 @@ class Epic1AnswerView {
           posted == other.posted;
 }
 
-/// One post of an epic1 payment to a transport of its link.
+/// One post of an epic1 payment on a route of its link.
 class Epic1Attempt {
   final String host;
 
@@ -644,25 +529,33 @@ class Epic1Attempt {
           uncertain == other.uncertain;
 }
 
-/// An epic1 link issued by `EpicWallet::epic1_link_make`.
+/// An epic1 address with its link: the public address of the default account from
+/// `EpicWallet::epic1_address`, or a link issued by `EpicWallet::epic1_link_make`.
 class Epic1Link {
-  /// The link text, `epic:epic1…`, to show as a QR code or share.
+  /// The link text, `epic:epic1…`, to share or copy.
   final String link;
+
+  /// The text to draw as a QR code: the address and the amount, without the message. A link
+  /// with neither an amount nor a route entry is written in upper case, which a QR code holds
+  /// in fewer modules; a reader takes it as the same link.
+  final String qr;
 
   /// The epic1 address the link pays.
   final String address;
 
-  /// The index of that address in the default account.
+  /// The index of that address in the default account: 0 for the public address.
   final int index;
 
   const Epic1Link({
     required this.link,
+    required this.qr,
     required this.address,
     required this.index,
   });
 
   @override
-  int get hashCode => link.hashCode ^ address.hashCode ^ index.hashCode;
+  int get hashCode =>
+      link.hashCode ^ qr.hashCode ^ address.hashCode ^ index.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -670,6 +563,7 @@ class Epic1Link {
       other is Epic1Link &&
           runtimeType == other.runtimeType &&
           link == other.link &&
+          qr == other.qr &&
           address == other.address &&
           index == other.index;
 }
@@ -754,12 +648,12 @@ class Epic1Paid {
   /// The posts made, in order; the last went through when `posted` is set.
   final List<Epic1Attempt> attempts;
 
-  /// The transport, from 0, the payment was posted to.
+  /// The route, from 0, the payment was posted on.
   final int? posted;
 
-  /// The first transport, from 0, whose relay may hold the payment though its post failed.
-  /// Show that the payment may still arrive and do not offer to pay again;
-  /// `EpicWallet::epic1_post_next` posts the same payment to the next relay.
+  /// The first route, from 0, that may hold the payment though its post failed. Show that
+  /// the payment may still arrive and do not offer to pay again;
+  /// `EpicWallet::epic1_post_next` posts the same payment on the next route.
   final int? uncertain;
 
   /// How the payment is written: always `Native`, a sealed `lepic.v1` slate.
@@ -799,31 +693,6 @@ class Epic1Paid {
           format == other.format;
 }
 
-/// A relay of the wallet's relay list and whether it serves epic1, from
-/// `EpicWallet::epic1_relays`.
-class Epic1RelayStatus {
-  /// The relay, `domain:port`.
-  final String relay;
-
-  /// `Some(true)` when the relay offered mux/1 when a socket of this process greeted it,
-  /// `Some(false)` when it answered without it or never answered, and `None` when no socket
-  /// greeted it yet: not known.
-  final bool? usable;
-
-  const Epic1RelayStatus({required this.relay, this.usable});
-
-  @override
-  int get hashCode => relay.hashCode ^ usable.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Epic1RelayStatus &&
-          runtimeType == other.runtimeType &&
-          relay == other.relay &&
-          usable == other.usable;
-}
-
 /// What [`crate::api::wallet::EpicWallet::watch_epicbox_sessions`] streams.
 class EpicboxSessionEvent {
   final EpicboxSessionEventKind kind;
@@ -859,7 +728,7 @@ enum EpicboxSessionEventKind {
   /// The session is in `state`. The first event of a session, then one per change.
   state,
 
-  /// The relay pushed mail the session queued, for the contacts collect or the listener.
+  /// The relay pushed mail the session queued, for the delivery loop or the listener.
   mailQueued,
 }
 
@@ -954,6 +823,11 @@ class EpicboxTuning {
   /// How long a relay that could not be asked is not asked again.
   final int onionDiscoveryRetryS;
 
+  /// The base interval of the delivery loop's tick: how often it posts what is due, ends what
+  /// expired and asks the push sessions what waits. A boost of `Poller::Relays` shortens it;
+  /// pushed mail is read as it arrives.
+  final int collectEveryS;
+
   const EpicboxTuning({
     required this.connectTimeoutS,
     required this.responseTimeoutS,
@@ -964,6 +838,7 @@ class EpicboxTuning {
     required this.torConnectTimeoutS,
     required this.onionDiscoveryTimeoutS,
     required this.onionDiscoveryRetryS,
+    this.collectEveryS = 30,
   });
 
   @override
@@ -976,7 +851,8 @@ class EpicboxTuning {
       drainTimeoutS.hashCode ^
       torConnectTimeoutS.hashCode ^
       onionDiscoveryTimeoutS.hashCode ^
-      onionDiscoveryRetryS.hashCode;
+      onionDiscoveryRetryS.hashCode ^
+      collectEveryS.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -991,7 +867,8 @@ class EpicboxTuning {
           drainTimeoutS == other.drainTimeoutS &&
           torConnectTimeoutS == other.torConnectTimeoutS &&
           onionDiscoveryTimeoutS == other.onionDiscoveryTimeoutS &&
-          onionDiscoveryRetryS == other.onionDiscoveryRetryS;
+          onionDiscoveryRetryS == other.onionDiscoveryRetryS &&
+          collectEveryS == other.collectEveryS;
 }
 
 /// A slate in sealed text as it arrived, from `EpicWallet::epictx_open`. Nothing is stored.
@@ -1049,26 +926,14 @@ enum ExpiredReason {
   /// A send whose every push the node's pool refused until its cutoff passed. Its inputs are
   /// spendable again. If another node mines it after all, it becomes `Confirmed`.
   rejectedByNode,
-}
 
-/// A pairing in progress that ended with nothing stored.
-class FailedPairing {
-  /// The id of the pairing's record, now removed.
-  final String contactId;
-  final PairingFailureReason reason;
+  /// A payment or invoice this wallet started whose answer never reached it before its
+  /// cutoff. No kernel of it can be mined.
+  noAnswer,
 
-  const FailedPairing({required this.contactId, required this.reason});
-
-  @override
-  int get hashCode => contactId.hashCode ^ reason.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is FailedPairing &&
-          runtimeType == other.runtimeType &&
-          contactId == other.contactId &&
-          reason == other.reason;
+  /// A transaction that was answered but not mined before its cutoff. Its kernel may still be
+  /// mined.
+  notMined,
 }
 
 /// What a send would take and pay, from `EpicWallet::estimate_fee` and
@@ -1337,8 +1202,7 @@ class InPersonCode {
   /// answer comes back by scan.
   final String? mailbox;
 
-  /// How the code is written: always `Native`, a raw `lepic.v1` slate, whatever
-  /// `EpicWallet::set_native_direct` says.
+  /// How the code is written: always `Native`, a raw `lepic.v1` slate.
   final SlateWire format;
 
   const InPersonCode({
@@ -1699,11 +1563,6 @@ class InboxReport {
   /// `withdrawn`, each also reported as its event.
   final int notices;
 
-  /// Invoices this wallet issued that the payer sent back unpaid, as a stock `epic-wallet`
-  /// does: that payer does not pay invoices and is sent nothing but slates from now on.
-  /// Nothing changed; cancel the invoice with `cancel_transaction`.
-  final int bounced;
-
   /// Messages acknowledged and forgotten: notices not from the other party of their invoice,
   /// of a kind this version does not know, oversize or malformed.
   final int dropped;
@@ -1718,7 +1577,6 @@ class InboxReport {
     required this.rejected,
     required this.held,
     required this.notices,
-    required this.bounced,
     required this.dropped,
     required this.buffered,
   });
@@ -1734,7 +1592,6 @@ class InboxReport {
       rejected.hashCode ^
       held.hashCode ^
       notices.hashCode ^
-      bounced.hashCode ^
       dropped.hashCode ^
       buffered.hashCode;
 
@@ -1749,7 +1606,6 @@ class InboxReport {
           rejected == other.rejected &&
           held == other.held &&
           notices == other.notices &&
-          bounced == other.bounced &&
           dropped == other.dropped &&
           buffered == other.buffered;
 }
@@ -1893,7 +1749,7 @@ class KernelLocation {
 
 /// How a key check from `EpicWallet::contact_key_check` stands.
 enum KeyCheckStart {
-  /// On its way, or already; the answer comes with a collect.
+  /// On its way, or already; the delivery loop reads the answer.
   sent,
 
   /// No check may run now (one a day per slot, within a day of the new pairing): the new
@@ -2000,8 +1856,8 @@ enum LegacyImportStatus {
 /// How the Epicbox listener reads mail from the relay over one shared push session (mux/1),
 /// instead of its own socket. Falls back to the socket when the relay does not offer it.
 class ListenVia {
-  /// The session's group. The contacts collect that names the same group on the same relay
-  /// shares the socket.
+  /// The session's group. While tor is off the delivery loop reads the contact mailboxes in
+  /// the same group, so both share one socket per relay.
   final String group;
 
   /// How often the session asks the relay whether mail waits, in seconds; `None` never asks.
@@ -2024,12 +1880,8 @@ class ListenVia {
 class ListenerEvent {
   final ListenerEventKind kind;
 
-  /// Local id of the transaction, for `Received`, `Repeated`, `Finalized` and
-  /// `InvoiceBounced`.
+  /// Local id of the transaction, for `Received`, `Repeated` and `Finalized`.
   final int? txId;
-
-  /// The slate id, for `InvoiceBounced`.
-  final String? slateId;
   final String message;
 
   /// For `Disconnected`: why the connection ended (close frame, I/O error, timeout), as text
@@ -2043,7 +1895,6 @@ class ListenerEvent {
   const ListenerEvent({
     required this.kind,
     this.txId,
-    this.slateId,
     required this.message,
     this.reason,
     this.retryInMs,
@@ -2053,7 +1904,6 @@ class ListenerEvent {
   int get hashCode =>
       kind.hashCode ^
       txId.hashCode ^
-      slateId.hashCode ^
       message.hashCode ^
       reason.hashCode ^
       retryInMs.hashCode;
@@ -2065,7 +1915,6 @@ class ListenerEvent {
           runtimeType == other.runtimeType &&
           kind == other.kind &&
           txId == other.txId &&
-          slateId == other.slateId &&
           message == other.message &&
           reason == other.reason &&
           retryInMs == other.retryInMs;
@@ -2093,12 +1942,6 @@ enum ListenerEventKind {
 
   /// The listener ended; no more events follow.
   stopped,
-
-  /// A payer sent back unpaid an invoice this wallet issued, as a wallet that does not pay
-  /// invoices does: `tx_id` and `slate_id` name the invoice. Nothing changed; cancel it with
-  /// `cancel_transaction`, or send that payer a slate file instead. A repeat for the same
-  /// `tx_id` is the same bounce, redelivered.
-  invoiceBounced,
 }
 
 /// The outcome of one listing in `EpicWallet::drain_epicbox_listings`. Exactly one of the two
@@ -2169,6 +2012,58 @@ class NetTuning {
           epicbox == other.epicbox &&
           http == other.http &&
           tor == other.tor;
+}
+
+/// What the node did with a push of a transaction.
+enum NodePostOutcome { accepted, refused, unreachable }
+
+/// The pushes of a finalized transaction to the node, from `TransactionDetails.post`.
+class NodePostView {
+  final int attempts;
+
+  /// What the node did with the latest push.
+  final NodePostOutcome lastOutcome;
+
+  /// The node's text for the latest push, when it refused it or could not be reached.
+  final String? lastError;
+  final PlatformInt64 lastAttemptAtMs;
+
+  /// The height from which a refresh pushes the transaction again, while it is `Finalized`
+  /// or `Posted`; `None` in any other state.
+  final BigInt? nextAttemptHeight;
+
+  /// The node accepted one of the pushes.
+  final bool acceptedOnce;
+
+  const NodePostView({
+    required this.attempts,
+    required this.lastOutcome,
+    this.lastError,
+    required this.lastAttemptAtMs,
+    this.nextAttemptHeight,
+    required this.acceptedOnce,
+  });
+
+  @override
+  int get hashCode =>
+      attempts.hashCode ^
+      lastOutcome.hashCode ^
+      lastError.hashCode ^
+      lastAttemptAtMs.hashCode ^
+      nextAttemptHeight.hashCode ^
+      acceptedOnce.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NodePostView &&
+          runtimeType == other.runtimeType &&
+          attempts == other.attempts &&
+          lastOutcome == other.lastOutcome &&
+          lastError == other.lastError &&
+          lastAttemptAtMs == other.lastAttemptAtMs &&
+          nextAttemptHeight == other.nextAttemptHeight &&
+          acceptedOnce == other.acceptedOnce;
 }
 
 /// How `node_tip` reaches the node. The host states it every time; there is no default.
@@ -2345,33 +2240,6 @@ class OutboxEntryView {
           notPostedYet == other.notPostedYet;
 }
 
-/// What one `EpicWallet::contacts_outbox_deliver` did.
-class OutboxReport {
-  final int delivered;
-  final int failed;
-
-  /// Entries that became stuck in this run.
-  final int stuck;
-
-  const OutboxReport({
-    required this.delivered,
-    required this.failed,
-    required this.stuck,
-  });
-
-  @override
-  int get hashCode => delivered.hashCode ^ failed.hashCode ^ stuck.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is OutboxReport &&
-          runtimeType == other.runtimeType &&
-          delivered == other.delivered &&
-          failed == other.failed &&
-          stuck == other.stuck;
-}
-
 /// Where a message for a contact stands.
 enum OutboxState {
   queued,
@@ -2500,7 +2368,7 @@ class PairingAnswer {
   /// `epiccash://pair-reply/1/...`, for "Send by hand" and for a post that failed.
   final String replyLink;
 
-  /// The reply reached the relay; the confirmation is collected later.
+  /// The reply reached the relay; the delivery loop reads the confirmation later.
   final bool posted;
 
   const PairingAnswer({
@@ -2547,7 +2415,7 @@ enum PairingEndReason {
   /// The contact removed the pairing.
   unpaired,
 
-  /// The contact's wallet was never heard during seven days of collecting.
+  /// The contact's wallet was never heard during seven days of reading its mailbox.
   neverFinished,
 }
 
@@ -2681,81 +2549,6 @@ enum PairingStatus {
   ended,
 }
 
-/// What this wallet learned about the software behind an Epicbox key from that key's own
-/// messages, from `EpicWallet::peer_compat`, with what follows from it now. Times are
-/// milliseconds since the Unix epoch. Everything is `None`, 0 or false for a key nothing is
-/// known about.
-class PeerCompat {
-  /// The last message from the key that carried the LEPIC marker, or the last notice from it
-  /// this wallet accepted.
-  final PlatformInt64? lastMarkedAtMs;
-
-  /// The last slate from the key without the marker, or an invoice it sent back.
-  final PlatformInt64? lastUnmarkedAtMs;
-
-  /// The feature bits its latest marked message claimed.
-  final int claimed;
-
-  /// The feature bits that worked with it.
-  final int works;
-
-  /// When `claimed` was last written from a message that carried feature bits.
-  final PlatformInt64? featuresAtMs;
-
-  /// Derived: its last marked message is newer than its last unmarked one.
-  final bool lepic;
-
-  /// Derived: `lepic`, with a marked message in the last 30 days, so this wallet tells it of
-  /// the end of an exchange that came marked.
-  final bool notices;
-
-  /// Derived: `notices`, and no unmarked slate in the last 30 days.
-  final bool fresh;
-
-  /// Its latest marked slate claimed native slates (RFC 0003) and gave the key to seal them
-  /// to.
-  final bool nativeSlates;
-
-  const PeerCompat({
-    this.lastMarkedAtMs,
-    this.lastUnmarkedAtMs,
-    required this.claimed,
-    required this.works,
-    this.featuresAtMs,
-    required this.lepic,
-    required this.notices,
-    required this.fresh,
-    required this.nativeSlates,
-  });
-
-  @override
-  int get hashCode =>
-      lastMarkedAtMs.hashCode ^
-      lastUnmarkedAtMs.hashCode ^
-      claimed.hashCode ^
-      works.hashCode ^
-      featuresAtMs.hashCode ^
-      lepic.hashCode ^
-      notices.hashCode ^
-      fresh.hashCode ^
-      nativeSlates.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is PeerCompat &&
-          runtimeType == other.runtimeType &&
-          lastMarkedAtMs == other.lastMarkedAtMs &&
-          lastUnmarkedAtMs == other.lastUnmarkedAtMs &&
-          claimed == other.claimed &&
-          works == other.works &&
-          featuresAtMs == other.featuresAtMs &&
-          lepic == other.lepic &&
-          notices == other.notices &&
-          fresh == other.fresh &&
-          nativeSlates == other.nativeSlates;
-}
-
 /// A pairing in progress, from `EpicWallet::pairings_pending`.
 class PendingPairingView {
   final String contactId;
@@ -2768,8 +2561,8 @@ class PendingPairingView {
   final String inviteName;
   final String label;
 
-  /// When it stops waiting; it may still take a late reply or confirm at the first drain of
-  /// its relay after that, for up to an hour.
+  /// When it stops waiting; it may still take a late reply or confirm at the first read of its
+  /// relay after that, for up to an hour.
   final PlatformInt64 expiresAtMs;
   final PlatformInt64 createdAtMs;
 
@@ -2819,7 +2612,7 @@ class PendingPairingView {
 
 /// A loop of the app's that [`crate::api::wallet::EpicWallet::boost`] speeds up (ADR 0058).
 enum Poller {
-  /// The contact collect cycle: contact, pairing and epic1 delivery mailboxes on the relays.
+  /// The FFI's delivery loop: contact, pairing and epic1 delivery mailboxes on the relays.
   relays,
 
   /// The check of the node for a new block, and the refresh it starts.
@@ -3009,6 +2802,38 @@ enum RelayCancelOutcome {
   /// The transaction was never filed on the relay under an id, so there is nothing to cancel
   /// there: it was sent another way, by an older version, or restored from a backup.
   noRelayId,
+}
+
+/// A relay of the wallet's relay list as the delivery loop uses it, from
+/// `EpicWallet::delivery_state`.
+class RelayDelivery {
+  /// The relay, `domain:port`.
+  final String relay;
+
+  /// `Some(true)` when the relay offered mux/1 when a socket of this process greeted it,
+  /// `Some(false)` when it answered without it or never answered, and `None` when no socket
+  /// greeted it yet: not known. Delivery mailboxes are read and posted to only on a relay
+  /// not known to lack it.
+  final bool? usable;
+
+  /// The state of the contacts' push session on the relay, which a tick of the delivery loop
+  /// in `Online` opens, from the loop or from `EpicWallet::delivery_wake`; `None` when it has
+  /// none.
+  final EpicboxSessionState? push;
+
+  const RelayDelivery({required this.relay, this.usable, this.push});
+
+  @override
+  int get hashCode => relay.hashCode ^ usable.hashCode ^ push.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RelayDelivery &&
+          runtimeType == other.runtimeType &&
+          relay == other.relay &&
+          usable == other.usable &&
+          push == other.push;
 }
 
 /// The user's answer to the words check.
@@ -3424,11 +3249,6 @@ class SelfSentTx {
           outputCount == other.outputCount;
 }
 
-/// The dialect a send to a listener over HTTP or Tor took: `Native` to the endpoint the
-/// listener advertises, `Legacy` as every Epic wallet listener takes it. Native only while
-/// `EpicWallet::set_native_direct` is on and the listener advertises it.
-enum SendDialect { native, legacy }
-
 /// How a send chooses its inputs and change. A call given `None` uses `Smallest` with one
 /// change output.
 class SendOptions {
@@ -3643,9 +3463,8 @@ enum SlateStage {
   i3,
 }
 
-/// How a slate went out: as legacy JSON, or as a native slate (RFC 0003), over Epicbox to a
-/// payments address whose wallet claims native slates or to a listener's native endpoint.
-/// Native only while `EpicWallet::set_native_direct` is on.
+/// How a slate went out or is written: as legacy JSON, or as a native slate (RFC 0003). Sends
+/// to an Epicbox address, a listener or a file go as legacy JSON.
 enum SlateWire { legacy, native }
 
 /// The wallet's tor. Ignored in a build without tor, but still checked.
@@ -3839,6 +3658,15 @@ class TransactionDetails {
   /// it: the call then fails with `InPool` or `OnChain`.
   final bool recoverable;
 
+  /// Where the post of the payment's slate stands, when the wallet posted it to a route of
+  /// an epic1 link or a contact's mailbox. `None` before the first post and for any other
+  /// transaction.
+  final DeliveryView? delivery;
+
+  /// The wallet's pushes of the finalized transaction to the node. `None` until the first
+  /// push.
+  final NodePostView? post;
+
   const TransactionDetails({
     required this.txId,
     required this.direction,
@@ -3874,6 +3702,8 @@ class TransactionDetails {
     this.recovery,
     this.recoveryOf,
     required this.recoverable,
+    this.delivery,
+    this.post,
   });
 
   @override
@@ -3911,7 +3741,9 @@ class TransactionDetails {
       cancelledReason.hashCode ^
       recovery.hashCode ^
       recoveryOf.hashCode ^
-      recoverable.hashCode;
+      recoverable.hashCode ^
+      delivery.hashCode ^
+      post.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -3951,7 +3783,9 @@ class TransactionDetails {
           cancelledReason == other.cancelledReason &&
           recovery == other.recovery &&
           recoveryOf == other.recoveryOf &&
-          recoverable == other.recoverable;
+          recoverable == other.recoverable &&
+          delivery == other.delivery &&
+          post == other.post;
 }
 
 /// A recovery of a send: a send to this wallet that spends the send's own inputs, so the send
@@ -4178,7 +4012,7 @@ class WalletConfig {
   final int hostFeatures;
 
   /// The app's profile of its owner, sent to paired contacts in bits 16 to 31 of the pairing
-  /// features and never in a marker; LEPIC does not read a bit. 0 for none. Read when a
+  /// features; LEPIC does not read a bit. 0 for none. Read when a
   /// wallet is created, restored or opened.
   final int profile;
 
@@ -4281,7 +4115,9 @@ class WalletEvent {
   /// Why a pairing ended, for `PairingFailed`.
   final PairingFailureReason? pairingFailure;
 
-  /// `domain:port`, for `HomeRelayUnreachable` and `ContactRelayMoveRequested`.
+  /// `domain:port`, for `HomeRelayUnreachable` and `ContactRelayMoveRequested`; for
+  /// `DeliveryChanged`, the route the post went to: an Epicbox address, or the endpoint of an
+  /// `http` or `tor` entry.
   final String? relay;
 
   /// For `InvoiceFromContact`, as the contact gave them.
@@ -4294,12 +4130,6 @@ class WalletEvent {
   /// For `InvoiceFromContact`, the issuer's message as `ContactInvoiceView.message` gives it;
   /// for `NotPosted`, why the node did not take the transaction.
   final String? message;
-
-  /// For `NoticeUnmatched`: what the notice says.
-  final String? noticeKind;
-
-  /// For `NoticeUnmatched`: the notice, to pass on as it is.
-  final String? notice;
 
   /// For `ContactUpdated`: what changed.
   final ContactChange? contactChange;
@@ -4318,6 +4148,9 @@ class WalletEvent {
 
   /// For `RecoveryChanged`: the state the recovery moved to.
   final RecoveryState? recoveryState;
+
+  /// For `DeliveryChanged`: the state the post moved to.
+  final DeliveryState? deliveryState;
 
   const WalletEvent({
     required this.kind,
@@ -4345,14 +4178,13 @@ class WalletEvent {
     this.reference,
     this.expires,
     this.message,
-    this.noticeKind,
-    this.notice,
     this.contactChange,
     this.endedReason,
     this.answer,
     this.checkCode,
     this.sameCode,
     this.recoveryState,
+    this.deliveryState,
   });
 
   @override
@@ -4382,14 +4214,13 @@ class WalletEvent {
       reference.hashCode ^
       expires.hashCode ^
       message.hashCode ^
-      noticeKind.hashCode ^
-      notice.hashCode ^
       contactChange.hashCode ^
       endedReason.hashCode ^
       answer.hashCode ^
       checkCode.hashCode ^
       sameCode.hashCode ^
-      recoveryState.hashCode;
+      recoveryState.hashCode ^
+      deliveryState.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -4421,14 +4252,13 @@ class WalletEvent {
           reference == other.reference &&
           expires == other.expires &&
           message == other.message &&
-          noticeKind == other.noticeKind &&
-          notice == other.notice &&
           contactChange == other.contactChange &&
           endedReason == other.endedReason &&
           answer == other.answer &&
           checkCode == other.checkCode &&
           sameCode == other.sameCode &&
-          recoveryState == other.recoveryState;
+          recoveryState == other.recoveryState &&
+          deliveryState == other.deliveryState;
 }
 
 enum WalletEventKind {
@@ -4452,10 +4282,6 @@ enum WalletEventKind {
   /// The stream fell behind and `missed` events were dropped. Refresh to catch up.
   missed,
 
-  /// An invoice from an allowed sender is waiting to be paid or declined: `slate_id` and
-  /// `amount` are set. Nothing was paid.
-  invoiceReceived,
-
   /// An invoice this wallet issued was paid and finalized: `tx_id` and `slate_id` are set.
   /// Its posting follows as `Transaction`.
   invoiceFinalized,
@@ -4477,13 +4303,6 @@ enum WalletEventKind {
   /// this wallet already paid, `tx_id` names the payment: offer the user
   /// `cancel_transaction`; nothing was cancelled.
   invoiceWithdrawn,
-
-  /// A payer sent back unpaid an invoice this wallet issued, as a wallet that does not pay
-  /// invoices does: `tx_id` and `slate_id` name the invoice. The payer is recorded as not
-  /// paying invoices. Nothing changed; cancel the invoice with `cancel_transaction`. A bounce
-  /// redelivered before its relay message was settled raises this again for the same
-  /// `tx_id`; treat a repeat as the same bounce.
-  invoiceBounced,
 
   /// A split or consolidation was stored and finalized: `tx_id` names its outgoing
   /// transaction, `account` and `amount` are set. Nothing was received from anyone, so
@@ -4533,7 +4352,7 @@ enum WalletEventKind {
   /// `contact_id` is set.
   contactUpdated,
 
-  /// A contact's relay did not answer; collecting from it backs off: `relay` is set,
+  /// A contact's relay did not answer; reading from it backs off: `relay` is set,
   /// `domain:port`. Turn "Delivered via" into a notice.
   homeRelayUnreachable,
 
@@ -4593,14 +4412,6 @@ enum WalletEventKind {
   /// app's choice, and `EpicWallet::cancel` keeps its own checks.
   paymentCancelled,
 
-  /// A notice arrived over Epicbox for a slate this wallet holds no transaction or invoice
-  /// of: `slate_id`, `notice_kind` (`posted`, `cancelled`, `declined` or `withdrawn`),
-  /// `sender` and `notice` are set. Another install on the same recovery phrase may hold
-  /// it: pass `sender` and `notice` over the device link to the other device, which calls
-  /// `EpicWallet::notice_apply_forwarded`. Nothing changed here, and nothing verified the
-  /// notice: never show it or act on it.
-  noticeUnmatched,
-
   /// The node did not take a finalized transaction: `tx_id`, `slate_id` and `message` (why)
   /// are set. The transaction stays finalized, its inputs locked. While the session is
   /// online, the wallet's refresh pushes it again until it is mined or its cutoff passes;
@@ -4616,9 +4427,9 @@ enum WalletEventKind {
   /// `ContactView::requested_relay` still shows the request.
   contactRelayMoveRequested,
 
-  /// Payloads from the pairing `contact_id` were left on the relay because the payloads kept
-  /// and not acknowledged fill its cap. Raised at most once per pairing in a collect. They
-  /// arrive after `EpicWallet::contact_payloads_ack` makes room.
+  /// Payloads from the pairing `contact_id` were left on the relay because the payloads kept and
+  /// not acknowledged fill its cap. Raised at most once per pairing in a tick of the delivery
+  /// loop. They arrive after `EpicWallet::contact_payloads_ack` makes room.
   contactPayloadsParked,
 
   /// The receiver of a send this wallet made refused it unanswered, as a wallet set to refuse
@@ -4638,6 +4449,13 @@ enum WalletEventKind {
   /// The recovery of a send moved to another state: `tx_id` (the send) and `recovery_state`
   /// are set. Raised once per change; read `TransactionDetails.recovery` for the rest.
   recoveryChanged,
+
+  /// The post of a payment's slate changed: `slate_id`, `relay` and `delivery_state` are set.
+  /// It went `Uncertain` (unanswered, and posted again on the same route), `Failed` (no route
+  /// took it, or its time or cutoff ran out), or from `Uncertain` to `Sent` (the same route
+  /// took it later). Raised once per change. `EpicWallet::epic1_post_next` moves an epic1
+  /// payment that is uncertain or failed to the next route of its link.
+  deliveryChanged,
 }
 
 /// An output of the wallet, from `EpicWallet::outputs`.

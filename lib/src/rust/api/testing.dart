@@ -78,7 +78,8 @@ abstract class MockChain implements RustOpaqueInterface {
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MockRelay>>
 abstract class MockRelay implements RustOpaqueInterface {
-  /// An empty relay for the addresses of `chain`.
+  /// An empty relay for the addresses of `chain`. It offers mux/1, as the public relays do,
+  /// since the contacts read their mailboxes by push.
   factory MockRelay({required Chain chain}) =>
       RustLib.instance.api.crateApiTestingMockRelayNew(chain: chain);
 

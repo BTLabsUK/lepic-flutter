@@ -63,8 +63,8 @@ class HostPolicy {
   /// Contact checks one contact gets answered in a day. From 1 to 24. Default 3.
   final int? contactCheckAnswersPerDay;
 
-  /// Times a contact mailbox message that fails for a lasting reason is kept for the next
-  /// collect before it is dropped. A failure that passes (node, relay or store not
+  /// Times a contact mailbox message that fails for a lasting reason is kept for the delivery
+  /// loop's next tick before it is dropped. A failure that passes (node, relay or store not
   /// answering, wallet locked) keeps it without counting. From 1 to 10. Default 3.
   final int? contactHoldAttempts;
 

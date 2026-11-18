@@ -193,8 +193,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Runs `poller` at most every `interval_secs` for `duration_secs` (ADR 0058) and returns
   /// the boost's id for [`EpicWallet::end_boost`]. The interval is at least 5 s and the
   /// window at most 10 min; a value outside is clamped. Several boosts of one poller run at
-  /// the shortest interval until the last one ends. It starts no loop: the app's loop asks
-  /// [`EpicWallet::poll_interval`] before each wait.
+  /// the shortest interval until the last one ends. While the delivery loop runs, a boost of
+  /// `Relays` brings its next tick forward to at most the boost's interval after the last one
+  /// and keeps its ticks at most that far apart. A boost of `Node` starts no loop: the app's
+  /// loop asks [`EpicWallet::poll_interval`] before each wait.
   BigInt boost({
     required Poller poller,
     required int durationSecs,
@@ -299,8 +301,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Follows the contact `contact_id` to the relay it asked to move to, `relay` as
   /// `ContactRelayMoveRequested` and `ContactView::requested_relay` give it (`domain:port`):
   /// messages go to its mailbox there, this wallet's mailbox for the contact moves to that
-  /// relay and the contact is told at the next collect, and the old mailbox is still
-  /// collected for seven days. Which relays to follow is the app's choice; nothing here
+  /// relay and the contact is told at the delivery loop's next tick, and the old mailbox is
+  /// still read for seven days. Which relays to follow is the app's choice; nothing here
   /// judges `relay`.
   ///
   /// Fails with `RelayMoveNotRequested` unless `relay` is the contact's `requested_relay`,
@@ -324,12 +326,12 @@ abstract class EpicWallet implements RustOpaqueInterface {
     String? appAddress,
   });
 
-  /// Asks the paired contact `contact_id` to answer with its current card. The answer is
-  /// collected as a contact update: it sets `peer_heard_at`, refreshes the card, and raises
-  /// `ContactRelayMoveRequested` when the contact moved its relay. A contact answers at most
-  /// as often as its host's policy allows (by default once an hour and three times a day);
-  /// a wallet too old to know the check drops it unanswered. Which contacts to check, and
-  /// how long to wait, are the app's.
+  /// Asks the paired contact `contact_id` to answer with its current card. The delivery loop
+  /// reads the answer as a contact update: it sets `peer_heard_at`, refreshes the card, and
+  /// raises `ContactRelayMoveRequested` when the contact moved its relay. A contact answers at
+  /// most as often as its host's policy allows (by default once an hour and three times a
+  /// day); a wallet too old to know the check drops it unanswered. Which contacts to check,
+  /// and how long to wait, are the app's.
   ///
   /// Fails with `ContactNotFound` for no such contact or one not paired, `PairingEnded` for
   /// an ended pairing, and `WrongPairingClass` for a private pairing.
@@ -359,12 +361,12 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Issues an invoice for `amount` to a paired contact, sealed with `purpose`, `reference`
   /// and the advisory `expires` (Unix seconds), and queues it for the contact's mailbox; the
   /// outbox runs once when the mode allows. The contact pays it only when it allows this
-  /// wallet's invoices; the payment comes back by collecting, finalized and posted with
-  /// `InvoiceFinalized`.
+  /// wallet's invoices; the delivery loop reads the payment, finalizes and posts it, and
+  /// raises `InvoiceFinalized`.
   ///
   /// Fails with `ContactNotFound` for a contact that is not paired or whose keys changed,
   /// and `ContactRefusesInvoices`. Offline the invoice is stored and queued, and goes out with
-  /// the next [`EpicWallet::contacts_outbox_deliver`].
+  /// the delivery loop's next tick.
   Future<IssuedInvoice> contactIssueInvoice({
     required String contactId,
     required BigInt amount,
@@ -376,10 +378,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   });
 
   /// Starts the key check between the new pairing `new` and the old pairing `old` of the
-  /// same address-book entry, for a contact that may have restored its wallet. The answer is
-  /// collected: `ContactKeysRestored` when the old keys are back (the new pairing was folded
-  /// into the old one), `ContactKeysChanged` when they are not or nothing answers within a
-  /// day (the new pairing waits for [`EpicWallet::contact_keys_resolve`]).
+  /// same address-book entry, for a contact that may have restored its wallet. The delivery
+  /// loop reads the answer: `ContactKeysRestored` when the old keys are back (the new pairing
+  /// was folded into the old one), `ContactKeysChanged` when they are not or nothing answers
+  /// within a day (the new pairing waits for [`EpicWallet::contact_keys_resolve`]).
   ///
   /// When no check may run (the new pairing is older than a day, or the old one's slot was
   /// checked in the last day) the new pairing goes to `KeysChanged` at once, as after an
@@ -449,11 +451,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// that is not one or more than 256 of them.
   Future<int> contactPayloadsAck({required List<String> ids});
 
-  /// The slate this wallet last wrote for `tx_id` as plain JSON, for a contact that cannot
-  /// open sealed text: the same transaction, never a second one. The contact's seal becomes
-  /// `Degraded`. Fails with `NoSlateToSend`.
-  Future<String> contactPlainFallback({required int txId});
-
   /// Sends `payload`, at most 64 KiB, to `contact_id`, a contact or a private pairing: sealed
   /// to its keys and signed with this pairing's, queued in the outbox and posted at once when
   /// the mode is `Online`; the outbox retries it as it retries slates and lists it with the
@@ -475,7 +472,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   });
 
   /// Sends the slate of `tx_id` sealed through the contact's mailbox: queued in the outbox
-  /// and posted once when the mode allows. The answer comes back by collecting: for an S1,
+  /// and posted once when the mode allows. The delivery loop reads the answer: for an S1,
   /// the contact's S2 is finalized and posted with a `ContactPaymentFinalized` event. A
   /// mailbox carries only sealed slates, so the contact's "Seal payments" switch does not
   /// apply here; it governs files and pastes. For a new payment prefer
@@ -485,9 +482,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `SealingOff` only when its wallet cannot open sealed slates, and `NoSlateToSend` when
   /// the transaction has no slate to send or belongs to another contact. A failure leaves
   /// the transaction as it was: `cancel_transaction` unlocks a send's inputs.
-  ///
-  /// Returns the format the slate was sealed in.
-  Future<SlateWire> contactPostSlate({
+  Future<void> contactPostSlate({
     required String contactId,
     required int txId,
     SlatePurpose? purpose,
@@ -514,9 +509,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// The slate this wallet last wrote for `tx_id` (its S1, I1, S2 or I2) sealed to the
   /// contact, as armored text for a file or a paste; the app writes the file, named as
-  /// [`sealed_file_extension`] says. An S1 or I1 goes as a native slate (`BEGINEPICTX.`, a
-  /// `.epictx` file) when `set_native_direct` is on and the contact claims native slates;
-  /// anything else is `BEGINEPICSEALED.`, a `.epicsealed` file. `purpose` defaults to a payment for an S1 and a request for an I1. Nothing is sent.
+  /// [`sealed_file_extension`] says. `purpose` defaults to a payment for an S1 and a request
+  /// for an I1. Nothing is sent.
   ///
   /// Fails with `ContactNotFound` for a contact that is not paired or whose keys changed,
   /// `SealingOff` when sealing is off for it or it cannot open sealed text, and
@@ -531,11 +525,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// payments address. The contact is checked first; then the send is built and its inputs
   /// locked as [`EpicWallet::create_send_slate`] does, and its S1 is sealed and queued for the
   /// contact's mailbox as [`EpicWallet::contact_post_slate`] queues it, posted once when the
-  /// mode allows (offline it waits for [`EpicWallet::contacts_outbox_deliver`]). The contact's
-  /// answer comes back by collecting, which finalizes and posts the payment and raises
-  /// `ContactPaymentFinalized`. `purpose` defaults to a payment. A contact that never answers
-  /// leaves the payment `Sent`: `cancel_transaction` gives it up and unlocks the inputs; if
-  /// the contact's answer arrives after that, it is refused.
+  /// mode allows (offline it waits for the delivery loop). The delivery loop reads the
+  /// contact's answer, finalizes and posts the payment and raises `ContactPaymentFinalized`.
+  /// `purpose` defaults to a payment. A contact that never answers leaves the payment `Sent`:
+  /// `cancel_transaction` gives it up and unlocks the inputs; if the contact's answer arrives
+  /// after that, it is refused.
   ///
   /// Fails, with nothing locked, with `ContactNotFound` for a contact that is not paired or
   /// whose keys changed, `SealingOff` when its wallet cannot open sealed slates, and as
@@ -587,26 +581,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// [`EpicWallet::pairings_pending`].
   Future<List<ContactView>> contacts();
 
-  /// Collects the pairing and contact mailboxes once and raises an event for what arrived:
-  /// replies and confirmations pair, contacts' payments and withdrawals are received and
-  /// answered through the outbox, their invoices wait in [`EpicWallet::contact_invoices`].
-  /// Pairings past their time end with `PairingFailed`. A relay that does not answer is listed
-  /// in `unreachable`, raises `HomeRelayUnreachable` and is tried again later, not returned as
-  /// an error. Messages are taken off a relay only once their effect is stored, so a call
-  /// cut short loses nothing.
-  ///
-  /// With `only`, just the mailboxes of those contact ids are drained, their pairings in
-  /// progress included: a cheap look at a few pairings that leaves the others' turn as it
-  /// was. The outbox and the expiry of pairings run as in a full collect.
-  ///
-  /// Fails with `ContactsOffline` or `EpicboxOff` before connecting, and with
-  /// `InvalidArgument` for an id that is not one or more than 64 of them.
-  Future<ContactCollectReport> contactsCollect({
-    required CollectTrigger trigger,
-    required ContactRelayMode relayMode,
-    List<String>? only,
-  });
-
   /// The pairings as a versioned JSON document for the app's `.wfeh` history backup. It
   /// holds no secret: the keys come from the recovery phrase. Pairings in progress are left
   /// out.
@@ -626,7 +600,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// paired contact that has not ended gets this wallet's card naming its mailbox there,
   /// once, as a contact update. Returns how many contacts were told. A contact that takes
   /// the update sees `ContactRelayMoveRequested` and follows once the app on its side
-  /// applies it. For `drain_days` (0 to 365) every collect still reads the old mailboxes:
+  /// applies it. For `drain_days` (0 to 365) every tick still reads the old mailboxes:
   /// what a contact sends there is taken, and a `contact_check` there is answered with the
   /// card naming the new mailbox, so a contact away longer than the relay keeps the update
   /// still learns of the move. The drain takes the one previous-home slot a contact has,
@@ -640,27 +614,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// than 365 days.
   Future<int> contactsMoveHome({required String relay, required int drainDays});
 
-  /// Posts every outbox entry that is due, raising `OutboxDelivered` for each that reached
-  /// its relay and `OutboxStuck` for one undelivered for a day, which stops retrying. A relay
-  /// that fails is counted, not returned.
-  ///
-  /// Fails with `ContactsOffline` or `EpicboxOff` before connecting.
-  Future<OutboxReport> contactsOutboxDeliver({
-    required ContactRelayMode relayMode,
-  });
-
-  /// Makes the contacts collect read the mailboxes of contacts on relays that offer mux/1
-  /// through push sessions of `via.group`, from the next collect on. Other relays keep their
-  /// sockets. Fails with `InvalidArgument` as [`EpicWallet::start_listener_via`] does and
-  /// with `Unsupported` when the configuration names no relay.
-  Future<void> contactsPushStart({required ListenVia via});
-
-  /// Makes the contacts collect use sockets again and lets go of its sessions. A session the
-  /// listener also uses stays for the listener.
-  Future<void> contactsPushStop();
-
   /// Gives every contact pairing that has not ended this wallet's card again, naming it
-  /// `name`, as a contact update the next collect posts; private pairings are left alone.
+  /// `name`, as a contact update the delivery loop's next tick posts; private pairings are
+  /// left alone.
   /// Returns how many were queued. Call it with `pairing_standing_invite(name)` when the
   /// user changes the name contacts see. Fails with `InvalidContactName`.
   Future<int> contactsSetOwnName({required String name});
@@ -737,6 +693,25 @@ abstract class EpicWallet implements RustOpaqueInterface {
     pin: pin,
   );
 
+  /// Each relay of the relay list, in order: the wallet's own Epicbox relay, then the meeting
+  /// relays. With each, whether it serves epic1 as far as the wallet knows, and the state of
+  /// the contacts' push session on it, `None` when it has none. A tick in `Online` opens that
+  /// session, from the loop or from [`EpicWallet::delivery_wake`]. Opens no connection.
+  List<RelayDelivery> deliveryState();
+
+  /// Runs one tick of the delivery loop now, after any tick under way, in the mode of
+  /// [`EpicWallet::set_delivery`], or `Online` when none was set. Use it for a pull to
+  /// refresh. A relay that does not answer raises `HomeRelayUnreachable` and is tried again
+  /// later, not returned as an error. Messages are taken off a relay only once their effect
+  /// is stored, so a tick cut short loses nothing.
+  ///
+  /// In `Online` the tick opens the contacts' push sessions. They stay open after the call,
+  /// with no loop running, until `set_delivery` with `Offline` or `EpicboxOff` or a lock ends
+  /// them; a switch of the Epicbox relay ends those on the old relay.
+  ///
+  /// Fails with `ContactsOffline` or `EpicboxOff` before connecting, as the mode says.
+  Future<void> deliveryWake();
+
   /// Signs a device-link `transcript` with this wallet's device-link key, an Ed25519 key of
   /// the phrase made for nothing else, under the tag `lepic/device-link/v1`, and returns the
   /// 64-byte signature. Every install of the phrase holds the same key, so
@@ -794,9 +769,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Ends the boost `id` before its window does. False when it ended already.
   bool endBoost({required BigInt id});
 
-  /// The epic1 address of the default account: its seal key and its epic1 proof key on the
-  /// wallet's network.
-  Future<String> epic1Address();
+  /// The epic1 address of the default account, index 0: its seal key and its delivery key on
+  /// the wallet's network, with the bare link to share and the text of its QR code.
+  Future<Epic1Link> epic1Address();
 
   /// The answers this wallet made for payments taken at its delivery mailboxes, each posted
   /// on the relay its payment was read from, and whether it was posted.
@@ -816,16 +791,17 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// the issuer. The address [`EpicWallet::epic1_address`] shows is there either way.
   Future<bool> epic1Issuing();
 
-  /// Issues a link: the default account's next epic1 address, asking `amount` atomic units
-  /// or, with `None`, any amount the payer chooses. A payment to it comes to the address's
-  /// delivery mailbox, which collecting reads on every relay the wallet uses. The link is open
+  /// Issues a link: the default account's next epic1 address, asking `amount` atomic units or,
+  /// with `None`, any amount the payer chooses. A payment to it comes to the address's delivery
+  /// mailbox, which the delivery loop reads on every relay the wallet uses. The link is open
   /// until it is retired and has no expiry.
   ///
   /// Fails with `InvalidArgument` for a zero amount, `Epic1TooManyOpen` when the account holds
   /// as many open links as it may, and `Epic1MessageInvalid` for a message longer than a link
   /// carries or with control characters. Making a link connects to no relay: `relay_mode`
   /// only builds the wallet's relay list, which is checked to be on the wallet's network
-  /// (`InvalidArgument`) as `lepic epic1 link` checks it; no mode refuses the call.
+  /// (`InvalidArgument`) as `lepic epic1 link` checks it; no mode refuses the call. Fails with
+  /// `Unsupported` when the configuration names no Epicbox relay.
   Future<Epic1Link> epic1LinkMake({
     BigInt? amount,
     String? message,
@@ -852,12 +828,14 @@ abstract class EpicWallet implements RustOpaqueInterface {
   Future<List<Epic1LinkView>> epic1Links();
 
   /// Pays an epic1 link `amount` atomic units, or with `None` the amount the link asks. The
-  /// payment is stored, then posted to the link's first `http` or `tor` entry, and to the
-  /// next when a post fails; a link without them is posted to the payee's delivery mailbox
-  /// on each relay of the relay list not known to lack mux/1. The payee answers on the relay
-  /// it read the payment from, or in the reply to an `http` or `tor` post. Collecting reads
-  /// the answer on the relays the payment went to and on those of the list, and finalizes it.
-  /// A second payment to a link is made while the first waits.
+  /// payment is stored, then posted to the link's first `http` or `tor` entry. A post that was
+  /// not sent, or was refused, goes to the next entry at once; one sent and not answered stays
+  /// on its entry, posted again later, until [`EpicWallet::epic1_post_next`] moves it on. A
+  /// link without such entries is posted to the payee's delivery mailbox on each relay of the
+  /// relay list not known to lack mux/1. The payee answers on the relay it read the
+  /// payment from, or in the reply to an `http` or `tor` post. The delivery loop reads the answer
+  /// on the relays the payment went to and on those of the list, and finalizes it. A second
+  /// payment to a link is made while the first waits.
   ///
   /// Fails as [`EpicWallet::epic1_link_read`] does, with `InvalidArgument` for a zero amount
   /// or none when the link asks none, `OwnRelayLocal` when the wallet's own relay is on this
@@ -880,12 +858,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required String slateId,
     required ContactRelayMode relayMode,
   });
-
-  /// Each relay of the relay list, in order, and whether it serves epic1: whether it offered
-  /// mux/1 when a socket of this process last greeted it. Opens no connection.
-  ///
-  /// Fails with `Unsupported` when the configuration names no Epicbox relay.
-  List<Epic1RelayStatus> epic1Relays();
 
   /// After a restore from the phrase: reads, once, on the wallet's own relay and on each other
   /// relay of the relay list not known to lack mux/1, the delivery mailboxes of each
@@ -1005,18 +977,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// or one that is not `finalized`, `posted` or `confirmed`.
   Future<String> finishedPayment({required int txId});
 
-  /// Forgets the pin of `origin`, as [`PeerPinView::origin`] names it, so the next native
-  /// send there takes the key the listener shows. Use it once the user confirmed that the
-  /// wallet at the origin changed its key. Returns whether there was a pin.
-  ///
-  /// Fails with `Locked` while the wallet is locked.
-  bool forgetPeerPin({required String origin});
-
-  /// Deletes what this wallet learned about every Epicbox key it has not heard from for
-  /// `older_than_days` days, and returns how many keys it forgot. A forgotten key gets no
-  /// notices until it is heard from again. Hosts call it on open with 180.
-  Future<int> forgetPeers({required int olderThanDays});
-
   /// The running HTTP listener, or `None`.
   HttpListenerInfo? httpListenerStatus();
 
@@ -1104,10 +1064,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   });
 
   /// Makes an in-person invoice for `amount` atomic units, with no payment proof, good for
-  /// `ttl_blocks` blocks past the chain tip. The app chooses the TTL: LEPIC uses 30 when
-  /// `None` and refuses one of 10 or fewer with `InvalidArgument`, as the payer stops paying
-  /// 10 blocks before the cutoff. With `Online` the code names a reply mailbox on the wallet's relay, which [`EpicWallet::contacts_collect`] then
-  /// watches until the code expires. The invoice and the code are stored.
+  /// `ttl_blocks` blocks past the chain tip. The app chooses the TTL: LEPIC uses 30 when `None`
+  /// and refuses one of 10 or fewer with `InvalidArgument`, as the payer stops paying 10 blocks
+  /// before the cutoff. With `Online` the code names a reply mailbox on the wallet's relay, which
+  /// the delivery loop then watches until the code expires. The invoice and the code are stored.
   ///
   /// Fails with `InvalidArgument` for a zero amount or a TTL of 10 blocks or fewer, and as
   /// `issue_invoice` fails.
@@ -1137,19 +1097,16 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// Posts the stored answer for the slate `slate_id` to the reply mailbox its code named,
   /// from a key used for this slate only, through the wallet's connection to relays (over
-  /// Tor when Epicbox over Tor is on). `relay_ok` says the user confirmed the mailbox
-  /// [`EpicWallet::in_person_read`] reported. Posting again is safe.
+  /// Tor when Epicbox over Tor is on). Posting again is safe.
   ///
-  /// Fails with `RelayNotConfirmed` when `relay_ok` is false, `InPersonNotFound` when no
-  /// answer is stored for the slate, `InPersonNoMailbox` when its code named no mailbox,
-  /// `ContactsOffline` or `EpicboxOff` before connecting, and `TransportFailed` when the
-  /// post failed.
+  /// Fails with `InPersonNotFound` when no answer is stored for the slate, `InPersonNoMailbox`
+  /// when its code named no mailbox, `ContactsOffline` or `EpicboxOff` before connecting, and
+  /// `TransportFailed` when the post failed.
   ///
   /// Returns the answer's check code, to show the user now and not before, and the format
   /// the answer went out in, always `Native`.
   Future<InPersonPosted> inPersonPost({
     required String slateId,
-    required bool relayOk,
     required ContactRelayMode relayMode,
   });
 
@@ -1196,8 +1153,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   });
 
   /// Takes an answer to a code this wallet showed, scanned or pasted: the envelope's bytes,
-  /// or its `BEGINEPICTX.` text as UTF-8. It is checked and stored as a collected answer is,
-  /// and nothing is finalized.
+  /// or its `BEGINEPICTX.` text as UTF-8. It is checked and stored as an answer read from a
+  /// mailbox is, and nothing is finalized.
   ///
   /// Fails with `InvalidSlate` for input that is not such an answer, `SealedForAnotherWallet`
   /// when it answers no open code of this wallet, and as the answer fails to check.
@@ -1287,14 +1244,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required String sealedPassword,
   });
 
-  /// The native slates setting as [`EpicWallet::set_native_direct`] last saved it: what the
-  /// wallet does from its next open.
-  bool nativeDirect();
-
-  /// Whether this session sends native slates to contacts that claim them: the setting as
-  /// it was when the wallet opened.
-  bool nativeDirectInUse();
-
   /// Whether the node client over Tor is on, as [`EpicWallet::set_node_over_tor`] set it.
   bool nodeOverTor();
 
@@ -1308,20 +1257,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Fails with `NodeUnreachable` when the tip or version cannot be had, `InvalidArgument`
   /// for a URL that is not one of a node, and `Locked` on a locked wallet.
   Future<NodeTip> nodeTipFor({required WalletConfig config});
-
-  /// Applies a notice another install of this wallet received for a slate it does not hold,
-  /// passed on from its `NoticeUnmatched` event with its `sender` and `notice`. It is taken
-  /// under the rules of a notice received here: only from the recorded counterparty of its
-  /// slate, `posted` only with the kernel the payment implies, and once; it raises the same
-  /// events. Returns whether it was accepted; one for a slate this wallet does not hold
-  /// either is dropped and raises nothing.
-  ///
-  /// Fails with `InvalidArgument` for a `sender` that is not an Epicbox address of this
-  /// network or a `notice` that is not one.
-  Future<bool> noticeApplyForwarded({
-    required String sender,
-    required String notice,
-  });
 
   /// The wallet's onion address, `<56 characters>.onion`, with a key of its own from the
   /// phrase (ADR 0044): it is not the payment-proof address, and a payment proof asked for
@@ -1391,8 +1326,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// Answers an invite as `name`. The pending pairing is stored first, then the reply is
   /// posted unless `by_hand` is set or the mode is not `Online`; `reply_link` is returned
-  /// either way, for "Send by hand" and for a post that failed (`posted` false).
-  /// [`EpicWallet::contacts_collect`] takes the confirmation and raises `PairingConfirmed`.
+  /// either way, for "Send by hand" and for a post that failed (`posted` false). The delivery
+  /// loop takes the confirmation and raises `PairingConfirmed`.
   ///
   /// `pairing_class` is the class the user means to answer, from the preview: an invite of the
   /// other class is refused with `WrongPairingClass` before anything is stored.
@@ -1433,7 +1368,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// Makes an invite to pair, valid for `expiry`, whose messages go through this wallet's
   /// relay. The pending pairing is stored and listed by [`EpicWallet::pairings_pending`];
-  /// [`EpicWallet::contacts_collect`] takes the reply and raises `PairingReplied`. Nothing
+  /// the delivery loop takes the reply and raises `PairingReplied`. Nothing
   /// is sent, so this works offline.
   /// The pairing's mailboxes live on `home_relay`, `domain[:port]` reached over TLS, or with
   /// `None` on the wallet's own Epicbox relay; the other side reaches them there whatever
@@ -1444,8 +1379,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   ///
   /// With `expect_address` set, the reply must prove that Epicbox address, compared by key:
   /// a reply without the proof fails `AddressProofMissing`, one proving another key
-  /// `OtherAddress`, with nothing stored, as `PairingFailed` in the collect or as the error
-  /// of `pairing_enter_link`. A reply that proves it completes the pairing Verified.
+  /// `OtherAddress`, with nothing stored, as `PairingFailed` from the delivery loop or as the
+  /// error of `pairing_enter_link`. A reply that proves it completes the pairing Verified.
   ///
   /// Fails with `InvalidArgument` for a home relay that is not `domain[:port]`
   /// or an `expect_address` that is not an Epicbox address of
@@ -1500,8 +1435,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// [`EpicWallet::pay_invoice_slate`] for the I1 file at `path`. The I2 is also written to
   /// `<path>.response`, as `epic-wallet` names it. Fails with `TransportFailed` when the file
-  /// cannot be read, or when the response cannot be written; the payment is stored then, its
-  /// I2 is in `contact_plain_fallback(tx_id)` and `cancel_transaction` gives it up.
+  /// cannot be read, or when the response cannot be written; the payment is stored then and
+  /// `cancel_transaction` gives it up.
   Future<PaidInvoiceSlate> payInvoiceFile({
     required String path,
     required BigInt amount,
@@ -1515,9 +1450,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// the fee comes on top. `minimum_confirmations`, `message` and `options` are as in
   /// `create_send_slate`. The inputs stay locked until the issuer posts the transaction or
   /// the payment is cancelled with `cancel_transaction`.
-  ///
-  /// An I1 from LEPIC may carry a reply key: `sealed_answer_to_marker` with the I1 and the
-  /// returned I2 seals the answer to it.
   ///
   /// Fails with `InvalidSlate` for text that is not an I1 or whose message signature does not
   /// verify, `AmountMismatch`, `InvoiceAlreadyPaid` for an invoice this wallet paid before,
@@ -1534,27 +1466,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     String? message,
     SendOptions? options,
   });
-
-  /// What this wallet learned about the software at the Epicbox address `address` (its key
-  /// alone counts) from that key's own messages, and what follows from it now. Reads only the
-  /// store. Fails with `InvalidArgument` for an address that does not parse or is on the other
-  /// network.
-  Future<PeerCompat> peerCompat({required String address});
-
-  /// Reports what the app learned of one of its own features with the wallet at `address`:
-  /// `bit` is one host bit (16, device forwarding, or 32, the name service); `worked` says
-  /// whether it worked. A bit the key never claimed does not start working. Sends nothing.
-  /// Fails with `InvalidArgument` for another bit or an address that does not parse.
-  Future<void> peerFeatureResult({
-    required String address,
-    required int bit,
-    required bool worked,
-  });
-
-  /// The pins of the wallet's listeners kept by native sends over HTTP and Tor, by origin.
-  ///
-  /// Fails with `Locked` while the wallet is locked.
-  List<PeerPinView> peerPins();
 
   /// How long `poller` waits before its next run, in seconds: `base_secs` with no boost,
   /// the boosts' interval while one runs, never more than `base_secs`.
@@ -1652,8 +1563,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Delivers the slate of send `tx_id` again, to the wallet listening at `url`, which may
   /// be another address or method than the first attempt, then finalizes and posts as
   /// [`EpicWallet::send_http`] does. Use it after a delivery failed. A wallet that answered
-  /// the slate before answers it again the same way. The dialect is chosen again, as
-  /// [`EpicWallet::send_http`] chooses it.
+  /// the slate before answers it again the same way.
   ///
   /// Fails with `HttpUrlInvalid` or `PlainHttpNotAllowed` for the URL, `InvalidArgument`
   /// when `tx_id` is not a send waiting for its answer, and otherwise as
@@ -1664,14 +1574,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required bool allowPlainHttp,
   });
 
-  /// As [`EpicWallet::resend_http`]; `legacy` as in [`EpicWallet::send_http_dialect`].
-  Future<HttpResentTx> resendHttpDialect({
-    required int txId,
-    required String url,
-    required bool allowPlainHttp,
-    required bool legacy,
-  });
-
   /// Delivers the slate of send `tx_id` again, to the wallet at `onion`, which may be
   /// another address or method than the first attempt, then finalizes and posts as
   /// [`EpicWallet::send_tor`] does.
@@ -1680,13 +1582,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `InvalidArgument` when `tx_id` is not a send waiting for its answer, and otherwise as
   /// [`EpicWallet::send_tor`].
   Future<HttpResentTx> resendTor({required int txId, required String onion});
-
-  /// As [`EpicWallet::resend_tor`]; `legacy` as in [`EpicWallet::send_http_dialect`].
-  Future<HttpResentTx> resendTorDialect({
-    required int txId,
-    required String onion,
-    required bool legacy,
-  });
 
   /// Whether the wallet's database was rebuilt from its seed, by a restore from the phrase or
   /// a `wallet.seed`, or by an open after a damaged or missing database, and no restore scan
@@ -1751,14 +1646,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   ///
   /// Fails with `Locked`, and with `InvalidArgument` for a payload above 32 MiB.
   Future<Uint8List> sealAppData({required List<int> payload});
-
-  /// The answer `reply` (the S2 or I2 JSON this wallet answered the plain slate `incoming`
-  /// with) sealed to the reply key `incoming` carries when it came from LEPIC, or `None`
-  /// when it carries none and the answer goes plain.
-  Future<String?> sealedAnswerToMarker({
-    required String incoming,
-    required String reply,
-  });
 
   /// Finalizes and posts the S2 or I2 in sealed text, as `finalize_slate` does.
   ///
@@ -1833,23 +1720,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// device stays direct. A tor that fails fails the send: it never goes directly instead.
   /// Otherwise the wallet is reached directly.
   ///
-  /// While native slates are on ([`EpicWallet::native_direct_in_use`]), a wallet that
-  /// advertises a native endpoint (ADR 0052) gets the slate sealed to its key there, and the
-  /// key is pinned for the URL's origin once it answered; [`EpicWallet::peer_pins`] lists the
-  /// pins. Every other wallet gets the slate as every Epic wallet takes it.
-  /// [`HttpSentTx::dialect`] says which. A native post never goes to this device. Use
-  /// [`EpicWallet::send_http_dialect`] to ask for the legacy dialect.
+  /// The other wallet gets the slate as every Epic wallet takes it.
   ///
   /// Fails, storing nothing, with `HttpUrlInvalid` or `PlainHttpNotAllowed` for the URL and
-  /// the errors of [`EpicWallet::estimate_fee`]. For an origin with a pin it fails, storing
-  /// nothing, with `PinnedNoAdvert` when the wallet there advertises no native endpoint,
-  /// `PinChanged` when it advertises another key, and `PeerProbeFailed` when it could not
-  /// be asked; [`WalletError::origin`] names the origin. A wallet advertising a native
-  /// endpoint at `localhost` or an address of this device fails, storing nothing, with
-  /// `ThisComputer` and the origin; ask for the legacy dialect. A native exchange that fails
-  /// after the send was stored fails with `ThisComputer` for a name that resolves to this
-  /// device and `NativeExchangeFailed` otherwise; [`WalletError::tx_id`] names the send,
-  /// which waits for a resend or a cancel. Fails with `TransportFailed` when the other
+  /// the errors of [`EpicWallet::estimate_fee`]. Fails with `TransportFailed` when the other
   /// wallet could not be reached, refused, or answered with something else than a slate: the
   /// send is then stored as sent with its inputs locked, so deliver it again with
   /// [`EpicWallet::resend_http`] or cancel it with [`EpicWallet::cancel_transaction`]. Fails
@@ -1863,18 +1737,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required bool allowPlainHttp,
     String? message,
     SendOptions? options,
-  });
-
-  /// As [`EpicWallet::send_http`]; `legacy` sends the slate as every Epic wallet takes it
-  /// whatever the other wallet advertises, with no pin read or kept.
-  Future<HttpSentTx> sendHttpDialect({
-    required BigInt amount,
-    required BigInt minimumConfirmations,
-    required String url,
-    required bool allowPlainHttp,
-    String? message,
-    SendOptions? options,
-    required bool legacy,
   });
 
   /// Spends the outputs `request.inputs` chooses among those with `minimum_confirmations`
@@ -1919,9 +1781,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// stops during the send fails it the same way with `TorNotRunning`. Fails as
   /// [`EpicWallet::send_http`] does when the answer could not be finalized.
   ///
-  /// The dialect is chosen, and pins are read and kept for the onion, as
-  /// [`EpicWallet::send_http`] does, with the same errors; use
-  /// [`EpicWallet::send_tor_dialect`] to ask for the legacy dialect.
+  /// The other wallet gets the slate as every Epic wallet takes it.
   ///
   /// `options` chooses the inputs and change, `Smallest` with one change output when `None`;
   /// change outputs outside 1..=10 fail with `InvalidArgument`.
@@ -1933,23 +1793,28 @@ abstract class EpicWallet implements RustOpaqueInterface {
     SendOptions? options,
   });
 
-  /// As [`EpicWallet::send_tor`]; `legacy` as in [`EpicWallet::send_http_dialect`].
-  Future<HttpSentTx> sendTorDialect({
-    required BigInt amount,
-    required BigInt minimumConfirmations,
-    required String onion,
-    String? message,
-    SendOptions? options,
-    required bool legacy,
-  });
+  /// Sets the relay mode of the delivery loop, which the app does after every open: `Online`
+  /// starts the loop, or keeps it running; `Offline` and `EpicboxOff` end it and let go of the
+  /// contacts' push sessions. Locking the wallet ends the loop and forgets the mode, so a
+  /// wallet opened again has no loop until this is called.
+  ///
+  /// The loop runs a tick at once, then every `EpicboxTuning.collect_every_s`, sooner while a
+  /// boost of `Poller::Relays` lasts. A tick claims the contact mailboxes on push sessions, takes
+  /// what arrived, raises an event for it, ends what expired and posts the outbox entries that
+  /// are due. Mail a relay pushes runs a tick at once, or a second after the last tick ended, and
+  /// so does a tick that completed a pairing. A tick that fails is logged and the next one runs
+  /// as planned. Two ticks never run at once.
+  ///
+  /// Fails with `Locked` on a locked wallet and with `Unsupported` for `Online` when the
+  /// configuration names no Epicbox relay.
+  void setDelivery({required ContactRelayMode mode});
 
   /// Turns on or off, for the listener `socket`, taking payments sealed to the wallet's epic1
   /// addresses at its native endpoint. It is off for both sockets until this turns it on:
   /// the listener then answers such a payment as one sealed to a key it does not hold, so
   /// whoever has one of the wallet's epic1 addresses cannot tell that the listener is the same
   /// wallet. The setting is kept in the wallet's directory and takes effect when the listener
-  /// next starts. It matters only with native slates on ([`EpicWallet::set_native_direct`]).
-  /// Deleting the wallet removes it.
+  /// next starts. Deleting the wallet removes it.
   ///
   /// Fails with `Io` when the setting cannot be written.
   void setEpic1AtListener({
@@ -1977,15 +1842,15 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// through tor. A send in progress finishes on its own connection.
   void setHttpOverTor({required bool enabled});
 
-  /// Sets the meeting relays: the relays of the wallet's relay list after its own Epicbox
-  /// relay, in order, each `domain[:port]` (443 when no port is given) reached over TLS. Every
-  /// call that takes a [`ContactRelayMode`] uses the list. The session holds them in memory
-  /// and has none when the wallet opens: set them after opening and again when the user
-  /// edits the list. An empty list clears them; a host given twice is kept once. A new list
-  /// takes effect at the next contact or epic1 call; a running push session gets it at the
-  /// next collect or claim. Set it before the first collect after opening: a collect or claim
-  /// without it stops watching the meeting relays' mailboxes until the next call with the
-  /// list, and a restore without it reads the wallet's own relay only.
+  /// Sets the meeting relays: the relays of the wallet's relay list after its own Epicbox relay,
+  /// in order, each `domain[:port]` (443 when no port is given) reached over TLS. Every call that
+  /// takes a [`ContactRelayMode`] uses the list. The session holds them in memory and has none
+  /// when the wallet opens: set them after opening and again when the user edits the list. An
+  /// empty list clears them; a host given twice is kept once. A new list takes effect at the next
+  /// contact or epic1 call; a running push session gets it at the delivery loop's next tick or
+  /// claim. Set it before [`EpicWallet::set_delivery`] after opening: a tick or claim without it
+  /// stops watching the meeting relays' mailboxes until the next call with the list, and a
+  /// restore without it reads the wallet's own relay only.
   ///
   /// Fails with `InvalidArgument`, changing nothing, for a host that is not a domain with an
   /// optional port other than 0, or for more than 16 hosts.
@@ -1996,16 +1861,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `summary(refresh: false)` and the balance events use it. Pass this value as the
   /// `minimum_confirmations` of a send so it spends what the balance calls spendable.
   Future<void> setMinimumConfirmations({required BigInt count});
-
-  /// Turns native slates to contacts (RFC 0003) on or off for this wallet. While it is on,
-  /// new slates to a contact that claims native slates over a pairing that is not private
-  /// go as native slates; [`ContactView`] says so in `native_slates`. It is off until this
-  /// turns it on. The setting is kept in the wallet's directory and takes effect when the
-  /// wallet next opens; [`EpicWallet::native_direct_in_use`] says what this session does.
-  /// Deleting the wallet removes it.
-  ///
-  /// Fails with `Io` when the setting cannot be written.
-  void setNativeDirect({required bool enabled});
 
   /// Says that [`EpicWallet::start_tor`] follows, so that a relay connection made before it,
   /// such as the listener's when the wallet opens, waits for tor instead of going directly.
@@ -2090,8 +1945,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// a stream that ends at once.
   Stream<ListenerEvent> startListener();
 
-  /// Like [`EpicWallet::start_listener`], reading the relay through a push session. The
-  /// session is shared with a contacts collect that uses the same `via.group`. Fails with
+  /// Like [`EpicWallet::start_listener`], reading the relay through a push session. While tor
+  /// is off the delivery loop reads the contact mailboxes through the same session. Fails with
   /// `InvalidArgument` for an empty or too long group or an interval of 0 or over a day.
   Stream<ListenerEvent> startListenerVia({required ListenVia via});
 
@@ -2144,11 +1999,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
   Future<WalletSummary> summary({required bool refresh});
 
   /// Expires what invoices left unpaid; run it from time to time, for example after
-  /// collecting. Invoices from contacts received more than `expiry_secs` ago and still
-  /// waiting are deleted, and invoices this wallet issued that long ago, to a contact or by
-  /// file, and not paid are cancelled, each with an `InvoiceExpired` event. Payments of
-  /// invoices whose time to live passed with the transaction neither on chain nor in the
-  /// node's pool are listed in `cancellable`, unchanged.
+  /// [`EpicWallet::delivery_wake`]. Invoices from contacts received more than `expiry_secs`
+  /// ago and still waiting are deleted, and invoices this wallet issued that long ago, to a
+  /// contact or by file, and not paid are cancelled, each with an `InvoiceExpired` event.
+  /// Payments of invoices whose time to live passed with the transaction neither on chain nor
+  /// in the node's pool are listed in `cancellable`, unchanged.
   ///
   /// `expiry_secs` defaults to a day and may be at most two days. Fails with
   /// `InvalidArgument` for 0 or more than two days, `NodeUnreachable` when a payment past its
