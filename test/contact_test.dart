@@ -45,22 +45,14 @@ Future<({String annaSide, String benSide})> pairContacts(
     pairingClass: PairingClass.contact,
   );
   expect(answer.posted, isTrue);
+  await anna.deliveryWake();
+  await ben.deliveryWake();
   expect(
-    (await anna.contactsCollect(
-      trigger: CollectTrigger.open,
-      relayMode: online,
-    )).paired,
-    1,
-  );
-  expect(
-    (await ben.contactsCollect(
-      trigger: CollectTrigger.open,
-      relayMode: online,
-    )).paired,
-    1,
+    (await ben.contact(contactId: answer.contactId)).status,
+    PairingStatus.paired,
   );
   // Ben says it finished as its confirm arrives; Anna hears Ben by that notice.
-  await anna.contactsCollect(trigger: CollectTrigger.open, relayMode: online);
+  await anna.deliveryWake();
   expect(
     (await anna.contact(contactId: invite.contactId)).status,
     PairingStatus.paired,
@@ -157,14 +149,8 @@ void main() {
         relayMode: online,
         pairingClass: PairingClass.contact,
       );
-      await anna.contactsCollect(
-        trigger: CollectTrigger.open,
-        relayMode: online,
-      );
-      await ben.contactsCollect(
-        trigger: CollectTrigger.pull,
-        relayMode: online,
-      );
+      await anna.deliveryWake();
+      await ben.deliveryWake();
 
       final replied = await eventWhere(
         annaEvents,
@@ -243,15 +229,14 @@ void main() {
     expect(paired.outcome, PairingLinkOutcome.paired);
     expect(paired.contactId, answer.contactId);
 
+    anna.setDelivery(mode: offline);
     await expectLater(
-      anna.contactsCollect(trigger: CollectTrigger.open, relayMode: offline),
+      anna.deliveryWake(),
       throwsWalletError(WalletErrorKind.contactsOffline),
     );
+    anna.setDelivery(mode: ContactRelayMode.epicboxOff);
     await expectLater(
-      anna.contactsCollect(
-        trigger: CollectTrigger.open,
-        relayMode: ContactRelayMode.epicboxOff,
-      ),
+      anna.deliveryWake(),
       throwsWalletError(WalletErrorKind.epicboxOff),
     );
   });
@@ -276,11 +261,8 @@ void main() {
       pairingClass: PairingClass.private,
     );
     expect(answer.posted, isTrue);
-    await phone.contactsCollect(
-      trigger: CollectTrigger.open,
-      relayMode: online,
-    );
-    await desk.contactsCollect(trigger: CollectTrigger.open, relayMode: online);
+    await phone.deliveryWake();
+    await desk.deliveryWake();
     final phoneSide = (await phone.privatePairings()).single;
     final deskSide = (await desk.privatePairings()).single;
     expect(phoneSide.sas, deskSide.sas);
@@ -301,11 +283,7 @@ void main() {
       payload: [1, 2, 3],
       relayMode: online,
     );
-    await desk.contactsCollect(
-      trigger: CollectTrigger.pull,
-      relayMode: online,
-      only: [deskSide.contactId],
-    );
+    await desk.deliveryWake();
     final kept = (await desk.contactPayloads()).single;
     expect(kept.id, id);
     expect(kept.payload, [1, 2, 3]);
@@ -315,10 +293,7 @@ void main() {
       payload: [4],
       relayMode: online,
     );
-    await phone.contactsCollect(
-      trigger: CollectTrigger.pull,
-      relayMode: online,
-    );
+    await phone.deliveryWake();
     expect((await phone.contactPayloads()).single.payload, [4]);
   });
 

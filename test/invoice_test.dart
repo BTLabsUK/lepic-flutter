@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Invoices between paired contacts on the mock chain and the mock relay: issued, paid with the
-// typed amount, declined and expired. Runs as wallet_test.dart does; from the repository root:
+// typed amount, declined and expired, and carried by the delivery loop. Runs as wallet_test.dart
+// does; from the repository root:
 //   tool/lepic.sh test
 
 import 'dart:async';
@@ -13,7 +14,7 @@ import 'package:lepic/testing.dart';
 
 import 'shipped_tuning.dart';
 
-import 'contact_test.dart' show online, pairContacts, relayDomain;
+import 'contact_test.dart' show offline, online, pairContacts, relayDomain;
 import 'wallet_test.dart'
     show
         MemoryStore,
@@ -27,9 +28,10 @@ import 'wallet_test.dart'
 /// Waits until [events] holds an event that [matches], and returns it.
 Future<WalletEvent> eventWhere(
   List<WalletEvent> events,
-  bool Function(WalletEvent) matches,
-) async {
-  final deadline = DateTime.now().add(const Duration(seconds: 10));
+  bool Function(WalletEvent) matches, {
+  Duration within = const Duration(seconds: 10),
+}) async {
+  final deadline = DateTime.now().add(within);
   while (DateTime.now().isBefore(deadline)) {
     for (final event in events) {
       if (matches(event)) return event;
@@ -145,7 +147,7 @@ void main() {
     );
   }
 
-  /// The issuer invoices 3 EPIC and the payer's collect parks it.
+  /// The issuer invoices 3 EPIC and the payer's wake reads it, where it waits.
   Future<(IssuedInvoice, ContactInvoiceView)> parked(Parties p) async {
     final issued = await p.issuer.contactIssueInvoice(
       contactId: p.issuerSide,
@@ -155,10 +157,7 @@ void main() {
       reference: 'order 42',
       relayMode: online,
     );
-    await p.payer.contactsCollect(
-      trigger: CollectTrigger.open,
-      relayMode: online,
-    );
+    await p.payer.deliveryWake();
     final waiting = await p.payer.contactInvoices();
     expect(waiting, hasLength(1));
     return (issued, waiting.single);
@@ -222,10 +221,7 @@ void main() {
       OutboxState.delivered,
     );
 
-    await p.issuer.contactsCollect(
-      trigger: CollectTrigger.open,
-      relayMode: online,
-    );
+    await p.issuer.deliveryWake();
     expect(chain.pushedCount(), 1);
     expect(
       (await p.issuer.transaction(txId: issued.txId)).status,
@@ -254,12 +250,9 @@ void main() {
         minimumConfirmations: BigInt.one,
         relayMode: online,
       );
-      // Paid, but the issuer has not collected the payment yet.
+      // Paid, but the issuer has not read the payment yet: its wake below does.
       expect((await invoiceOutput()).category, OutputCategory.unpaidInvoice);
-      await p.issuer.contactsCollect(
-        trigger: CollectTrigger.open,
-        relayMode: online,
-      );
+      await p.issuer.deliveryWake();
 
       expect(
         (await invoiceOutput()).category,
@@ -293,11 +286,8 @@ void main() {
       p.payer.contactDeclineInvoice(slateId: 'not-a-slate-id'),
       throwsWalletError(WalletErrorKind.invalidArgument),
     );
-    await p.payer.contactsOutboxDeliver(relayMode: online);
-    await p.issuer.contactsCollect(
-      trigger: CollectTrigger.open,
-      relayMode: online,
-    );
+    await p.payer.deliveryWake();
+    await p.issuer.deliveryWake();
     final declined = await eventWhere(
       p.issuerEvents,
       (e) => e.kind == WalletEventKind.invoiceDeclined,
@@ -319,10 +309,7 @@ void main() {
       purpose: SlatePurpose.request,
       relayMode: online,
     );
-    await p.payer.contactsCollect(
-      trigger: CollectTrigger.open,
-      relayMode: online,
-    );
+    await p.payer.deliveryWake();
     expect(await p.payer.contactInvoices(), isEmpty);
     expect(
       p.payerEvents.where((e) => e.kind == WalletEventKind.invoiceFromContact),
@@ -366,6 +353,58 @@ void main() {
     );
     expect(cancelled.slateId, issued.slateId);
     expect(cancelled.txId, issued.txId);
+  });
+
+  test('the delivery loop reads mail by push and a wake delivers the outbox', () async {
+    final p = await parties('delivery');
+    Future<void> until(bool Function() done) async {
+      final deadline = DateTime.now().add(const Duration(seconds: 10));
+      while (!done()) {
+        if (DateTime.now().isAfter(deadline)) {
+          throw TimeoutException('${p.payer.deliveryState()}');
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      }
+    }
+
+    // The pairing wakes opened the payer's push session, which stays with no loop running; the
+    // loop follows its pushes.
+    expect(p.payer.deliveryState().single.relay, '$relayDomain:443');
+    expect(p.payer.deliveryState().single.push, EpicboxSessionState.attached);
+    p.payer.setDelivery(mode: online);
+    expect(p.payer.deliveryState().single.usable, isTrue);
+    final sessionKinds = <EpicboxSessionEventKind>[];
+    final sessions = p.payer.watchEpicboxSessions().listen(
+      (event) => sessionKinds.add(event.kind),
+    );
+    addTearDown(sessions.cancel);
+    // The loop's first tick and the tick the attached session asks for must be over, so only
+    // a push can bring the mail inside the bound below.
+    await Future<void>.delayed(const Duration(seconds: 3));
+
+    final issued = await p.issuer.contactIssueInvoice(
+      contactId: p.issuerSide,
+      amount: BigInt.from(epic),
+      purpose: SlatePurpose.request,
+      relayMode: offline,
+    );
+    Future<OutboxState> state() async =>
+        (await p.issuer.contactOutbox(contactId: p.issuerSide))
+            .singleWhere((entry) => entry.slateId == issued.slateId)
+            .state;
+    expect(await state(), OutboxState.queued);
+    await p.issuer.deliveryWake();
+    expect(await state(), OutboxState.delivered);
+    final received = await eventWhere(
+      p.payerEvents,
+      (e) => e.kind == WalletEventKind.invoiceFromContact,
+      within: const Duration(seconds: 10),
+    );
+    expect(received.slateId, issued.slateId);
+    expect(sessionKinds, contains(EpicboxSessionEventKind.mailQueued));
+
+    p.payer.setDelivery(mode: offline);
+    await until(() => p.payer.deliveryState().single.push == null);
   });
 
   test('errors of the invoice calls carry their stable codes', () async {

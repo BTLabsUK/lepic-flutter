@@ -172,14 +172,8 @@ const errorCodes = {
   WalletErrorKind.pairingKindDiffers: 91,
   WalletErrorKind.relayMoveNotRequested: 92,
   WalletErrorKind.inPersonNotFound: 93,
-  WalletErrorKind.relayNotConfirmed: 94,
   WalletErrorKind.inPersonNoMailbox: 95,
   WalletErrorKind.urCodeIncomplete: 96,
-  WalletErrorKind.pinnedNoAdvert: 97,
-  WalletErrorKind.pinChanged: 98,
-  WalletErrorKind.peerProbeFailed: 99,
-  WalletErrorKind.nativeExchangeFailed: 100,
-  WalletErrorKind.thisComputer: 101,
   WalletErrorKind.savedTransaction: 102,
   WalletErrorKind.epic1CannotPay: 103,
   WalletErrorKind.epic1NoMoreRelays: 104,
@@ -2210,5 +2204,121 @@ void main() {
     ]) {
       expect(bundle, isNot(contains(secret)));
     }
+  });
+
+  test('a send the network never took is recovered', () async {
+    final (alice, bob, _) = await fundedPair('recover');
+    final s1 = await alice.createSendSlate(
+      amount: BigInt.from(epic),
+      minimumConfirmations: BigInt.one,
+    );
+    final s2 = await bob.receiveSlate(slateJson: s1.json);
+    await alice.finalizeAndPost(slateJson: s2.json);
+    final posted = await alice.transaction(txId: s1.txId);
+    expect(posted.status, TxStatus.posted);
+    expect(posted.recoverable, isTrue);
+    expect(posted.recovery, isNull);
+
+    chain.setNodeUnreachable(unreachable: true);
+    await expectLater(
+      alice.recoverTransaction(txId: s1.txId),
+      throwsWalletError(WalletErrorKind.nodeUnreachable),
+    );
+    chain.setNodeUnreachable(unreachable: false);
+    final unchanged = await alice.transaction(txId: s1.txId);
+    expect(unchanged.status, TxStatus.posted);
+    expect(unchanged.recovery, isNull);
+    expect(chain.pushedCount(), 1);
+
+    final recovered = await alice.recoverTransaction(txId: s1.txId);
+    final recovery = recovered.recovery!;
+    expect(recovered.status, TxStatus.posted);
+    expect(recovered.recoverable, isFalse);
+    expect(recovery.state, RecoveryState.posted);
+    expect(recovery.error, isNull);
+    expect(recovery.confirmations, BigInt.zero);
+    expect(chain.pushedCount(), 2);
+    final sent = await alice.transaction(txId: recovery.sentTxId);
+    final received = await alice.transaction(txId: recovery.receivedTxId);
+    expect(sent.direction, TxDirection.outgoing);
+    expect(received.direction, TxDirection.incoming);
+    expect(sent.recoveryOf, s1.txId);
+    expect(received.recoveryOf, s1.txId);
+    await expectLater(
+      alice.recoverTransaction(txId: s1.txId),
+      throwsWalletError(WalletErrorKind.recoveryOpen),
+    );
+
+    // The send counts nowhere while its recovery waits for its confirmations.
+    final made = BigInt.from(10 * epic) - recovery.fee!;
+    final balance = await alice.summary(refresh: false);
+    expect(balance.locked, BigInt.zero);
+    expect(balance.awaitingFinalization, BigInt.zero);
+    expect(balance.awaitingConfirmation, made);
+    expect(balance.total, made);
+  });
+
+  test('a send the node holds is not recovered', () async {
+    final (alice, bob, _) = await fundedPair('recover-held');
+    final s1 = await alice.createSendSlate(
+      amount: BigInt.from(epic),
+      minimumConfirmations: BigInt.one,
+    );
+    final s2 = await bob.receiveSlate(slateJson: s1.json);
+    await alice.finalizeAndPost(slateJson: s2.json);
+
+    chain.minePushed();
+    await expectLater(
+      alice.recoverTransaction(txId: s1.txId),
+      throwsWalletError(WalletErrorKind.onChain),
+    );
+    expect((await alice.transaction(txId: s1.txId)).recovery, isNull);
+    expect(chain.pushedCount(), 1);
+    // The pool is asked before the chain.
+    chain.poolPushed();
+    await expectLater(
+      alice.recoverTransaction(txId: s1.txId),
+      throwsWalletError(WalletErrorKind.inPool),
+    );
+    final held = await alice.transaction(txId: s1.txId);
+    expect(held.status, TxStatus.posted);
+    expect(held.recovery, isNull);
+    expect(chain.pushedCount(), 1);
+  });
+
+  test('an epic1 address and link carry the text of their QR code', () async {
+    // A link names the wallet's relays, so the wallet needs one; making it connects to none.
+    final alice = await EpicWallet.create(
+      runtime: runtime,
+      config: WalletConfig(
+        dataDir: walletDir('epic1-qr').path,
+        chain: Chain.floonet,
+        nodeUrl: 'http://127.0.0.1:1',
+        epicboxDomain: 'epicbox.example',
+        epicboxPort: 443,
+        onionRoutes: const [],
+        tuning: shippedTuning,
+        offline: false,
+        hostFeatures: 0,
+        profile: 0,
+        torWanted: false,
+        policy: const HostPolicy(),
+      ),
+      store: lepicSecretStore(MemoryStore()),
+      password: password,
+    );
+    final address = await alice.epic1Address();
+    expect(address.qr, address.link.toUpperCase());
+
+    final made = await alice.epic1LinkMake(
+      amount: BigInt.from(2 * epic),
+      message: 'tea',
+      relayMode: ContactRelayMode.offline,
+    );
+    expect(made.link, contains('message=tea'));
+    expect(made.qr, made.qr.toLowerCase());
+    expect(made.qr, startsWith('epic:${made.address}?'));
+    expect(made.qr, contains('amount='));
+    expect(made.qr, isNot(contains('message')));
   });
 }

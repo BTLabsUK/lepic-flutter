@@ -23,6 +23,7 @@ const shippedTuning = NetTuning(
     torConnectTimeoutS: 90,
     onionDiscoveryTimeoutS: 45,
     onionDiscoveryRetryS: 600,
+    collectEveryS: 30,
   ),
   http: HttpTuning(
     headerTimeoutS: 10,
