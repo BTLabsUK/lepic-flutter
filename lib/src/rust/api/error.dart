@@ -157,10 +157,6 @@ enum WalletErrorKind {
   /// recovered. Refresh later.
   inPool,
 
-  /// The transaction is not a finalized or posted send, or no refresh has yet missed its
-  /// kernel at `TransactionDetails.releasable_from` or above. The message says which.
-  notReleasable,
-
   /// No invoice with that slate id waits to be paid or declined: it was paid, declined,
   /// deleted by a sweep, or never arrived.
   invoiceNotFound,

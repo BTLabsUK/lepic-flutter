@@ -3818,15 +3818,6 @@ class TransactionDetails {
   /// The height from which the slate may no longer be completed. `None` when it sets none.
   final BigInt? ttlCutoffHeight;
 
-  /// For a finalized or posted send, the height from which a refresh that still finds its
-  /// kernel nowhere on chain makes it releasable: 1440 blocks after it was finalized. `None`
-  /// for every other transaction.
-  final BigInt? releasableFrom;
-
-  /// Whether `release_transaction` may release the send now. A refresh at or above
-  /// `releasable_from` missed its kernel; the release asks the node once more.
-  final bool releasable;
-
   /// A send waiting for its answer whose slate no delivery attempt got to the other party
   /// yet: every attempt failed, or none finished, as when the app was killed before the
   /// first. Show it as not delivered and offer
@@ -3940,8 +3931,6 @@ class TransactionDetails {
     this.counterparty,
     this.receiveListing,
     this.ttlCutoffHeight,
-    this.releasableFrom,
-    required this.releasable,
     required this.undelivered,
     required this.messages,
     required this.flow,
@@ -3980,8 +3969,6 @@ class TransactionDetails {
       counterparty.hashCode ^
       receiveListing.hashCode ^
       ttlCutoffHeight.hashCode ^
-      releasableFrom.hashCode ^
-      releasable.hashCode ^
       undelivered.hashCode ^
       messages.hashCode ^
       flow.hashCode ^
@@ -4022,8 +4009,6 @@ class TransactionDetails {
           counterparty == other.counterparty &&
           receiveListing == other.receiveListing &&
           ttlCutoffHeight == other.ttlCutoffHeight &&
-          releasableFrom == other.releasableFrom &&
-          releasable == other.releasable &&
           undelivered == other.undelivered &&
           messages == other.messages &&
           flow == other.flow &&

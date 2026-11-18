@@ -1664,18 +1664,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// cancellation there.
   Future<RelayCancelOutcome> relayCancelTransaction({required int txId});
 
-  /// Releases a finalized or posted send the network never took, once
-  /// `TransactionDetails.releasable` says so: the send is cancelled, its inputs are unlocked
-  /// and its change is dropped. The node is asked once more first.
-  ///
-  /// If another node still holds the transaction and mines it later, the inputs are spent by
-  /// it after all, and a new send that spends them fails. A refresh within 10080 blocks of
-  /// the release then confirms the send, with a transaction event, and restores its change.
-  ///
-  /// Fails with `NotReleasable`, with `OnChain` or `InPool` when the node's chain or pool
-  /// holds the transaction, and with `NodeUnreachable` when the node cannot be asked.
-  Future<void> releaseTransaction({required int txId});
-
   /// Posts the stored final transaction of `tx_id` to the node again, at once. A refresh
   /// also pushes a `finalized` one again by itself, until it is mined or its cutoff passes.
   Future<void> repostTransaction({required int txId});
