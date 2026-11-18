@@ -884,7 +884,9 @@ Every call that may reach a relay takes a `ContactRelayMode`:
 | `epicboxOff` | the user switched Epicbox off; calls that need the relay fail with `EpicboxOff` |
 
 Calls that need the relay fail with `ContactsOffline` in `offline` mode and with `EpicboxOff` in
-`epicboxOff` mode, with nothing sent. Calls that queue a message store it and return.
+`epicboxOff` mode, with nothing sent. Calls that queue a message store it and return. The calls
+reach the relays of the wallet's relay list, its own Epicbox relay and then the meeting relays
+([The relay list](#the-relay-list)), and the home relays of contacts.
 
 ### Pairing
 
@@ -1132,10 +1134,11 @@ fails with `UrCodeIncomplete` while parts are missing.
 
 ## epic1 links
 
-An epic1 address is a payments address derived from the recovery phrase: it holds the wallet's seal
-key and its proof key for the network, and carries its own delivery mailbox, which a payer posts
-to on a relay. A link is the account's next epic1 address with what it asks: a payment, optionally
-of a fixed amount, and a message. Payer and payee both run LEPIC. [LEPIC's epic1 page](https://github.com/BTLabsUK/lepic/blob/main/docs/protocols/epic1.md)
+An epic1 address is a payments address derived from the recovery phrase: it holds a seal key and
+a delivery key for the network. The delivery key is the address's mailbox, which a payer posts to
+on the relays of its relay list. A link is the account's next epic1 address with what it asks: a
+payment, optionally of a fixed amount, and a message. Payer and payee both run LEPIC.
+[LEPIC's epic1 page](https://github.com/BTLabsUK/lepic/blob/main/docs/protocols/epic1.md)
 describes the address and the link.
 
 | Side | Call | Use |
@@ -1144,34 +1147,62 @@ describes the address and the link.
 | Payee | `epic1LinkMake(amount:, message:, relayMode:)` | issues a link; a null `amount` lets the payer choose |
 | Payee | `epic1Links()`, `epic1LinkRetire(index:)` | lists the open links by the index of their address; retires the open address `index` |
 | Payee | `epic1Answers()` | the answers made for payments taken, and whether each was posted |
-| Payee | `epic1Restore(relayMode:)` | after a restore from the phrase, reads the delivery mailboxes of the account's addresses once |
-| Payer | `epic1LinkRead(link:, relayMode:)` | shows the payee, amount, message and relays; stores nothing |
-| Payer | `epic1Pay(link:, amount:, minimumConfirmations:, hostsOk:, ...)` | pays the link |
-| Payer | `epic1PostNext(slateId:, hostsOk:, relayMode:)` | posts the payment again to the next relay of the link |
+| Payee | `epic1Restore(relayMode:)` | after a restore from the phrase, reads the delivery mailboxes of each account's addresses once, on each relay of the relay list |
+| Payer | `epic1LinkRead(link:, relayMode:)` | shows the payee, amount, message and the host of an `http` or `tor` entry; stores nothing |
+| Payer | `epic1Pay(link:, amount:, minimumConfirmations:, ...)` | pays the link |
+| Payer | `epic1PostNext(slateId:, relayMode:)` | posts the payment again to the next `http` or `tor` entry of the link |
+| Both | `setMeetingRelays(hosts:)`, `meetingRelays()` | sets and reads the meeting relays of the relay list |
+| Both | `epic1Relays()` | each relay of the relay list and whether it serves epic1 |
 
 `epic1LinkMake` returns an `Epic1Link` with the `link` text (`epic:epic1…`), the `address` and
 its `index` in the default account. The link stays open until `epic1LinkRetire` retires its
-address, and has no expiry. Collecting reads the delivery mailbox of every open address on every
-relay the wallet uses. Making a link connects to no relay: `relayMode` only builds the wallet's
+address, and has no expiry. Collecting reads the delivery mailbox of every open address on each
+relay of the relay list. Making a link connects to no relay: `relayMode` only builds the wallet's
 relay list. `epic1LinkMake` fails with `Epic1TooManyOpen` when the account holds as many open links
 as it may, `Epic1MessageInvalid` for a message longer than a link carries or with control
 characters, and `InvalidArgument` for a zero amount or a relay list of another network.
 `epic1LinkRetire` fails with `Epic1NotFound` for index 0, the public address, and for an index
 that is not open.
 
-The payer reads the link first and shows the user every relay in `Epic1LinkRead.hosts`. The user
-confirms them, and `epic1Pay` takes `hostsOk: true`. Without it the call fails with
-`RelayNotConfirmed`, and with `OwnRelayLocal` when the wallet's own relay, which holds the
-payment's reply mailbox, is on this device. The payment goes to the first relay of the link, to the next when a post fails,
-at most three, and `Epic1Paid.attempts` lists the posts. The payment's answer arrives with
-`contactsCollect`, which finalizes it. `epic1PostNext` fails with `Epic1Finalized` once the payment
-is finalized and `Epic1NoMoreRelays` when every relay was tried. `epic1LinkRead` fails with
+The payer reads the link first and shows the user the amount, the payee (`Epic1LinkRead.address`)
+and, for a link with an `http` or `tor` entry, its host (`httpHost`). The user confirms, and
+`epic1Pay` pays. It fails with `OwnRelayLocal` when the wallet's own relay, which holds the
+payment's reply mailbox, is on this device. A payment to a link with `http` or `tor` entries goes
+to the first entry, to the next when a post fails, at most three. A payment to a link without them
+goes to the payee's delivery mailbox on each relay of the relay list not known to lack mux/1.
+`Epic1Paid.attempts` lists the posts. A second payment to a link is made while the first waits.
+The payment's answer arrives with `contactsCollect`, which reads it on the relays the payment went
+to and on those of the list, and finalizes it. `epic1PostNext` fails with `Epic1Finalized` once
+the payment is finalized and `Epic1NoMoreRelays` when every entry was tried. `epic1LinkRead` fails
+with
 `NotAnEpic1Link`, `Epic1WrongNetwork` or `Epic1CannotPay` for a link that names no relay this wallet
 can use.
 
-The payee answers each payment on the relay it read the payment from, during collecting.
-`epic1Answers` lists the answers with that relay (`mailbox`) and whether each was `posted`. Both
-sides write native slates (`format` is always `Native`).
+The payee answers each payment on the relay it read the payment from, during collecting, or in the
+reply to an `http` or `tor` post. `epic1Answers` lists the answers with that relay (`mailbox`) and
+whether each was `posted`. Both sides write native slates (`format` is always `Native`).
+
+### The relay list
+
+The relay list is the wallet's own Epicbox relay, then the meeting relays, in order. Delivery
+mailboxes are posted to and read on each relay of the list not known to lack mux/1, and every
+call that takes a `relayMode` uses the list. The session holds the meeting relays in memory and
+has none when the wallet opens. Call `setMeetingRelays(hosts:)` after each open, the open on a
+fresh handle after a lock included, before the first collect, and again when the user edits the
+list: a collect or claim without it stops
+watching the meeting relays' mailboxes until the next call with the list, and `epic1Restore`
+without it reads the wallet's own relay only. Each host is `domain[:port]`, 443 when no port is
+given, reached over TLS. An empty list clears the meeting relays, and a host given twice is kept
+once. A new list takes effect at the next contact or epic1 call; a running push session gets it at
+the next collect or claim. `setMeetingRelays` fails with `InvalidArgument`, changing nothing, for a
+host that is not a domain with an optional port other than 0, or for more than 16 hosts.
+
+`meetingRelays()` returns the meeting relays as set, lowercased: `domain` on port 443,
+`domain:port` on any other. `epic1Relays()` lists each relay of the relay list (`relay`,
+`domain:port`) with `usable`: true when the relay offered mux/1 when a socket of this process last
+greeted it, false when it answered without it or never answered, and null when no socket greeted
+it yet. It opens no connection, and fails with `Unsupported` when the configuration names no
+Epicbox relay.
 
 ### Sealed text
 
@@ -1444,7 +1475,6 @@ locked, and `txId` is set.
 | 110 | `epic1Finalized` | the epic1 payment was finalized already |
 | 111 | `epic1WrongNetwork` | the link or its slate is for another network |
 | 112 | `notAnEpic1Link` | the text is not an epic1 link |
-| 114 | `epic1PaymentPending` | a payment to the epic1 link waits for its answer: finalize or cancel it, or post it to the link's next relay |
 
 ## Testing
 
