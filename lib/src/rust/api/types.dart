@@ -194,11 +194,11 @@ class ContactPayloadView {
           payload == other.payload;
 }
 
-/// Whether contact calls may reach relays, as the user set the app: `Online`, `Offline`
-/// (nothing connects anywhere) or Epicbox switched off (no relay is reached, home relays of
-/// contacts included). Calls that need a relay fail with `ContactsOffline` or `EpicboxOff`
-/// before connecting.
-enum ContactRelayMode { online, offline, epicboxOff }
+/// Whether contact calls may reach relays, as the user set the app: `Online` or `Offline`
+/// (nothing connects anywhere). Calls that need a relay fail with `ContactsOffline` before
+/// connecting. Contact, device, epic1, in-person and pairing calls go through mailboxes; a
+/// switch for the classic Epicbox address does not reach them.
+enum ContactRelayMode { online, offline }
 
 /// A paired contact, from `EpicWallet::contacts` and `EpicWallet::contact`. Holds no key.
 /// Times are milliseconds since the Unix epoch.

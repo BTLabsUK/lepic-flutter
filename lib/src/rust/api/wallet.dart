@@ -389,7 +389,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// way it returns `Sent` and sends nothing.
   ///
   /// Fails with `ContactNotFound` unless both are paired and differ, `KeyCheckRefused` when
-  /// the new pairing's check already ended, and `ContactsOffline` or `EpicboxOff`.
+  /// the new pairing's check already ended, and `ContactsOffline`.
   Future<KeyCheckStart> contactKeyCheck({
     required String new_,
     required String old,
@@ -414,8 +414,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// payment still waits for the contact. The contact treats a repeat as the same message.
   ///
   /// Fails with `NoSlateToSend` for an id the outbox does not hold or whose transaction
-  /// finished, was cancelled or expired, `ContactsOffline` or
-  /// `EpicboxOff`, and `TransportFailed` when the relay fails.
+  /// finished, was cancelled or expired, `ContactsOffline`, and
+  /// `TransportFailed` when the relay fails.
   ///
   /// Returns the format the entry went out in: `Native` for a `BEGINEPICTX.` slate, `Legacy`
   /// for any other entry, including an app payload, which is no slate.
@@ -569,9 +569,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// "Remove pairing" that tells the contact: as [`EpicWallet::contact_remove`], after a
   /// signed unpaired notice to the contact's mailbox, best effort and waiting at most a few
   /// seconds for its relay, so the contact sees `ContactUnpaired` instead of sending to a
-  /// pairing nobody reads. Nothing is sent with `relay_mode` Offline or Epicbox off, for a
-  /// pairing in progress, or for one the contact removed first. Returns whether anything
-  /// was removed.
+  /// pairing nobody reads. Nothing is sent with `relay_mode` Offline, for a pairing in
+  /// progress, or for one the contact removed first. Returns whether anything was removed.
   Future<bool> contactUnpair({
     required String contactId,
     required ContactRelayMode relayMode,
@@ -706,10 +705,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// is stored, so a tick cut short loses nothing.
   ///
   /// In `Online` the tick opens the contacts' push sessions. They stay open after the call,
-  /// with no loop running, until `set_delivery` with `Offline` or `EpicboxOff` or a lock ends
+  /// with no loop running, until `set_delivery` with `Offline` or a lock ends
   /// them; a switch of the Epicbox relay ends those on the old relay.
   ///
-  /// Fails with `ContactsOffline` or `EpicboxOff` before connecting, as the mode says.
+  /// Fails with `ContactsOffline` before connecting, as the mode says.
   Future<void> deliveryWake();
 
   /// Signs a device-link `transcript` with this wallet's device-link key, an Ed25519 key of
@@ -1100,7 +1099,7 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Tor when Epicbox over Tor is on). Posting again is safe.
   ///
   /// Fails with `InPersonNotFound` when no answer is stored for the slate, `InPersonNoMailbox`
-  /// when its code named no mailbox, `ContactsOffline` or `EpicboxOff` before connecting, and
+  /// when its code named no mailbox, `ContactsOffline` before connecting, and
   /// `TransportFailed` when the post failed.
   ///
   /// Returns the answer's check code, to show the user now and not before, and the format
@@ -1794,9 +1793,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   });
 
   /// Sets the relay mode of the delivery loop, which the app does after every open: `Online`
-  /// starts the loop, or keeps it running; `Offline` and `EpicboxOff` end it and let go of the
-  /// contacts' push sessions. Locking the wallet ends the loop and forgets the mode, so a
-  /// wallet opened again has no loop until this is called.
+  /// starts the loop, or keeps it running; `Offline` ends it and lets go of the contacts' push
+  /// sessions. Locking the wallet ends the loop and forgets the mode, so a wallet opened again
+  /// has no loop until this is called.
   ///
   /// The loop runs a tick at once, then every `EpicboxTuning.collect_every_s`, sooner while a
   /// boost of `Poller::Relays` lasts. A tick claims the contact mailboxes on push sessions, takes

@@ -212,10 +212,6 @@ enum WalletErrorKind {
   /// fetched; whatever was stored stays.
   contactsOffline,
 
-  /// Epicbox is switched off, so the contact call reached no relay. Nothing was sent or
-  /// fetched; whatever was stored stays.
-  epicboxOff,
-
   /// The link, card, reply or sealed text is damaged, is not one, or is for the other
   /// network. Nothing was stored.
   invalidPairingText,
