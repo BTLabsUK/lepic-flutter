@@ -507,7 +507,7 @@ restarting the app does not reset it.
 | `withdrawalFromContact`, `sealedReceived` | a contact's payment arrived and was received |
 | `contactPaymentFinalized`, `paymentDeclined`, `paymentCancelled`, `notPosted` | the course of a payment this wallet sent |
 | `receiveSuperseded`, `paymentPosted` | news about a payment this wallet received |
-| `pairingRequested`, `pairingReplied`, `pairingConfirmed`, `pairingFailed` | pairing steps ([Contacts and pairing](#contacts-and-pairing)) |
+| `pairingReplied`, `pairingConfirmed`, `pairingFailed` | pairing steps ([Contacts and pairing](#contacts-and-pairing)) |
 | `contactUpdated`, `contactKeysRestored`, `contactKeysChanged`, `contactRelayMoveRequested`, `contactUnpaired`, `contactPayload`, `contactPayloadsParked` | changes to a contact |
 | `homeRelayUnreachable`, `outboxDelivered`, `outboxStuck` | delivery to contact mailboxes |
 | `inPersonAnswer` | an answer to an in-person code was taken |
@@ -536,8 +536,12 @@ change output.
 | `excludeOutputs` | up to 500 output commitments (66 hex characters) the send must not take; unknown ones are ignored |
 
 `estimateFee(amount:, minimumConfirmations:, options:)` returns a `FeeEstimate` (`fee`,
-`inputCount`, `change`, `locked`, `changeOutputs`) and locks nothing. A send at the same chain tip,
-with the same options and no output changed in between, charges that fee. `estimateMax` returns
+`inputCount`, `change`, `locked`, `changeOutputs`, `slateBytes`, `slateLimit`) and locks nothing. A
+send at the same chain tip, with the same options and no output changed in between, charges that
+fee. With Epicbox on, `slateBytes` predicts the size of the receiver's answer on the relay and
+`slateLimit` gives the most the relay takes in one post; both are null without Epicbox. Over the
+limit the estimate still answers, so the app can warn, and the send fails with `SlateTooLarge`.
+`SentTx` carries the same two fields for the send that went out. `estimateMax` returns
 the largest amount a send can pay; use it with `SelectionStrategy.all` to send everything.
 `estimateSendToSelf` does the same for [`sendToSelf`](#splitting-and-merging-outputs).
 
@@ -593,8 +597,12 @@ invoice it sets `senderReportedCancelledAtMs`; for the sender of a send it sets
 `receiverDeclinedAtMs`. The events `paymentCancelled`, `paymentDeclined`, `invoiceDeclined` and
 `invoiceWithdrawn` report it once. It never finalizes: a transaction already in the pool or on the
 chain is kept and still lands.
-`releaseTransaction(txId:)` frees a finalized or posted send the network never took, once
-`TransactionDetails.releasable` says so; a node that mines it later spends the inputs after all.
+`recoverTransaction(txId:)` gives up a send the network may never mine, once
+`TransactionDetails.recoverable` says it can: it pushes a send to this wallet that spends the send's
+own inputs, so the coins come back and the send can never be mined. The returned details carry the
+`recovery`; the send is `cancelled` once the recovery is done. It fails with `InPool` or `OnChain`
+when the node holds the send, `RecoveryOpen` while an earlier recovery of it is open, and
+`NotRecoverable` for a send it cannot recover.
 
 ### HTTP
 
@@ -886,7 +894,6 @@ answer, and both sides compare four emoji, the words check.
 | Way | Calls |
 |---|---|
 | Link | the inviter calls `pairingInvite(...)`, which returns an `epiccash://pair/1/...` link; the other side calls `pairingPreview(link:)`, then `pairingAccept(...)` |
-| Request | one side calls `pairingRequestSend(toAddress:, ...)`; the other lists `pairingRequests()` and answers with `pairingAccept(expectAddress:, ...)` |
 | By hand | `pairingAccept(byHand: true, ...)` returns a `replyLink` to paste to the inviter, who calls `pairingEnterLink(text:, ...)`; its confirmation goes back the same way |
 
 `pairingPreview` stores and sends nothing. It returns an `InvitePreview` with the claimed name, the
@@ -901,10 +908,6 @@ made offline. The `kind` argument of `pairingInvite` is required but ignored.
 wallet's own relay, and makes a fresh one when it is missing, answered, within a day of its expiry,
 names another relay than the wallet's or carries another name. It sends nothing. The link is
 returned on every call and is not stored by the app.
-
-`pairingRequestSend` asks a wallet that is known to run LEPIC to pair, by posting an invite that
-only that wallet can answer. It fails with `PeerNotProven` unless that address ran LEPIC lately and
-claimed pair requests. `pairingRequestDismiss(requestId:)` hides a request.
 
 After a pairing, `pairingSas(contactId:, decision:, relayMode:)` records the words check:
 `SasDecision.match` marks the contact verified, `mismatch` removes the pairing and tells the other
@@ -966,7 +969,8 @@ effect is stored.
 so. `lapsed` is set when nothing sealed from the contact opened for 90 days. `peerCaps` holds the
 capability bits of the contact's card (bit 0 opens sealed, 1 pays invoices, 2 issues invoices, 3
 fixed hint, 4 sends withdrawals), 0 before its card arrives; `contactIssueInvoice` refuses a
-contact without bit 1 with `contactRefusesInvoices`. `paymentsAddress` is
+contact without bit 1 with `contactRefusesInvoices`, and one whose words were not checked with
+`contactNotVerified`. `paymentsAddress` is
 set only when an address proof verified. `awaiting` is set while something is under way with the
 contact: a message waiting to go out, a payment not yet finished, or an invoice from it waiting
 for an answer. An app checking contacts on a timer may check only these.
@@ -999,11 +1003,15 @@ when `setNativeDirect` is on and the contact claims native slates. Otherwise it 
 
 ### Invoices between contacts
 
-`contactIssueInvoice` issues an invoice to a contact, which pays it only if it allows invoices from
-this wallet. `contactInvoices()` lists the invoices waiting for the user. `contactPayInvoice(...)`
-pays one after the user approved the amount, and `contactDeclineInvoice(slateId:)` declines it.
-Allowing invoices needs a verified contact: `contactSetAllowInvoices` fails with
-`ContactNotVerified` otherwise, and turning it off declines the contact's unpaid invoices.
+An invoice between contacts needs a verified contact on both sides. `contactIssueInvoice` issues
+an invoice to a contact whose words this wallet checked, and fails with `ContactNotVerified`
+otherwise. The contact pays it only if it verified this wallet and allows its invoices; otherwise
+it answers with a decline. `contactInvoices()` lists the invoices waiting for the user.
+`contactPayInvoice(...)` pays one after the user approved the amount, and fails with
+`ContactNotVerified` when the contact is no longer verified with invoices allowed;
+`contactDeclineInvoice(slateId:)` declines it. Allowing invoices needs a verified contact:
+`contactSetAllowInvoices` fails with `ContactNotVerified` otherwise, and turning it off declines
+the contact's unpaid invoices.
 
 ### Payloads
 
@@ -1125,44 +1133,45 @@ fails with `UrCodeIncomplete` while parts are missing.
 ## epic1 links
 
 An epic1 address is a payments address derived from the recovery phrase: it holds the wallet's seal
-key and its proof key for the network. A link to it asks for a payment, optionally of a fixed
-amount, and names mailboxes on Epicbox relays where the answer is collected. Payer and payee both
-run LEPIC. [LEPIC's epic1 page](https://github.com/BTLabsUK/lepic/blob/main/docs/protocols/epic1.md)
+key and its proof key for the network, and carries its own delivery mailbox, which a payer posts
+to on a relay. A link is the account's next epic1 address with what it asks: a payment, optionally
+of a fixed amount, and a message. Payer and payee both run LEPIC. [LEPIC's epic1 page](https://github.com/BTLabsUK/lepic/blob/main/docs/protocols/epic1.md)
 describes the address and the link.
 
 | Side | Call | Use |
 |---|---|---|
 | Payee | `epic1Address()` | the wallet's epic1 address |
-| Payee | `epic1LinkMake(amount:, message:, kind:, relays:, relayMode:)` | issues a link; a null `amount` lets the payer choose |
-| Payee | `epic1Links()`, `epic1LinkRetire(n:)` | lists the link mailboxes; frees printed link `n` |
-| Payee | `epic1Answers(relayMode:)`, `epic1PostAnswer(slateId:, relayOk:, relayMode:)` | the answers made for payments taken, and a post of one |
-| Payee | `epic1Restore(relayMode:)` | after a restore from the phrase, drains the link mailboxes once |
+| Payee | `epic1LinkMake(amount:, message:, relayMode:)` | issues a link; a null `amount` lets the payer choose |
+| Payee | `epic1Links()`, `epic1LinkRetire(index:)` | lists the open links by the index of their address; retires the open address `index` |
+| Payee | `epic1Answers()` | the answers made for payments taken, and whether each was posted |
+| Payee | `epic1Restore(relayMode:)` | after a restore from the phrase, reads the delivery mailboxes of the account's addresses once |
 | Payer | `epic1LinkRead(link:, relayMode:)` | shows the payee, amount, message and relays; stores nothing |
 | Payer | `epic1Pay(link:, amount:, minimumConfirmations:, hostsOk:, ...)` | pays the link |
 | Payer | `epic1PostNext(slateId:, hostsOk:, relayMode:)` | posts the payment again to the next relay of the link |
 
-`Epic1LinkKind` picks the mailbox lifetime. An `onScreen` link takes the next mailbox of a ring of
-50 that wraps, and the wallet drains it for seven days after it was issued or last used. A `printed`
-link holds one of 32 mailboxes until `epic1LinkRetire` frees it. `relays` names at most three
-relays, each `domain[:port]`; with an empty list the link names the wallet's own relay. A link has
-no expiry. `epic1LinkMake` fails with `PrintedLinksFull` when all 32 printed links are in use,
-`Epic1RelayInvalid` for more than three relays or one that is not a domain with an optional port or
-is on this device, `OwnRelayLocal` when the wallet's own relay is on this device,
-`Epic1MessageInvalid` for a message longer than a link carries or with control characters, and
-`InvalidArgument` for a zero amount.
+`epic1LinkMake` returns an `Epic1Link` with the `link` text (`epic:epic1…`), the `address` and
+its `index` in the default account. The link stays open until `epic1LinkRetire` retires its
+address, and has no expiry. Collecting reads the delivery mailbox of every open address on every
+relay the wallet uses. Making a link connects to no relay: `relayMode` only builds the wallet's
+relay list. `epic1LinkMake` fails with `Epic1TooManyOpen` when the account holds as many open links
+as it may, `Epic1MessageInvalid` for a message longer than a link carries or with control
+characters, and `InvalidArgument` for a zero amount or a relay list of another network.
+`epic1LinkRetire` fails with `Epic1NotFound` for index 0, the public address, and for an index
+that is not open.
 
 The payer reads the link first and shows the user every relay in `Epic1LinkRead.hosts`. The user
 confirms them, and `epic1Pay` takes `hostsOk: true`. Without it the call fails with
-`RelayNotConfirmed`. The payment goes to the first relay of the link, to the next when a post fails,
+`RelayNotConfirmed`, and with `OwnRelayLocal` when the wallet's own relay, which holds the
+payment's reply mailbox, is on this device. The payment goes to the first relay of the link, to the next when a post fails,
 at most three, and `Epic1Paid.attempts` lists the posts. The payment's answer arrives with
 `contactsCollect`, which finalizes it. `epic1PostNext` fails with `Epic1Finalized` once the payment
 is finalized and `Epic1NoMoreRelays` when every relay was tried. `epic1LinkRead` fails with
 `NotAnEpic1Link`, `Epic1WrongNetwork` or `Epic1CannotPay` for a link that names no relay this wallet
 can use.
 
-The payee shows the relay of each answer from `epic1Answers` and passes `relayOk: true` to
-`epic1PostAnswer` once the user confirmed it. Posting again is safe. Both sides write native slates
-(`format` is always `Native`).
+The payee answers each payment on the relay it read the payment from, during collecting.
+`epic1Answers` lists the answers with that relay (`mailbox`) and whether each was `posted`. Both
+sides write native slates (`format` is always `Native`).
 
 ### Sealed text
 
@@ -1352,9 +1361,8 @@ locked, and `txId` is set.
 | 12 | `paymentExpired` | the slate's time to live passed; nothing was signed or posted |
 | 18 | `notPosted` | the transaction is finalized and stored, but the node did not accept it; `repostTransaction` |
 | 23 | `changedDuringCancel` | another operation changed the transaction during the cancel; nothing was cancelled |
-| 24 | `onChain` | the node holds the kernel; the transaction cannot be cancelled or released |
+| 24 | `onChain` | the node holds the kernel; the transaction cannot be cancelled or recovered |
 | 27 | `inPool` | the node's pool holds the transaction; refresh later |
-| 28 | `notReleasable` | the transaction is not a finalized or posted send, or no refresh has missed its kernel yet |
 | 31 | `notDelivered` | the invoice or payment is stored but the relay did not take it; cancel it |
 | 45 | `changeTooSmall` | the change cannot split into the requested number of outputs |
 | 46 | `tooHeavy` | the transaction would exceed the input or output limit; send less or consolidate |
@@ -1415,10 +1423,8 @@ locked, and `txId` is set.
 | 73 | `contactRefusesInvoices` | the contact's wallet does not pay invoices |
 | 77 | `wrongPairingClass` | the invite, contact or call is of the other pairing class |
 | 82 | `addressProofMissing` | an address was given and the pairing proves none |
-| 83 | `peerNotProven` | `pairingRequestSend` to a key that did not run LEPIC lately; offer the invite |
-| 84 | `pairingInProgress` | a pairing or live request with that wallet exists; show it |
+| 84 | `pairingInProgress` | a pairing with that wallet is in progress here or waits for it; show it |
 | 85 | `pairingCrossed` | this wallet's own pairing wins under the lower-key rule; keep waiting |
-| 86 | `inviteDismissed` | the invite of a request this wallet dismissed |
 | 87 | `pairingEnded` | the pairing ended; nothing goes through it |
 | 88 | `pairingWaiting` | the contact's wallet has not been heard yet; no sealed send or invoice |
 | 91 | `pairingKindDiffers` | the card names another contact kind than the invite did |
@@ -1429,11 +1435,11 @@ locked, and `txId` is set.
 | Code | Kind | Meaning |
 |---|---|---|
 | 103 | `epic1CannotPay` | the link names no transport this wallet can use |
-| 104 | `epic1NoMoreRelays` | the payment went to every relay of the link |
-| 105 | `printedLinksFull` | all printed links are in use; retire one |
-| 106 | `epic1NotFound` | no printed link with that number, or no epic1 payment or answer for the slate |
-| 107 | `ownRelayLocal` | the wallet's relay is on this device, so no other device reaches a link to it |
-| 108 | `epic1RelayInvalid` | a relay is not a domain with an optional port, is on this device, or there are more than three |
+| 104 | `epic1NoMoreRelays` | the payment went to every transport of the link |
+| 105 | `epic1TooManyOpen` | the account holds as many open epic1 links as it may; retire one |
+| 106 | `epic1NotFound` | no open link or address has that number, no epic1 payment or answer for the slate, or the address was never handed out by this wallet |
+| 107 | `ownRelayLocal` | the wallet's relay is on this device, so no other device reaches the reply mailbox a payment names on it |
+| 108 | `epic1RelayInvalid` | a link entry is not an `http` host or onion with an optional port, its host is on this device, or there are more than three |
 | 109 | `epic1MessageInvalid` | the message is longer than a link carries or holds control characters |
 | 110 | `epic1Finalized` | the epic1 payment was finalized already |
 | 111 | `epic1WrongNetwork` | the link or its slate is for another network |
