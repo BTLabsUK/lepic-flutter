@@ -116,7 +116,6 @@ const errorCodes = {
   WalletErrorKind.foreignAppData: 25,
   WalletErrorKind.damagedAppData: 26,
   WalletErrorKind.inPool: 27,
-  WalletErrorKind.notReleasable: 28,
   WalletErrorKind.invoiceNotFound: 29,
   WalletErrorKind.amountMismatch: 30,
   WalletErrorKind.notDelivered: 31,
@@ -164,10 +163,8 @@ const errorCodes = {
   WalletErrorKind.peerInputsSpent: 80,
   WalletErrorKind.otherAddress: 81,
   WalletErrorKind.addressProofMissing: 82,
-  WalletErrorKind.peerNotProven: 83,
   WalletErrorKind.pairingInProgress: 84,
   WalletErrorKind.pairingCrossed: 85,
-  WalletErrorKind.inviteDismissed: 86,
   WalletErrorKind.pairingEnded: 87,
   WalletErrorKind.pairingWaiting: 88,
   WalletErrorKind.foreignProofAddress: 89,
@@ -186,7 +183,7 @@ const errorCodes = {
   WalletErrorKind.savedTransaction: 102,
   WalletErrorKind.epic1CannotPay: 103,
   WalletErrorKind.epic1NoMoreRelays: 104,
-  WalletErrorKind.printedLinksFull: 105,
+  WalletErrorKind.epic1TooManyOpen: 105,
   WalletErrorKind.epic1NotFound: 106,
   WalletErrorKind.ownRelayLocal: 107,
   WalletErrorKind.epic1RelayInvalid: 108,
@@ -197,6 +194,9 @@ const errorCodes = {
   WalletErrorKind.walletTooNew: 113,
   WalletErrorKind.epic1PaymentPending: 114,
   WalletErrorKind.cancelledOnRelay: 115,
+  WalletErrorKind.recoveryOpen: 116,
+  WalletErrorKind.notRecoverable: 117,
+  WalletErrorKind.slateTooLarge: 118,
 };
 
 Matcher throwsWalletError(WalletErrorKind kind) => throwsA(
@@ -2211,85 +2211,5 @@ void main() {
     ]) {
       expect(bundle, isNot(contains(secret)));
     }
-  });
-
-  /// A send Bob answered and the node took, posted at height 20, and the height from which a
-  /// refresh that misses its kernel makes it releasable.
-  Future<(EpicWallet, int, BigInt)> postedSend(String name) async {
-    final (alice, bob, _) = await fundedPair(name);
-    final s1 = await alice.createSendSlate(
-      amount: BigInt.from(epic),
-      minimumConfirmations: BigInt.one,
-    );
-    final s2 = await bob.receiveSlate(slateJson: s1.json);
-    await alice.finalizeAndPost(slateJson: s2.json);
-    final posted = await alice.transaction(txId: s1.txId);
-    expect(posted.status, TxStatus.posted);
-    return (alice, s1.txId, BigInt.from(20 + 1440));
-  }
-
-  /// The chain reaches `height` without the send, and two refreshes confirm that tip: the
-  /// first holds a tip that far ahead as pending.
-  Future<void> chainPassesWithoutIt(EpicWallet wallet, BigInt height) async {
-    chain.setHeight(height: height);
-    await wallet.summary(refresh: true);
-    await wallet.summary(refresh: true);
-  }
-
-  test('a send the network never took is released', () async {
-    final (alice, txId, from) = await postedSend('release');
-    final waiting = await alice.transaction(txId: txId);
-    expect(waiting.releasableFrom, from);
-    expect(waiting.releasable, isFalse);
-    await expectLater(
-      alice.releaseTransaction(txId: txId),
-      throwsWalletError(WalletErrorKind.notReleasable),
-    );
-
-    await chainPassesWithoutIt(alice, from);
-    expect((await alice.transaction(txId: txId)).releasable, isTrue);
-    expect((await alice.transactions()).first.releasable, isTrue);
-
-    chain.setNodeUnreachable(unreachable: true);
-    await expectLater(
-      alice.releaseTransaction(txId: txId),
-      throwsWalletError(WalletErrorKind.nodeUnreachable),
-    );
-    chain.setNodeUnreachable(unreachable: false);
-    expect((await alice.transaction(txId: txId)).status, TxStatus.posted);
-
-    await alice.releaseTransaction(txId: txId);
-    final released = await alice.transaction(txId: txId);
-    expect(released.status, TxStatus.cancelled);
-    expect(released.releasable, isFalse);
-    final balance = await alice.summary(refresh: false);
-    expect(balance.locked, BigInt.zero);
-    expect(balance.spendable, BigInt.from(10 * epic));
-  });
-
-  test('a send whose kernel reached the chain is not released', () async {
-    final (alice, txId, from) = await postedSend('release-on-chain');
-    await chainPassesWithoutIt(alice, from);
-    expect((await alice.transaction(txId: txId)).releasable, isTrue);
-    chain.minePushed();
-
-    await expectLater(
-      alice.releaseTransaction(txId: txId),
-      throwsWalletError(WalletErrorKind.onChain),
-    );
-    expect((await alice.transaction(txId: txId)).status, TxStatus.posted);
-  });
-
-  test('a send the node pool holds is not released', () async {
-    final (alice, txId, from) = await postedSend('release-in-pool');
-    await chainPassesWithoutIt(alice, from);
-    expect((await alice.transaction(txId: txId)).releasable, isTrue);
-    chain.poolPushed();
-
-    await expectLater(
-      alice.releaseTransaction(txId: txId),
-      throwsWalletError(WalletErrorKind.inPool),
-    );
-    expect((await alice.transaction(txId: txId)).status, TxStatus.posted);
   });
 }
