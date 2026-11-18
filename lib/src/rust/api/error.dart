@@ -351,20 +351,13 @@ enum WalletErrorKind {
   /// after the contact's card with a proof arrives.
   addressProofMissing,
 
-  /// `pairing_request_send` to a key that did not run LEPIC lately, answered unmarked since,
-  /// or never claimed pair requests. Nothing was sent; offer the invite instead.
-  peerNotProven,
-
-  /// A request or answer toward a wallet that already has a pairing in progress here, one
-  /// waiting for it, or a live request from it. Show that pairing or request.
+  /// A request or answer toward a wallet that already has a pairing in progress here or one
+  /// waiting for it. Show that pairing.
   pairingInProgress,
 
   /// This wallet's own pairing with the same wallet wins under the lower-key rule: keep
   /// waiting for its answer. Nothing changed.
   pairingCrossed,
-
-  /// The invite of a request this wallet dismissed. Ask for a new one.
-  inviteDismissed,
 
   /// The pairing ended: nothing new goes through it. Offer to remove it.
   pairingEnded,
@@ -440,21 +433,22 @@ enum WalletErrorKind {
   /// The epic1 link names no transport this wallet can use.
   epic1CannotPay,
 
-  /// The payment went to every relay of the link: none is left to try.
+  /// The payment went to every transport of the link: none is left to try.
   epic1NoMoreRelays,
 
-  /// All printed epic1 links are in use: retire one first.
-  printedLinksFull,
+  /// The account holds as many open epic1 links as it may: retire one first.
+  epic1TooManyOpen,
 
-  /// No printed link with that number is in use, the wallet holds no epic1 payment or answer
+  /// No open link or address has that number, the wallet holds no epic1 payment or answer
   /// for the slate, or the address was never handed out by this wallet.
   epic1NotFound,
 
-  /// The wallet's relay is on this device, so no other device reaches a link to it.
+  /// The wallet's relay is on this device, so no other device reaches the reply mailbox a
+  /// payment names on it.
   ownRelayLocal,
 
-  /// A relay named for a link is not a domain with an optional port, is on this device, or
-  /// there are more than three.
+  /// A link entry is not an `http` host or onion with an optional port, its host is on this
+  /// device, or there are more than three.
   epic1RelayInvalid,
 
   /// The message is longer than a link carries or holds control characters.
@@ -489,7 +483,12 @@ enum WalletErrorKind {
   /// The transaction cannot be recovered: it is not a send that is finalized, posted,
   /// cancelled or expired, its inputs are not all held for it, or they cannot pay the fee of
   /// the recovery. Nothing was stored.
-  notRecoverable;
+  notRecoverable,
+
+  /// The payment spends so many outputs that its slate, or the receiver's answer to it, is
+  /// longer than the Epicbox relay takes; `message` gives the size and the limit. Nothing was
+  /// stored. Consolidate the wallet's outputs or pay a smaller amount.
+  slateTooLarge;
 
   /// The stable number of this kind.
   Future<int> code() =>

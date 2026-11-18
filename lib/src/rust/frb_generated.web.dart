@@ -243,9 +243,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactKind dco_decode_box_autoadd_contact_kind(dynamic raw);
 
   @protected
-  Epic1Host dco_decode_box_autoadd_epic_1_host(dynamic raw);
-
-  @protected
   EpicboxSessionState dco_decode_box_autoadd_epicbox_session_state(dynamic raw);
 
   @protected
@@ -411,9 +408,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Epic1Link dco_decode_epic_1_link(dynamic raw);
-
-  @protected
-  Epic1LinkKind dco_decode_epic_1_link_kind(dynamic raw);
 
   @protected
   Epic1LinkRead dco_decode_epic_1_link_read(dynamic raw);
@@ -614,9 +608,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<OutboxEntryView> dco_decode_list_outbox_entry_view(dynamic raw);
 
   @protected
-  List<PairRequestView> dco_decode_list_pair_request_view(dynamic raw);
-
-  @protected
   List<PeerPinView> dco_decode_list_peer_pin_view(dynamic raw);
 
   @protected
@@ -707,9 +698,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ContactKind? dco_decode_opt_box_autoadd_contact_kind(dynamic raw);
-
-  @protected
-  Epic1Host? dco_decode_opt_box_autoadd_epic_1_host(dynamic raw);
 
   @protected
   EpicboxSessionState? dco_decode_opt_box_autoadd_epicbox_session_state(
@@ -841,9 +829,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PaidInvoiceSlate dco_decode_paid_invoice_slate(dynamic raw);
-
-  @protected
-  PairRequestView dco_decode_pair_request_view(dynamic raw);
 
   @protected
   PairingAnswer dco_decode_pairing_answer(dynamic raw);
@@ -1263,9 +1248,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ContactKind sse_decode_box_autoadd_contact_kind(SseDeserializer deserializer);
 
   @protected
-  Epic1Host sse_decode_box_autoadd_epic_1_host(SseDeserializer deserializer);
-
-  @protected
   EpicboxSessionState sse_decode_box_autoadd_epicbox_session_state(
     SseDeserializer deserializer,
   );
@@ -1477,9 +1459,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Epic1Link sse_decode_epic_1_link(SseDeserializer deserializer);
-
-  @protected
-  Epic1LinkKind sse_decode_epic_1_link_kind(SseDeserializer deserializer);
 
   @protected
   Epic1LinkRead sse_decode_epic_1_link_read(SseDeserializer deserializer);
@@ -1720,11 +1699,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  List<PairRequestView> sse_decode_list_pair_request_view(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   List<PeerPinView> sse_decode_list_peer_pin_view(SseDeserializer deserializer);
 
   @protected
@@ -1829,11 +1803,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ContactKind? sse_decode_opt_box_autoadd_contact_kind(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  Epic1Host? sse_decode_opt_box_autoadd_epic_1_host(
     SseDeserializer deserializer,
   );
 
@@ -2011,9 +1980,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PaidInvoiceSlate sse_decode_paid_invoice_slate(SseDeserializer deserializer);
-
-  @protected
-  PairRequestView sse_decode_pair_request_view(SseDeserializer deserializer);
 
   @protected
   PairingAnswer sse_decode_pairing_answer(SseDeserializer deserializer);
@@ -2508,12 +2474,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_box_autoadd_epic_1_host(
-    Epic1Host self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_box_autoadd_epicbox_session_state(
     EpicboxSessionState self,
     SseSerializer serializer,
@@ -2800,12 +2760,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_epic_1_link(Epic1Link self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_epic_1_link_kind(
-    Epic1LinkKind self,
-    SseSerializer serializer,
-  );
 
   @protected
   void sse_encode_epic_1_link_read(
@@ -3099,12 +3053,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_list_pair_request_view(
-    List<PairRequestView> self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_list_peer_pin_view(
     List<PeerPinView> self,
     SseSerializer serializer,
@@ -3233,12 +3181,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_contact_kind(
     ContactKind? self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_opt_box_autoadd_epic_1_host(
-    Epic1Host? self,
     SseSerializer serializer,
   );
 
@@ -3458,12 +3400,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_paid_invoice_slate(
     PaidInvoiceSlate self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_pair_request_view(
-    PairRequestView self,
     SseSerializer serializer,
   );
 

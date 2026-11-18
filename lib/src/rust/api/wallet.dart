@@ -798,11 +798,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// wallet's network.
   Future<String> epic1Address();
 
-  /// The answers this wallet made for payments taken at its link mailboxes, with the relay
-  /// each goes to and whether it was posted.
-  Future<List<Epic1AnswerView>> epic1Answers({
-    required ContactRelayMode relayMode,
-  });
+  /// The answers this wallet made for payments taken at its delivery mailboxes, each posted
+  /// on the relay its payment was read from, and whether it was posted.
+  Future<List<Epic1AnswerView>> epic1Answers();
 
   /// Whether the listener `socket` takes payments sealed to the wallet's epic1 addresses from
   /// its next start, as [`EpicWallet::set_epic1_at_listener`] last saved it.
@@ -818,22 +816,19 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// the issuer. The address [`EpicWallet::epic1_address`] shows is there either way.
   Future<bool> epic1Issuing();
 
-  /// Issues a link to the wallet's epic1 address, asking `amount` atomic units or, with
-  /// `None`, any amount the payer chooses. The link names its mailbox on each of `relays`,
-  /// `domain[:port]`, at most three, or on the wallet's own relay when `relays` is empty. It
-  /// has no expiry. Collecting drains an on-screen link's mailbox for seven days after it was
-  /// issued or last used, and a printed link's until it is retired.
+  /// Issues a link: the default account's next epic1 address, asking `amount` atomic units
+  /// or, with `None`, any amount the payer chooses. A payment to it comes to the address's
+  /// delivery mailbox, which collecting reads on every relay the wallet uses. The link is open
+  /// until it is retired and has no expiry.
   ///
-  /// Fails with `InvalidArgument` for a zero amount, `PrintedLinksFull` when all 32 printed
-  /// links are in use, `Epic1RelayInvalid` for more than three relays or one that is not a
-  /// domain with an optional port or is on this device, `OwnRelayLocal` when the wallet's own
-  /// relay is on this device, and `Epic1MessageInvalid` for a message longer than a link
-  /// carries or with control characters.
+  /// Fails with `InvalidArgument` for a zero amount, `Epic1TooManyOpen` when the account holds
+  /// as many open links as it may, and `Epic1MessageInvalid` for a message longer than a link
+  /// carries or with control characters. Making a link connects to no relay: `relay_mode`
+  /// only builds the wallet's relay list, which is checked to be on the wallet's network
+  /// (`InvalidArgument`) as `lepic epic1 link` checks it; no mode refuses the call.
   Future<Epic1Link> epic1LinkMake({
     BigInt? amount,
     String? message,
-    required Epic1LinkKind kind,
-    required List<String> relays,
     required ContactRelayMode relayMode,
   });
 
@@ -847,11 +842,12 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required ContactRelayMode relayMode,
   });
 
-  /// Frees the printed link `n`: its mailbox is no longer drained and the next printed link
-  /// may take it. Fails with `Epic1NotFound` when no printed link `n` is in use.
-  Future<void> epic1LinkRetire({required int n});
+  /// Retires the open address `index`, link or not: its delivery mailbox is no longer read,
+  /// and a payment to it is not taken. Fails with `Epic1NotFound` for index 0, the public
+  /// address, and for an index not open.
+  Future<void> epic1LinkRetire({required int index});
 
-  /// The link mailboxes of the default account in use, by kind and number.
+  /// The open links of the default account, by the index of their address.
   Future<List<Epic1LinkView>> epic1Links();
 
   /// Pays an epic1 link `amount` atomic units, or with `None` the amount the link asks. The payment names a reply mailbox on the wallet's own relay, is stored, then posted
@@ -873,20 +869,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required ContactRelayMode relayMode,
   });
 
-  /// Posts the answer for the payment `slate_id` to the reply mailbox the payer named.
-  /// `relay_ok` says the user confirmed the relay [`EpicWallet::epic1_answers`] showed.
-  /// Posting again is safe.
-  ///
-  /// Fails with `RelayNotConfirmed` when `relay_ok` is false, `Epic1NotFound` when no answer
-  /// is stored, and `TransportFailed` when the post failed.
-  ///
-  /// Returns the format the answer went out in, always `Native`.
-  Future<SlateWire> epic1PostAnswer({
-    required String slateId,
-    required bool relayOk,
-    required ContactRelayMode relayMode,
-  });
-
   /// Posts the stored payment `slate_id` again, the same bytes, to the relays of its link
   /// after the one it was last posted to. `hosts_ok` says the user confirmed them.
   ///
@@ -899,10 +881,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required ContactRelayMode relayMode,
   });
 
-  /// After a restore from the phrase: drains, once, all 50 on-screen and all 32 printed link
-  /// mailboxes on the wallet's own relay, and the reply mailboxes of the pending payments.
-  /// A link mailbox that held a payment is marked in use; links named on other relays are not
-  /// found. Returns how many payments were taken and answers finalized.
+  /// After a restore from the phrase: reads, once, on the wallet's own relay, the delivery
+  /// mailboxes of the default account's addresses up to 50 past the highest one paid, and
+  /// the reply mailboxes of the pending payments. An address that held a payment is open
+  /// from then on; payments on other relays are not found. Returns how many payments were
+  /// taken and answers finalized.
   ///
   /// Fails with `TransportFailed` when a drain failed.
   Future<int> epic1Restore({required ContactRelayMode relayMode});
@@ -939,8 +922,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// as [`EpicWallet::create_send_slate`], [`EpicWallet::send_file`] and
   /// [`EpicWallet::send_epicbox`] choose them, with nothing locked. Such a send at the same
   /// chain tip, with no outputs changed in between, charges this fee. Asks the node for its
-  /// tip. Fails as those sends do, for example with `NotEnoughFunds` or `NodeUnreachable`.
-  /// Pass the `options` the send will get.
+  /// tip. Fails as those sends do, for example with `NotEnoughFunds` or `NodeUnreachable`,
+  /// but not on the relay's limit: over it the estimate gives `slate_bytes` and
+  /// `slate_limit`, and the send fails with `SlateTooLarge`. Pass the `options` the send will
+  /// get.
   ///
   /// `options` chooses the inputs and change, `Smallest` with one change output when `None`;
   /// change outputs outside 1..=10 fail with `InvalidArgument`.
@@ -1398,15 +1383,13 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// `pairing_class` is the class the user means to answer, from the preview: an invite of the
   /// other class is refused with `WrongPairingClass` before anything is stored.
   ///
-  /// With `expect_address` set, from a pairing request's `from_address`, the confirmation
-  /// must prove that address, and the request is marked answered. If this wallet's own
-  /// request to the same wallet is out, the wallet with the lower key keeps its invite: when
-  /// ours wins this fails `PairingCrossed`, otherwise our request is withdrawn.
+  /// With `expect_address` set, the confirmation must prove that address. If this wallet's
+  /// own invite that expects the same wallet is out, the wallet with the lower key keeps its
+  /// invite: when ours wins this fails `PairingCrossed`, otherwise our invite is withdrawn.
   ///
   /// Fails as [`EpicWallet::pairing_preview`] does, with `AlreadyPaired` for an invite this
   /// wallet made or answered already or a live pairing with that address, `PairingInProgress`,
-  /// `PairingCrossed`, `InviteDismissed` for a request dismissed here, and
-  /// `InvalidContactName`.
+  /// `PairingCrossed` and `InvalidContactName`.
   Future<PairingAnswer> pairingAccept({
     required String link,
     required String name,
@@ -1471,31 +1454,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Fails with `InvalidPairingText` for text that is not an invite on the wallet's network,
   /// and `InviteExpired` for one past its expiry.
   Future<InvitePreview> pairingPreview({required String link});
-
-  /// Hides a request. Its invite id is remembered until the invite expires, so a copy of it
-  /// is dropped; a newer request from the same wallet shows again. Fails with
-  /// `PairingNotFound` for no live request with that id.
-  Future<void> pairingRequestDismiss({required String requestId});
-
-  /// Asks the wallet at `to_address` to pair: a new invite of its own, good for seven days,
-  /// which only that wallet can answer, posted to its payments address. The invite is kept
-  /// only when the post went through; answered, the pairing completes Verified.
-  ///
-  /// Fails with `PeerNotProven` unless that key ran LEPIC lately, answered nothing unmarked
-  /// since and claimed pair requests; `AlreadyPaired` for a live pairing with it;
-  /// `PairingInProgress` for a pairing in progress or waiting with it, or a live request from
-  /// it; `ContactsOffline`, `EpicboxOff`; `TransportFailed` when the post failed, with
-  /// nothing kept; and `InvalidArgument` for an address of another network.
-  Future<PendingPairingView> pairingRequestSend({
-    required String toAddress,
-    required String name,
-    required ContactRelayMode relayMode,
-  });
-
-  /// The live pairing requests other wallets sent, oldest first: not dismissed, answered or
-  /// expired. Answer one with [`EpicWallet::pairing_accept`], its `invite_link` and
-  /// `from_address` as `expect_address`.
-  Future<List<PairRequestView>> pairingRequests();
 
   /// Records the words check: `Match` makes the contact verified, `Mismatch` removes the
   /// pairing on this side and, when this wallet made the invite, tells the other side when
