@@ -29,6 +29,7 @@ every call.
 - [Listeners and Tor](#listeners-and-tor)
 - [Invoices](#invoices)
 - [Contacts and pairing](#contacts-and-pairing)
+- [Delivery](#delivery)
 - [QR codes and in-person transfers](#qr-codes-and-in-person-transfers)
 - [epic1 links](#epic1-links)
 - [Offline sessions](#offline-sessions)
@@ -260,9 +261,11 @@ network changes or the app returns from the background. It is synchronous, does 
 for no call or node switch; calls in flight end on their own connection. A locked wallet fails it
 with `Locked`.
 
-`boost(poller:, durationSecs:, intervalSecs:)` runs the app's `Poller.relays` collect or
-`Poller.node` check at most every `intervalSecs` (5 at least) for `durationSecs` (600 at most)
-and returns an id; `endBoost(id:)` ends it early. It starts no loop: the app's loop asks
+`boost(poller:, durationSecs:, intervalSecs:)` runs a poller at most every `intervalSecs` (5 at
+least) for `durationSecs` (600 at most) and returns an id; `endBoost(id:)` ends it early. Several
+boosts run at the shortest interval. `Poller.relays` is the session's
+[delivery loop](#delivery), which follows its boosts by itself. `Poller.node` is the app's node
+check and refresh: the boost starts no loop, and the app's loop asks
 `pollInterval(poller:, baseSecs:)` before each wait. All three are synchronous.
 
 ## Wallet lifecycle
@@ -286,6 +289,7 @@ final wallet = await EpicWallet.create(
   store: store,
   password: password,
 );
+wallet.setDelivery(mode: ContactRelayMode.online);
 final phrase = await wallet.mnemonic(password: password); // for the backup screen
 ```
 
@@ -314,12 +318,16 @@ final wallet = await EpicWallet.open(
   store: store,
   password: password,
 );
+wallet.setDelivery(mode: ContactRelayMode.online);
 ```
 
 `open` fails with `WrongPassword`, `WalletNotFound` (the store holds no vault), `ForeignWallet`,
 `WalletBusy` and `DamagedDatabase`. On `DamagedDatabase` LEPIC has renamed the database file to
 `<file>.damaged-<unix seconds>`. Opening again builds a new database from the seed, and
 `scan` without a start height then runs from genesis.
+
+An opened wallet has no [delivery loop](#delivery) until the app calls `setDelivery`. With
+meeting relays, call `setMeetingRelays(hosts:)` first ([The relay list](#the-relay-list)).
 
 Every `open` attempt counts as a failure in the store (`lepic.pin-failures`) and may wait; a right
 password clears the count ([PIN rules](#pin-rules)). Attempts of one runtime run one at a time.
@@ -353,10 +361,11 @@ transactions, including sends waiting for an answer.
 ### Lock and delete
 
 `wallet.lock()` stops the listener and any scan, wipes the root key and ends running calls with
-`Cancelled`. Every later call on the handle fails with `Locked`. Open the wallet again on a new
-handle. A call that failed with `Cancelled` at a lock may still have stored its effect: after a
-lock, read the transactions again instead of taking the failure as the outcome. A send stored as
-sent goes out again with its resend call, and one finalized is posted again with
+`Cancelled`. It ends the delivery loop and the push sessions and forgets the delivery mode. Every
+later call on the handle fails with `Locked`. To unlock, open the wallet again on a new handle and
+call `setDelivery` on it. A call that failed with `Cancelled` at a lock may still have stored its
+effect: after a lock, read the transactions again instead of taking the failure as the outcome. A
+send stored as sent goes out again with its resend call, and one finalized is posted again with
 `repostTransaction`.
 
 `deleteWallet(runtime:, config:, store:)` deletes the database in `dataDir`, the vault in the
@@ -388,7 +397,7 @@ copied.
 |---|---|
 | `epicboxAddress()` | `<key>@<domain>[:port]`; fails with `Unsupported` when the configuration names no relay |
 | `onionAddress()` | the wallet's `<56 characters>.onion` address |
-| `epic1Address()` | the wallet's epic1 address |
+| `epic1Address()` | the wallet's epic1 address as an `Epic1Link` ([epic1 links](#epic1-links)) |
 | `sealAppData(payload:)`, `openAppData(file:)` | encrypt and decrypt an app file as a `WFEH` version 1 file, 32 MiB at most; only this wallet or one restored from the same phrase opens it |
 | `nodeTip` and `nodeTipFor(config:)` | the tip and version of a node |
 
@@ -445,6 +454,7 @@ final created = await EpicWallet.createWithPin(
   pin: pin,
 );
 await appStorage.write('sealed', created.sealedPassword); // before anything else
+created.wallet.setDelivery(mode: ContactRelayMode.online);
 final phrase = await created.wallet.mnemonicWithPin(
   pin: pin,
   sealedPassword: created.sealedPassword,
@@ -502,22 +512,23 @@ restarting the app does not reset it.
 | `transport` | a transport's connection changed |
 | `missed` | the stream fell behind and `missed` events were dropped; refresh to catch up |
 | `selfSend` | a split or consolidation was stored and finalized |
-| `invoiceReceived`, `invoiceFromContact` | an invoice waits to be paid or declined |
-| `invoiceFinalized`, `invoicePosted`, `invoiceExpired`, `invoiceDeclined`, `invoiceWithdrawn`, `invoiceBounced` | the course of an invoice ([Invoices](#invoices)) |
+| `invoiceFromContact` | an invoice waits to be paid or declined |
+| `invoiceFinalized`, `invoicePosted`, `invoiceExpired`, `invoiceDeclined`, `invoiceWithdrawn` | the course of an invoice ([Invoices](#invoices)) |
 | `withdrawalFromContact`, `sealedReceived` | a contact's payment arrived and was received |
 | `contactPaymentFinalized`, `paymentDeclined`, `paymentCancelled`, `notPosted` | the course of a payment this wallet sent |
 | `receiveSuperseded`, `paymentPosted` | news about a payment this wallet received |
 | `pairingReplied`, `pairingConfirmed`, `pairingFailed` | pairing steps ([Contacts and pairing](#contacts-and-pairing)) |
 | `contactUpdated`, `contactKeysRestored`, `contactKeysChanged`, `contactRelayMoveRequested`, `contactUnpaired`, `contactPayload`, `contactPayloadsParked` | changes to a contact |
 | `homeRelayUnreachable`, `outboxDelivered`, `outboxStuck` | delivery to contact mailboxes |
+| `deliveryChanged` | the post of a payment's slate changed ([Transaction details](#transaction-details)) |
 | `inPersonAnswer` | an answer to an in-person code was taken |
-| `unknownSlate`, `noticeUnmatched`, `sealedUnopenable` | advisory events |
+| `unknownSlate`, `sealedUnopenable` | advisory events |
 
 The doc comment of each kind in `lib/src/rust/api/types.dart` lists the fields it sets.
 
-Advisory events (`unknownSlate`, `noticeUnmatched`, `sealedUnopenable`) report messages that
-nothing has verified: anyone who knows the wallet's address can cause them. Show them as
-information and never act on them or show their sender as trusted.
+Advisory events (`unknownSlate`, `sealedUnopenable`) report messages that nothing has verified:
+anyone who knows the wallet's address can cause them. Show them as information and never act on
+them or show their sender as trusted.
 
 ## Sending and receiving
 
@@ -568,7 +579,7 @@ final sent = await wallet.sendEpicbox(
   minimumConfirmations: await wallet.minimumConfirmations(),
   address: 'es1qexample...@relay.example.org',
 );
-// sent.txId, sent.slateId, sent.fee; sent.format is SlateWire.legacy or SlateWire.native
+// sent.txId, sent.slateId, sent.fee; sent.format is SlateWire.legacy
 ```
 
 A send is stored and its inputs are locked before it goes out. When delivery fails, the send stays
@@ -604,6 +615,32 @@ own inputs, so the coins come back and the send can never be mined. The returned
 when the node holds the send, `RecoveryOpen` while an earlier recovery of it is open, and
 `NotRecoverable` for a send it cannot recover.
 
+### Transaction details
+
+`TransactionDetails.delivery` (`DeliveryView`) is set once the wallet posted the payment's slate
+to a route of an epic1 link or to a contact's mailbox. Its `state` is `queued`, `sent`,
+`uncertain` (the post went unanswered and is posted again on the same route; it may have arrived)
+or `failed` (no route took it, or its time or cutoff ran out); `updatedAtMs` and `error` go with
+it. Each change raises one `deliveryChanged` event with `slateId`, `relay` and `deliveryState`.
+`epic1PostNext` moves an uncertain or failed epic1 payment to the next route of its link.
+
+`TransactionDetails.post` (`NodePostView`) holds the wallet's pushes of the finalized transaction
+to the node, and is null until the first push: `attempts`, `lastOutcome` (`accepted`, `refused`
+or `unreachable`), `lastError`, `lastAttemptAtMs`, `acceptedOnce` and `nextAttemptHeight`, the
+height from which a refresh pushes it again while it is `Finalized` or `Posted`.
+
+For an `Expired` transaction, `expiredReason` says why the wallet ended it:
+
+| `ExpiredReason` | Meaning |
+|---|---|
+| `rejectedByNode` | the node's pool refused every push of a send until its cutoff; its inputs are spendable again, and it becomes `Confirmed` if another node mines it |
+| `noAnswer` | the answer to a payment or invoice this wallet started never came before its cutoff; no kernel of it can be mined |
+| `notMined` | the transaction was answered but not mined before its cutoff; its kernel may still be mined |
+
+`post.lastError`, `delivery.error`, `recovery.error` and the `relay` of a `deliveryChanged` event
+carry a node's or a relay's text. LEPIC escapes its control characters and the characters that
+reorder or hide text, and cuts it to 256 characters.
+
 ### HTTP
 
 `sendHttp` posts to `http(s)://host[:port][/path]`. A missing port is 3415 for `http` and 443 for
@@ -611,26 +648,7 @@ when the node holds the send, `RecoveryOpen` while an earlier recovery of it is 
 the user agreed that the slate travels unencrypted, or the call fails with `PlainHttpNotAllowed`.
 Over Tor, see [Listeners and Tor](#listeners-and-tor).
 
-`HttpSentTx` has `posted` (false when the node refused the transaction), `dialect`
-(`SendDialect.native` or `legacy`) and `format`.
-
-### Native slates
-
-With `setNativeDirect(enabled: true)` a send over HTTP or Tor to a wallet that advertises a native
-endpoint is sealed to that wallet's key
-([ADR 0052](https://github.com/BTLabsUK/lepic/blob/main/docs/adr/0052-legacy-at-the-edge-native-between-lepic-wallets.md)).
-Every other wallet gets the slate as every Epic wallet takes it. The setting is stored in the
-wallet's directory and applies when the wallet next opens; `nativeDirectInUse()` says what the
-session does. `sendHttpDialect(..., legacy: true)`, `sendTorDialect` and the matching resend calls
-send the legacy form whatever the other wallet advertises.
-
-After a native exchange succeeds, the wallet pins the key for the URL's origin. `peerPins()` lists
-the pins (`PeerPinView`: `origin`, `sealKey`, `firstSeenMs`, `lastSeenMs`). A send to a pinned
-origin fails when the wallet there stops advertising (`PinnedNoAdvert`), advertises another key
-(`PinChanged`) or cannot be asked (`PeerProbeFailed`); `WalletError.origin` names the origin. After
-the user confirmed that the wallet changed its key, `forgetPeerPin(origin:)` drops the pin. A wallet
-advertising a native endpoint on `localhost` or an address of the device fails with `ThisComputer`;
-ask for the legacy dialect.
+`HttpSentTx` has `posted` (false when the node refused the transaction) and `format`.
 
 ### Receiving
 
@@ -643,7 +661,7 @@ already answered, not as a second payment. A wallet whose restore scan is pendin
 Payments over Epicbox, HTTP and Tor arrive through the [listeners](#listeners-and-tor) or
 `drainEpicbox()`, which connects once, handles every pending message and disconnects. It returns an
 `InboxReport` with counts of what was received, finalized, repeated, rejected, held on the relay,
-noticed, bounced, dropped and buffered.
+noticed, dropped and buffered.
 
 `drainEpicboxListings(listings:)` drains up to 16 name-service listings (`ListingRef`) one after
 the other on one relay connection where it can, and returns one result per listing in the
@@ -709,22 +727,18 @@ retries with backoff. Without a relay in the configuration the stream fails with
 | `connected`, `disconnected` | the relay connection |
 | `received`, `repeated` | a payment was signed and answered, or came again and was answered with the stored reply |
 | `finalized` | an answer to one of this wallet's sends was finalized and posted |
-| `invoiceBounced` | a payer sent an invoice back unpaid, as a stock `epic-wallet` does; cancel it with `cancelTransaction` |
 | `error`, `stopped` | the listener failed (`stopped` follows) or ended |
 
 ### Push sessions
 
 A relay that offers mux/1 can push mail over one shared socket instead of one socket per
-mailbox. The listener and the contacts collect can both read through such a session. A relay that
-does not offer mux/1 keeps the socket behaviour above, and its session shows `notOffered`.
+mailbox. The [delivery loop](#delivery) reads the contact mailboxes through such sessions, and so
+does a listener started with `startListenerVia(via:)`. A relay that does not offer mux/1 keeps the
+socket behaviour above, and its session shows `notOffered`.
 
 `startListenerVia(via:)` is `startListener()` reading through a session. It has the same stream,
-events and one-listener rule. `contactsPushStart(via:)` makes the contacts collect read the
-mailboxes of contacts on such relays through sessions, from the next collect on;
-`contactsPushStop()` returns it to sockets and lets go of its sessions (one the listener also
-uses stays for the listener); it does not wait for a session that is still opening. When the listener and the collect pass the same `ListenVia.group`
-they share one socket. `contactsPushStart` fails with `Unsupported` when the configuration names
-no relay.
+events and one-listener rule. While Tor is off, the delivery loop joins the listener's
+`ListenVia.group`, so both read from one session per relay.
 
 | `ListenVia` field | Meaning |
 |---|---|
@@ -739,9 +753,8 @@ holds it and a later claim names it. A session that never attached ends as `notO
 relay answers its greeting with an error, or when three greetings in a row get no answer; one that
 attached before keeps retrying.
 
-`lock()` ends the sessions and forgets the contacts setting. The host calls
-`contactsPushStart` again after each unlock; a listener is started again as before.
-A relay switch moves the contacts setting to the new relay.
+A relay switch moves the sessions to the new relay; the sessions on the old one end. `lock()` ends
+all sessions.
 
 `epicboxSessions()` (synchronous) lists the sessions of the relay in use as `EpicboxSessionView`:
 `relay` (`domain:port`), `group`, `state` and the counters `socketsOpened`, `attaches`,
@@ -760,7 +773,7 @@ switch to a wallet without a relay.
 | `EpicboxSessionEventKind` | Meaning |
 |---|---|
 | `state` | the session is in `state`: the first event of a session, then one per change |
-| `mailQueued` | the relay pushed mail for the collect or the listener; `state` is `null` |
+| `mailQueued` | the relay pushed mail for the delivery loop or the listener; `state` is `null` |
 
 ### HTTP listener
 
@@ -860,11 +873,10 @@ the issuer refuses to finalize a payment of it, from 10 blocks before that. `can
 an invoice the wallet issued withdraws it.
 
 `sweepInvoices(expirySecs:)` expires what invoices left unpaid and returns an `InvoiceSweep`. Run
-it from time to time, for example after collecting contact mail. Received invoices waiting longer
-than `expirySecs` are deleted and issued ones are cancelled, each with an `invoiceExpired` event.
-`expirySecs` defaults to a day and is at most two days. `InvoiceSweep.cancellable` lists payments
-whose time to live passed with the transaction neither on chain nor in the pool; the app offers the
-user `cancelTransaction` for them.
+it from time to time. Received invoices waiting longer than `expirySecs` are deleted and issued
+ones are cancelled, each with an `invoiceExpired` event. `expirySecs` defaults to a day and is at
+most two days. `InvoiceSweep.cancellable` lists payments whose time to live passed with the
+transaction neither on chain nor in the pool; the app offers the user `cancelTransaction` for them.
 
 ## Contacts and pairing
 
@@ -880,7 +892,7 @@ Every call that may reach a relay takes a `ContactRelayMode`:
 | Mode | Effect |
 |---|---|
 | `online` | the call may use the relay |
-| `offline` | nothing is sent; what is queued waits for `contactsOutboxDeliver` |
+| `offline` | nothing is sent; what is queued waits until the [delivery loop](#delivery) runs `online` |
 | `epicboxOff` | the user switched Epicbox off; calls that need the relay fail with `EpicboxOff` |
 
 Calls that need the relay fail with `ContactsOffline` in `offline` mode and with `EpicboxOff` in
@@ -890,8 +902,8 @@ reach the relays of the wallet's relay list, its own Epicbox relay and then the 
 
 ### Pairing
 
-An invite starts a pairing. The other side answers it, the inviter's `contactsCollect` takes the
-answer, and both sides compare four emoji, the words check.
+An invite starts a pairing. The other side answers it, the inviter's
+[delivery loop](#delivery) takes the answer, and both sides compare four emoji, the words check.
 
 | Way | Calls |
 |---|---|
@@ -933,24 +945,6 @@ phrase alone does not give access to it. `contactRemove` or `contactUnpair` remo
 the wrong class fails with `WrongPairingClass`. With `expectAddress`, the reply must prove that
 Epicbox address, or the pairing fails with `AddressProofMissing` or `OtherAddress`.
 
-### Collecting
-
-`contactsCollect(trigger:, relayMode:, only:)` reads the mailboxes once and raises an event for each
-thing that arrived. It also delivers the outbox and ends pairings past their time.
-
-| `CollectTrigger` | Mailboxes read |
-|---|---|
-| `open` | every mailbox; the app opened or resumed, or the wallet unlocked |
-| `foreground` | those of contacts with something pending |
-| `pull` | every mailbox; the user pulled to refresh |
-| `push` | every mailbox; a push wake-up |
-
-`only` limits the call to at most 64 contact ids. The returned `ContactCollectReport` counts
-mailboxes and messages, completed pairings, delivered outbox entries and quarantined messages, and
-lists `unreachable` relays. A relay that does not answer is not an error: it raises
-`homeRelayUnreachable` and is tried again later. LEPIC takes a message off a relay only after its
-effect is stored.
-
 ### The address book
 
 | Call | Use |
@@ -988,20 +982,16 @@ for an answer. An app checking contacts on a timer may check only these.
 | `contactSend(contactId:, amount:, minimumConfirmations:, ...)` | builds a send and queues its S1 sealed in the contact's mailbox |
 | `contactSealSlate(contactId:, txId:)` | seals the last slate of a transaction as text for a file or paste; sends nothing |
 | `contactPostSlate(contactId:, txId:, relayMode:)` | queues the slate of an existing transaction |
-| `contactPlainFallback(txId:)` | the slate as plain JSON, for a contact that cannot open sealed text |
 | `contactOutbox(contactId:)`, `contactOutboxResend` | the queued messages, and a repeat of one |
-| `contactsOutboxDeliver(relayMode:)` | posts every outbox entry that is due |
 
-`contactSend` checks the contact before it locks anything. The contact's answer arrives with
-`contactsCollect`, which finalizes and posts the payment and raises `contactPaymentFinalized`. A
-contact that never answers leaves the payment `Sent`: `cancelTransaction` gives it up. An outbox
-entry undelivered for a day raises `outboxStuck` and stops retrying; `contactOutboxResend` posts it
-again.
+`contactSend` checks the contact before it locks anything. It queues the S1 and posts it once when
+the mode allows; offline, the [delivery loop](#delivery) posts it. The delivery loop takes the
+contact's answer, finalizes and posts the payment and raises `contactPaymentFinalized`. A contact
+that never answers leaves the payment `Sent`: `cancelTransaction` gives it up. An outbox entry
+undelivered for a day raises `outboxStuck` and stops retrying; `contactOutboxResend` posts it again.
 
-`contactSealSlate` returns `BEGINEPICTX.` text for a native slate, which goes in a `.epictx` file,
-when `setNativeDirect` is on and the contact claims native slates. Otherwise it returns
-`BEGINEPICSEALED.` text for a `.epicsealed` file. The sealed text is opened with `sealedOpen` or
-`epictxOpen`, described in [epic1 links](#epic1-links).
+`contactSealSlate` returns `BEGINEPICSEALED.` text for a `.epicsealed` file. The sealed text is
+opened with `sealedOpen` or `epictxOpen`, described in [epic1 links](#epic1-links).
 
 ### Invoices between contacts
 
@@ -1035,7 +1025,7 @@ words check.
 | `contactsExport()`, `contactsImport(document:)` | the pairings as a JSON document, without secrets, and the reverse; at most 32 MiB |
 
 Attach a new pairing to an address-book entry that already has one, then call `contactKeyCheck`. The
-answer arrives with `contactsCollect`: `contactKeysRestored` when the old keys are back and
+delivery loop takes the answer: `contactKeysRestored` when the old keys are back and
 `contactKeysChanged` when they are not or nothing answers within a day. Until the user decides, the
 new pairing seals nothing and takes no invoices. `contactKeyCheck` returns `KeyCheckStart.sent` or
 `keysChanged`.
@@ -1054,6 +1044,65 @@ A contact message that cannot be handled yet stays in quarantine. `contactQuaran
 messages without their envelopes, `contactQuarantineDiscard(id:)` forgets one and
 `contactQuarantineRetry(id:, relayMode:)` handles one or all again. LEPIC never retries on its own.
 
+## Delivery
+
+The session posts to and reads the mailboxes of contacts, pairings, in-person codes and epic1
+addresses by itself, in a delivery loop. The loop runs once the app sets its mode, after every
+open:
+
+```dart
+wallet.setMeetingRelays(hosts: meetingRelays); // the user's meeting relays, if any
+wallet.setDelivery(mode: ContactRelayMode.online);
+```
+
+`setDelivery(mode:)` is synchronous. `online` starts the loop, or keeps it running. The loop runs
+a tick at once, then every `collectEveryS` seconds of the `epicbox` tuning after the last tick
+ended; the shipped value is 30. A tick claims the contact mailboxes on push sessions, takes what
+arrived and raises an event for it, ends what expired and posts the outbox entries that are due.
+Mail a relay pushes runs a tick at once, or a second after the last tick ended. So do a contacts
+session that attaches, when the loop starts and after each reconnect, a switch of the Epicbox
+relay, and a tick that completed a pairing. A tick that fails is logged, and the next one runs as
+planned. Two ticks never run at once. `setDelivery` fails with `Locked` on a locked wallet and
+with `Unsupported` for `online` when the configuration names no Epicbox relay.
+
+The app calls `setDelivery` again when what the loop may do changes:
+
+| Change | Call |
+|---|---|
+| the device has no network, or the app keeps it off the network | `setDelivery(mode: ContactRelayMode.offline)` |
+| the network is back | `setDelivery(mode: ContactRelayMode.online)` |
+| the user switched Epicbox off | `setDelivery(mode: ContactRelayMode.epicboxOff)` |
+
+`offline` and `epicboxOff` end the loop and let go of the contacts' push sessions. What is queued
+waits until the loop runs `online` again.
+
+`deliveryWake()` runs one tick now, after any tick under way, in the mode `setDelivery` set, or
+`online` when none was set. Use it for a pull to refresh. A relay that does not answer raises
+`homeRelayUnreachable` and is tried again later; the call does not fail for it. A message is taken
+off a relay only once its effect is stored, so a tick cut short loses nothing. In `offline` and
+`epicboxOff` mode the call fails with `ContactsOffline` or `EpicboxOff` before connecting. In
+`online` mode the tick opens the contacts' push sessions. They stay open after the call, with no
+loop running, until `setDelivery` with `offline` or `epicboxOff` or a lock ends them; a switch of
+the Epicbox relay ends those on the old relay.
+
+`deliveryState()` (synchronous) lists the relays the loop uses, in order: the wallet's own Epicbox
+relay, then the meeting relays. Each `RelayDelivery` has `relay` (`domain:port`), `usable` and
+`push`. `usable` is true when the relay offered mux/1 when a socket of this process greeted it,
+false when it answered without mux/1 or never answered, and null when no socket greeted it yet. The
+delivery mailboxes of epic1 addresses are read and posted to only on a relay not known to lack
+mux/1, so a relay with `usable == false` carries no epic1 payment. `push` is the state of the
+contacts' push session on the relay ([Push sessions](#push-sessions)), and null when it has none.
+The call opens no connection. It fails with `Unsupported` when the configuration names no Epicbox
+relay.
+
+`lock()` ends the loop and its push sessions and forgets the mode. The FFI has no unlock: the app
+opens the wallet again on a new handle, which has no loop until it calls `setMeetingRelays` and
+`setDelivery` again.
+
+`boost(poller: Poller.relays, durationSecs:, intervalSecs:)` runs the loop's ticks at most every
+`intervalSecs` for `durationSecs`. The loop follows the boost by itself and returns to
+`collectEveryS` when it ends. Mail a relay pushes is read as it arrives, with or without a boost.
+
 ## QR codes and in-person transfers
 
 Two phones next to each other can make a payment with no relay in the middle for the code itself.
@@ -1067,8 +1116,8 @@ describes the format.
 | 1 | `inPersonSend(amount:, minimumConfirmations:, relayMode:)` for a send, or `inPersonInvoice(amount:, relayMode:)` for an invoice, returns an `InPersonCode` | |
 | 2 | | `inPersonRead(code:, minimumConfirmations:, relayMode:)` shows what the code asks for; nothing is stored |
 | 3 | | after the user approves, `inPersonReceive(code:, ...)` for a send, `inPersonPay(code:, amount:, ...)` for an invoice; both return an `InPersonReply` |
-| 4 | | `inPersonPost(slateId:, relayOk:, relayMode:)` posts the answer, or the app shows `armored` or `envelope` back |
-| 5 | `inPersonTake(answer:)` takes a scanned or pasted answer; a posted one arrives with `contactsCollect` and an `inPersonAnswer` event | |
+| 4 | | `inPersonPost(slateId:, relayMode:)` posts the answer and returns an `InPersonPosted`, or the app shows `armored` or `envelope` back |
+| 5 | `inPersonTake(answer:)` takes a scanned or pasted answer; the delivery loop takes a posted one and raises `inPersonAnswer` | |
 | 6 | `inPersonAnswers(slateId:)` lists the answers; `inPersonFinalize(slateId:, answer:)` finalizes the one the user picked | |
 
 `InPersonCode.bytes` is the code to show, as one byte-mode QR code or as the parts
@@ -1076,7 +1125,8 @@ describes the format.
 is good, in blocks past the chain tip. It defaults to 30, and a value of 10 or less fails with
 `InvalidArgument`, because the payer stops paying 10 blocks before the cutoff. The cutoff is
 `InPersonCode.ttlCutoff`. A send keeps its inputs locked until an answer is finalized, the code
-expires or the send is cancelled.
+expires or the send is cancelled. With `online`, the code names a reply mailbox on the wallet's
+relay, which the delivery loop watches until the code expires.
 
 `inPersonRead` returns an `InPersonRead` with the `stage` (`S1` for a send to receive, `I1` for an
 invoice to pay), the `amount`, the `fee`, the other party's `message` and the reply `mailbox`. Show
@@ -1084,13 +1134,13 @@ the message as quoted text. A code with a payment proof, without a reply key or 
 mailbox is a loopback or unspecified host fails with `InvalidSlate`.
 
 `InPersonRead.mailbox` is an `InPersonHost` (`host`, `port`, `inRelayList`, `localNetwork`) and is
-null when the answer goes back by scan. When the answer posts to a mailbox, the user confirms that
-host first: `inPersonPost` fails with `RelayNotConfirmed` unless `relayOk` is true. The post uses a
-key made for that slate, goes through Tor when Epicbox over Tor is on, and is safe to repeat.
+null when the answer goes back by scan. `inPersonPost` posts to that mailbox from a key made for
+that slate, goes through Tor when Epicbox over Tor is on, and is safe to repeat. It fails with
+`InPersonNotFound`, `InPersonNoMailbox`, `ContactsOffline` or `EpicboxOff`, and `TransportFailed`.
 
-`InPersonReply.checkCode` is four digits. The scanning side shows it, and the showing side
-finalizes only the answer that carries the same code. `InPersonAnswerView.sameCode` marks answers
-whose check codes collide, which the user cannot tell apart by the code.
+`InPersonPosted.checkCode` is four digits. The scanning side shows it only after posting, and the
+showing side finalizes only the answer that carries the same code. `InPersonAnswerView.sameCode`
+marks answers whose check codes collide, which the user cannot tell apart by the code.
 
 ### Animated QR codes
 
@@ -1143,7 +1193,7 @@ describes the address and the link.
 
 | Side | Call | Use |
 |---|---|---|
-| Payee | `epic1Address()` | the wallet's epic1 address |
+| Payee | `epic1Address()` | the wallet's public epic1 address as an `Epic1Link`, index 0 |
 | Payee | `epic1LinkMake(amount:, message:, relayMode:)` | issues a link; a null `amount` lets the payer choose |
 | Payee | `epic1Links()`, `epic1LinkRetire(index:)` | lists the open links by the index of their address; retires the open address `index` |
 | Payee | `epic1Answers()` | the answers made for payments taken, and whether each was posted |
@@ -1152,57 +1202,59 @@ describes the address and the link.
 | Payer | `epic1Pay(link:, amount:, minimumConfirmations:, ...)` | pays the link |
 | Payer | `epic1PostNext(slateId:, relayMode:)` | posts the payment again to the next `http` or `tor` entry of the link |
 | Both | `setMeetingRelays(hosts:)`, `meetingRelays()` | sets and reads the meeting relays of the relay list |
-| Both | `epic1Relays()` | each relay of the relay list and whether it serves epic1 |
+| Both | `deliveryState()` | each relay and whether it serves epic1, with its push state ([Delivery](#delivery)) |
 
-`epic1LinkMake` returns an `Epic1Link` with the `link` text (`epic:epic1…`), the `address` and
-its `index` in the default account. The link stays open until `epic1LinkRetire` retires its
-address, and has no expiry. Collecting reads the delivery mailbox of every open address on each
-relay of the relay list. Making a link connects to no relay: `relayMode` only builds the wallet's
-relay list. `epic1LinkMake` fails with `Epic1TooManyOpen` when the account holds as many open links
-as it may, `Epic1MessageInvalid` for a message longer than a link carries or with control
-characters, and `InvalidArgument` for a zero amount or a relay list of another network.
-`epic1LinkRetire` fails with `Epic1NotFound` for index 0, the public address, and for an index
-that is not open.
+`epic1LinkMake` returns an `Epic1Link` with the `link` text (`epic:epic1…`), the `qr` text, the
+`address` and its `index` in the default account. `qr` is the text to draw as a QR code: the address
+and the amount, without the message. A link with neither an amount nor a route entry is written in
+upper case there, which takes fewer QR modules; a reader takes it as the same link. The link stays
+open until `epic1LinkRetire` retires its address, and has no expiry. The [delivery loop](#delivery)
+reads the delivery mailbox of every open address on each relay of the relay list. Making a link
+connects to no relay: `relayMode` only builds the wallet's relay list. `epic1LinkMake` fails with
+`Epic1TooManyOpen` when the account holds as many open links as it may, `Epic1MessageInvalid` for a
+message longer than a link carries or with control characters, and `InvalidArgument` for a zero
+amount or a relay list of another network. `epic1LinkRetire` fails with `Epic1NotFound` for index 0,
+the public address, and for an index that is not open.
 
 The payer reads the link first and shows the user the amount, the payee (`Epic1LinkRead.address`)
 and, for a link with an `http` or `tor` entry, its host (`httpHost`). The user confirms, and
 `epic1Pay` pays. It fails with `OwnRelayLocal` when the wallet's own relay, which holds the
-payment's reply mailbox, is on this device. A payment to a link with `http` or `tor` entries goes
-to the first entry, to the next when a post fails, at most three. A payment to a link without them
-goes to the payee's delivery mailbox on each relay of the relay list not known to lack mux/1.
-`Epic1Paid.attempts` lists the posts. A second payment to a link is made while the first waits.
-The payment's answer arrives with `contactsCollect`, which reads it on the relays the payment went
-to and on those of the list, and finalizes it. `epic1PostNext` fails with `Epic1Finalized` once
-the payment is finalized and `Epic1NoMoreRelays` when every entry was tried. `epic1LinkRead` fails
-with
-`NotAnEpic1Link`, `Epic1WrongNetwork` or `Epic1CannotPay` for a link that names no relay this wallet
-can use.
+payment's reply mailbox, is on this device. A payment to a link with `http` or `tor` entries goes to
+the first entry. A post that was not sent or was refused goes to the next entry at once. A post sent
+and not answered stays on its entry and is posted again later, until `epic1PostNext` moves it to the
+next. A payment to a link without entries goes to the payee's delivery mailbox on each relay of the
+relay list not known to lack mux/1. `Epic1Paid.attempts` lists the posts, `posted` the route, from
+0, the payment was posted on, and `uncertain` the first route that may hold the payment though its
+post failed: show that the payment may still arrive and do not offer to pay again. A second payment
+to a link is made while the first waits. The delivery loop reads the payment's answer on the relays
+the payment went to and on those of the list, and finalizes it. `epic1PostNext` fails with
+`Epic1NotFound`, with `Epic1Finalized` once the payment is finalized and with `Epic1NoMoreRelays`
+when every entry was tried. `epic1LinkRead` fails with `NotAnEpic1Link`, `Epic1WrongNetwork` or
+`Epic1CannotPay` for a link that names no relay this wallet can use.
 
-The payee answers each payment on the relay it read the payment from, during collecting, or in the
-reply to an `http` or `tor` post. `epic1Answers` lists the answers with that relay (`mailbox`) and
-whether each was `posted`. Both sides write native slates (`format` is always `Native`).
+The payee answers each payment on the relay it read the payment from, during a tick of the delivery
+loop, or in the reply to an `http` or `tor` post. `epic1Answers` lists the answers with that relay
+(`mailbox`) and whether each was `posted`. Both sides write native slates (`format` is always
+`Native`).
 
 ### The relay list
 
 The relay list is the wallet's own Epicbox relay, then the meeting relays, in order. Delivery
-mailboxes are posted to and read on each relay of the list not known to lack mux/1, and every
-call that takes a `relayMode` uses the list. The session holds the meeting relays in memory and
-has none when the wallet opens. Call `setMeetingRelays(hosts:)` after each open, the open on a
-fresh handle after a lock included, before the first collect, and again when the user edits the
-list: a collect or claim without it stops
-watching the meeting relays' mailboxes until the next call with the list, and `epic1Restore`
-without it reads the wallet's own relay only. Each host is `domain[:port]`, 443 when no port is
-given, reached over TLS. An empty list clears the meeting relays, and a host given twice is kept
-once. A new list takes effect at the next contact or epic1 call; a running push session gets it at
-the next collect or claim. `setMeetingRelays` fails with `InvalidArgument`, changing nothing, for a
-host that is not a domain with an optional port other than 0, or for more than 16 hosts.
+mailboxes are posted to and read on each relay of the list not known to lack mux/1, and every call
+that takes a `relayMode` uses the list. The session holds the meeting relays in memory and has none
+when the wallet opens. Call `setMeetingRelays(hosts:)` after each open, the open on a fresh handle
+after a lock included, before `setDelivery`, and again when the user edits the list: a tick or claim
+without it stops watching the meeting relays' mailboxes until the next call with the list, and
+`epic1Restore` without it reads the wallet's own relay only. Each host is `domain[:port]`, 443 when
+no port is given, reached over TLS. An empty list clears the meeting relays, and a host given twice
+is kept once. A new list takes effect at the next contact or epic1 call; a running push session gets
+it at the delivery loop's next tick or claim. `setMeetingRelays` fails with `InvalidArgument`,
+changing nothing, for a host that is not a domain with an optional port other than 0, or for more
+than 16 hosts.
 
 `meetingRelays()` returns the meeting relays as set, lowercased: `domain` on port 443,
-`domain:port` on any other. `epic1Relays()` lists each relay of the relay list (`relay`,
-`domain:port`) with `usable`: true when the relay offered mux/1 when a socket of this process last
-greeted it, false when it answered without it or never answered, and null when no socket greeted
-it yet. It opens no connection, and fails with `Unsupported` when the configuration names no
-Epicbox relay.
+`domain:port` on any other. `deliveryState()` lists each relay of the list and whether it serves
+epic1 ([Delivery](#delivery)).
 
 ### Sealed text
 
@@ -1217,7 +1269,6 @@ the same text ([Contacts and pairing](#contacts-and-pairing)).
 | `sealedReceive(text:, message:)` | receives the sealed S1 and returns a `SealedAnswer` |
 | `sealedPay(text:, amount:, ...)` | pays the sealed I1 after the user approved the invoiced amount |
 | `sealedFinalize(text:)` | finalizes and posts the sealed S2 or I2 |
-| `sealedAnswerToMarker(incoming:, reply:)` | seals an answer to the reply key a plain slate from LEPIC carries; null when it carries none |
 
 `SealedAnswer.answer` is armored sealed text when `sealed` is true and plain slate JSON when the
 sender cannot open sealed text. The app returns it the way the slate came. `SealedSlateView.stage`
@@ -1294,8 +1345,6 @@ Every fallible call throws a `WalletError`. Its fields:
 | `code` | the kind's stable number, for an app that stores or sends the error |
 | `message` | English text for logs and bug reports; it never holds a secret |
 | `txId` | the stored transaction a failed call left behind with its inputs locked, if any |
-| `origin` | the listener origin (`scheme://host:port`) for `pinnedNoAdvert`, `pinChanged`, `peerProbeFailed` and `thisComputer` |
-| `pinnedKey`, `shownKey` | for `pinChanged`: the pinned key and the key the listener shows, 64 hex digits each |
 
 `toString` prints `WalletError(<kind name>, <code>): <message>`. Branch on `kind`, not on the
 message.
@@ -1319,9 +1368,9 @@ try {
 When `txId` is set, the call stored a transaction and a later step failed. Cancel it with
 `cancelTransaction(txId:)` or run the step again; until then its inputs stay locked.
 
-Each call's doc comment lists the kinds it throws. The numbers are part of the API. Numbers 32 to
-36, 38 and 39 are unused. `WalletErrorKind.code()` is an `async` call that returns the number; a
-caught `WalletError` already carries it in `code`.
+Each call's doc comment lists the kinds it throws. The numbers are part of the API. Numbers 28,
+32 to 36, 38, 39, 83, 86, 94, 97 to 101 and 114 are unused. `WalletErrorKind.code()` is an `async`
+call that returns the number; a caught `WalletError` already carries it in `code`.
 
 ### Wallet and password
 
@@ -1372,15 +1421,9 @@ database. After `walletTooNew`, do not delete or restore the wallet.
 | 43 | `torNotRunning` | Tor is not running or not connected; `startTor`, then wait for the `bootstrapped` event |
 | 44 | `onionUnreachable` | the other wallet is not online with Tor on; the send is stored as sent |
 | 81 | `otherAddress` | the pairing proves another payments address than the one given |
-| 97 | `pinnedNoAdvert` | the origin is pinned and its listener advertises no native endpoint |
-| 98 | `pinChanged` | a pinned listener shows another key; see [Native slates](#native-slates) |
-| 99 | `peerProbeFailed` | the pinned listener could not be asked for its endpoint |
-| 100 | `nativeExchangeFailed` | the native exchange of a stored send failed; deliver it again or cancel it |
-| 101 | `thisComputer` | the native endpoint is one of this device's own addresses |
 
 `torNotRunning` stores nothing when the send failed before anything went out. A send whose Tor
-stopped during delivery is stored as sent. `onionUnreachable`, `nativeExchangeFailed` and a
-`thisComputer` for a name that only resolves to this device leave the send stored with its inputs
+stopped during delivery is stored as sent. `onionUnreachable` leaves the send stored with its inputs
 locked, and `txId` is set.
 
 ### Sending and transactions
@@ -1426,7 +1469,6 @@ locked, and `txId` is set.
 | 54 | `invalidUrCode` | a slate code is damaged or of a newer version than LEPIC reads |
 | 55 | `urCodeTooLarge` | the slate is too large for QR codes, or the parts exceed one code; use a file |
 | 93 | `inPersonNotFound` | no in-person code or answer for the slate, or no answer with that number |
-| 94 | `relayNotConfirmed` | `inPersonPost` was called without the user confirming the relay |
 | 95 | `inPersonNoMailbox` | the code names no reply mailbox; show the answer instead |
 | 96 | `urCodeIncomplete` | the scanned parts do not make a whole code; keep scanning and pass every part |
 
