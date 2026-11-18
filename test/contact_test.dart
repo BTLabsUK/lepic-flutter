@@ -234,11 +234,6 @@ void main() {
       anna.deliveryWake(),
       throwsWalletError(WalletErrorKind.contactsOffline),
     );
-    anna.setDelivery(mode: ContactRelayMode.epicboxOff);
-    await expectLater(
-      anna.deliveryWake(),
-      throwsWalletError(WalletErrorKind.epicboxOff),
-    );
   });
 
   test('two wallets pair privately and pass payloads both ways', () async {

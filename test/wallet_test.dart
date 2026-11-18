@@ -137,7 +137,6 @@ const errorCodes = {
   WalletErrorKind.invalidUrCode: 54,
   WalletErrorKind.urCodeTooLarge: 55,
   WalletErrorKind.contactsOffline: 56,
-  WalletErrorKind.epicboxOff: 57,
   WalletErrorKind.invalidPairingText: 58,
   WalletErrorKind.invalidContactName: 59,
   WalletErrorKind.inviteExpired: 60,
