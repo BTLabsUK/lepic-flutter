@@ -467,10 +467,6 @@ enum WalletErrorKind {
   /// Nothing was changed; update the app to open the wallet. Do not delete or restore it.
   walletTooNew,
 
-  /// A payment to the epic1 link waits for its answer: finalize or cancel it first, or post
-  /// it to the link's next relay.
-  epic1PaymentPending,
-
   /// The Epicbox relay refused the slate because the other party cancelled the transaction
   /// there. The transaction (`tx_id`) is cancelled in this wallet as well; nothing is left to
   /// do with it.

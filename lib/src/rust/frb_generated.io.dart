@@ -402,9 +402,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Epic1Attempt dco_decode_epic_1_attempt(dynamic raw);
 
   @protected
-  Epic1Host dco_decode_epic_1_host(dynamic raw);
-
-  @protected
   Epic1Link dco_decode_epic_1_link(dynamic raw);
 
   @protected
@@ -415,6 +412,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Epic1Paid dco_decode_epic_1_paid(dynamic raw);
+
+  @protected
+  Epic1RelayStatus dco_decode_epic_1_relay_status(dynamic raw);
 
   @protected
   EpicboxSessionEvent dco_decode_epicbox_session_event(dynamic raw);
@@ -448,9 +448,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   FoundDuring dco_decode_found_during(dynamic raw);
-
-  @protected
-  HostClassView dco_decode_host_class_view(dynamic raw);
 
   @protected
   HostPolicy dco_decode_host_policy(dynamic raw);
@@ -576,10 +573,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<Epic1Attempt> dco_decode_list_epic_1_attempt(dynamic raw);
 
   @protected
-  List<Epic1Host> dco_decode_list_epic_1_host(dynamic raw);
+  List<Epic1LinkView> dco_decode_list_epic_1_link_view(dynamic raw);
 
   @protected
-  List<Epic1LinkView> dco_decode_list_epic_1_link_view(dynamic raw);
+  List<Epic1RelayStatus> dco_decode_list_epic_1_relay_status(dynamic raw);
 
   @protected
   List<EpicboxSessionView> dco_decode_list_epicbox_session_view(dynamic raw);
@@ -1453,9 +1450,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Epic1Attempt sse_decode_epic_1_attempt(SseDeserializer deserializer);
 
   @protected
-  Epic1Host sse_decode_epic_1_host(SseDeserializer deserializer);
-
-  @protected
   Epic1Link sse_decode_epic_1_link(SseDeserializer deserializer);
 
   @protected
@@ -1466,6 +1460,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Epic1Paid sse_decode_epic_1_paid(SseDeserializer deserializer);
+
+  @protected
+  Epic1RelayStatus sse_decode_epic_1_relay_status(SseDeserializer deserializer);
 
   @protected
   EpicboxSessionEvent sse_decode_epicbox_session_event(
@@ -1507,9 +1504,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   FoundDuring sse_decode_found_during(SseDeserializer deserializer);
-
-  @protected
-  HostClassView sse_decode_host_class_view(SseDeserializer deserializer);
 
   @protected
   HostPolicy sse_decode_host_policy(SseDeserializer deserializer);
@@ -1655,10 +1649,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  List<Epic1Host> sse_decode_list_epic_1_host(SseDeserializer deserializer);
+  List<Epic1LinkView> sse_decode_list_epic_1_link_view(
+    SseDeserializer deserializer,
+  );
 
   @protected
-  List<Epic1LinkView> sse_decode_list_epic_1_link_view(
+  List<Epic1RelayStatus> sse_decode_list_epic_1_relay_status(
     SseDeserializer deserializer,
   );
 
@@ -2754,9 +2750,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_epic_1_attempt(Epic1Attempt self, SseSerializer serializer);
 
   @protected
-  void sse_encode_epic_1_host(Epic1Host self, SseSerializer serializer);
-
-  @protected
   void sse_encode_epic_1_link(Epic1Link self, SseSerializer serializer);
 
   @protected
@@ -2773,6 +2766,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_epic_1_paid(Epic1Paid self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_epic_1_relay_status(
+    Epic1RelayStatus self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_epicbox_session_event(
@@ -2818,9 +2817,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_found_during(FoundDuring self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_host_class_view(HostClassView self, SseSerializer serializer);
 
   @protected
   void sse_encode_host_policy(HostPolicy self, SseSerializer serializer);
@@ -2994,14 +2990,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_list_epic_1_host(
-    List<Epic1Host> self,
+  void sse_encode_list_epic_1_link_view(
+    List<Epic1LinkView> self,
     SseSerializer serializer,
   );
 
   @protected
-  void sse_encode_list_epic_1_link_view(
-    List<Epic1LinkView> self,
+  void sse_encode_list_epic_1_relay_status(
+    List<Epic1RelayStatus> self,
     SseSerializer serializer,
   );
 

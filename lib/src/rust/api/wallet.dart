@@ -832,8 +832,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required ContactRelayMode relayMode,
   });
 
-  /// Reads an epic1 link: the address it pays, what it asks, and the relays a payment would
-  /// be posted to, to show before the user pays. Nothing is stored.
+  /// Reads an epic1 link: the address it pays, what it asks, and the host of its first
+  /// `http` or `tor` entry, or none for a payment that goes to the payee's mailbox, to show
+  /// before the user pays. Nothing is stored.
   ///
   /// Fails with `NotAnEpic1Link` for text that is not one, `Epic1WrongNetwork` for a link of
   /// the other network, and `Epic1CannotPay` when it names no relay this wallet can use.
@@ -850,44 +851,52 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// The open links of the default account, by the index of their address.
   Future<List<Epic1LinkView>> epic1Links();
 
-  /// Pays an epic1 link `amount` atomic units, or with `None` the amount the link asks. The payment names a reply mailbox on the wallet's own relay, is stored, then posted
-  /// to the link's first relay, and to the next when a post fails, at most three.
-  /// `hosts_ok` says the user confirmed every relay [`EpicWallet::epic1_link_read`] showed.
-  /// Collecting takes the answer and finalizes it.
+  /// Pays an epic1 link `amount` atomic units, or with `None` the amount the link asks. The
+  /// payment is stored, then posted to the link's first `http` or `tor` entry, and to the
+  /// next when a post fails; a link without them is posted to the payee's delivery mailbox
+  /// on each relay of the relay list not known to lack mux/1. The payee answers on the relay
+  /// it read the payment from, or in the reply to an `http` or `tor` post. Collecting reads
+  /// the answer on the relays the payment went to and on those of the list, and finalizes it.
+  /// A second payment to a link is made while the first waits.
   ///
   /// Fails as [`EpicWallet::epic1_link_read`] does, with `InvalidArgument` for a zero amount
-  /// or none when the link asks none, `RelayNotConfirmed` when `hosts_ok` is false,
-  /// `OwnRelayLocal` when the wallet's own relay is on this device, `Epic1PaymentPending`
-  /// while an earlier payment to the link waits for its answer, and as `send` fails.
+  /// or none when the link asks none, `OwnRelayLocal` when the wallet's own relay is on this
+  /// device, and as `send` fails.
   Future<Epic1Paid> epic1Pay({
     required String link,
     BigInt? amount,
     required BigInt minimumConfirmations,
     String? message,
     SendOptions? options,
-    required bool hostsOk,
     required ContactRelayMode relayMode,
   });
 
-  /// Posts the stored payment `slate_id` again, the same bytes, to the relays of its link
-  /// after the one it was last posted to. `hosts_ok` says the user confirmed them.
+  /// Posts the stored payment `slate_id` again, the same bytes, to the entry of its link
+  /// after the one it was last posted to.
   ///
-  /// Fails with `RelayNotConfirmed` when `hosts_ok` is false, `Epic1NotFound` when no
-  /// payment is stored, `Epic1Finalized` once it was finalized, and `Epic1NoMoreRelays` when
-  /// every relay was tried.
+  /// Fails with `Epic1NotFound` when no payment is stored, `Epic1Finalized` once it was
+  /// finalized, and `Epic1NoMoreRelays` when every entry was tried.
   Future<Epic1Paid> epic1PostNext({
     required String slateId,
-    required bool hostsOk,
     required ContactRelayMode relayMode,
   });
 
-  /// After a restore from the phrase: reads, once, on the wallet's own relay, the delivery
-  /// mailboxes of the default account's addresses up to 50 past the highest one paid, and
-  /// the reply mailboxes of the pending payments. An address that held a payment is open
-  /// from then on; payments on other relays are not found. Returns how many payments were
-  /// taken and answers finalized.
+  /// Each relay of the relay list, in order, and whether it serves epic1: whether it offered
+  /// mux/1 when a socket of this process last greeted it. Opens no connection.
   ///
-  /// Fails with `TransportFailed` when a drain failed.
+  /// Fails with `Unsupported` when the configuration names no Epicbox relay.
+  List<Epic1RelayStatus> epic1Relays();
+
+  /// After a restore from the phrase: reads, once, on the wallet's own relay and on each other
+  /// relay of the relay list not known to lack mux/1, the delivery mailboxes of each
+  /// account's addresses, and the reply mailboxes of the pending payments.
+  /// An account in its restore gap is read up to 101 past the highest index it knows or
+  /// finds paid, 50 past the first address it would issue; any other account at its open
+  /// addresses only. An address that held a payment is open from then on; payments on relays
+  /// outside the list are not found, so set the meeting relays first. Returns how many
+  /// payments were taken and answers finalized.
+  ///
+  /// Fails with `TransportFailed` when a relay of the list was not read.
   Future<int> epic1Restore({required ContactRelayMode relayMode});
 
   /// The wallet's Epicbox address, `<key>@<domain>[:port]`. Fails with `Unsupported` when
@@ -1255,6 +1264,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// instead of taking the failure as the outcome; a send stored as sent is delivered again
   /// with its resend, one finalized is posted again with [`EpicWallet::repost_transaction`].
   void lock();
+
+  /// The meeting relays as [`EpicWallet::set_meeting_relays`] set them, lowercased: `domain`
+  /// on port 443, `domain:port` on any other. The wallet's own relay given as one stays here
+  /// as set; the relay list holds each relay once.
+  List<String> meetingRelays();
 
   /// The confirmations an output needs to count as spendable in `summary` and to be spent by
   /// a send: the wallet's setting, 6 until `set_minimum_confirmations` changes it. Reads only
@@ -1962,6 +1976,20 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// onion and to send to onions. Sends to onions ([`EpicWallet::send_tor`]) always go
   /// through tor. A send in progress finishes on its own connection.
   void setHttpOverTor({required bool enabled});
+
+  /// Sets the meeting relays: the relays of the wallet's relay list after its own Epicbox
+  /// relay, in order, each `domain[:port]` (443 when no port is given) reached over TLS. Every
+  /// call that takes a [`ContactRelayMode`] uses the list. The session holds them in memory
+  /// and has none when the wallet opens: set them after opening and again when the user
+  /// edits the list. An empty list clears them; a host given twice is kept once. A new list
+  /// takes effect at the next contact or epic1 call; a running push session gets it at the
+  /// next collect or claim. Set it before the first collect after opening: a collect or claim
+  /// without it stops watching the meeting relays' mailboxes until the next call with the
+  /// list, and a restore without it reads the wallet's own relay only.
+  ///
+  /// Fails with `InvalidArgument`, changing nothing, for a host that is not a domain with an
+  /// optional port other than 0, or for more than 16 hosts.
+  void setMeetingRelays({required List<String> hosts});
 
   /// Sets the wallet's minimum confirmations, 1 to 30 (anything else fails with
   /// `InvalidArgument`), and re-splits the balance at once without the node: the next
