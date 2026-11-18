@@ -192,7 +192,6 @@ const errorCodes = {
   WalletErrorKind.epic1WrongNetwork: 111,
   WalletErrorKind.notAnEpic1Link: 112,
   WalletErrorKind.walletTooNew: 113,
-  WalletErrorKind.epic1PaymentPending: 114,
   WalletErrorKind.cancelledOnRelay: 115,
   WalletErrorKind.recoveryOpen: 116,
   WalletErrorKind.notRecoverable: 117,
