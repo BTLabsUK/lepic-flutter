@@ -232,6 +232,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool dco_decode_box_autoadd_bool(dynamic raw);
 
   @protected
+  CancelledReason dco_decode_box_autoadd_cancelled_reason(dynamic raw);
+
+  @protected
   ContactChange dco_decode_box_autoadd_contact_change(dynamic raw);
 
   @protected
@@ -242,6 +245,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   EpicboxSessionState dco_decode_box_autoadd_epicbox_session_state(dynamic raw);
+
+  @protected
+  ExpiredReason dco_decode_box_autoadd_expired_reason(dynamic raw);
 
   @protected
   HttpExposure dco_decode_box_autoadd_http_exposure(dynamic raw);
@@ -291,6 +297,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PinSettings dco_decode_box_autoadd_pin_settings(dynamic raw);
 
   @protected
+  RecoveryState dco_decode_box_autoadd_recovery_state(dynamic raw);
+
+  @protected
   ScanFound dco_decode_box_autoadd_scan_found(dynamic raw);
 
   @protected
@@ -313,6 +322,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TorFailureKind dco_decode_box_autoadd_tor_failure_kind(dynamic raw);
+
+  @protected
+  TransactionRecovery dco_decode_box_autoadd_transaction_recovery(dynamic raw);
 
   @protected
   TransportConnection dco_decode_box_autoadd_transport_connection(dynamic raw);
@@ -343,6 +355,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   WalletSummary dco_decode_box_autoadd_wallet_summary(dynamic raw);
+
+  @protected
+  CancelledReason dco_decode_cancelled_reason(dynamic raw);
 
   @protected
   Chain dco_decode_chain(dynamic raw);
@@ -424,6 +439,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   EpictxView dco_decode_epictx_view(dynamic raw);
+
+  @protected
+  ExpiredReason dco_decode_expired_reason(dynamic raw);
 
   @protected
   FailedPairing dco_decode_failed_pairing(dynamic raw);
@@ -680,6 +698,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool? dco_decode_opt_box_autoadd_bool(dynamic raw);
 
   @protected
+  CancelledReason? dco_decode_opt_box_autoadd_cancelled_reason(dynamic raw);
+
+  @protected
   ContactChange? dco_decode_opt_box_autoadd_contact_change(dynamic raw);
 
   @protected
@@ -692,6 +713,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   EpicboxSessionState? dco_decode_opt_box_autoadd_epicbox_session_state(
     dynamic raw,
   );
+
+  @protected
+  ExpiredReason? dco_decode_opt_box_autoadd_expired_reason(dynamic raw);
 
   @protected
   HttpExposure? dco_decode_opt_box_autoadd_http_exposure(dynamic raw);
@@ -732,6 +756,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  RecoveryState? dco_decode_opt_box_autoadd_recovery_state(dynamic raw);
+
+  @protected
   ScanFound? dco_decode_opt_box_autoadd_scan_found(dynamic raw);
 
   @protected
@@ -751,6 +778,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TorFailureKind? dco_decode_opt_box_autoadd_tor_failure_kind(dynamic raw);
+
+  @protected
+  TransactionRecovery? dco_decode_opt_box_autoadd_transaction_recovery(
+    dynamic raw,
+  );
 
   @protected
   TransportConnection? dco_decode_opt_box_autoadd_transport_connection(
@@ -864,6 +896,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ReceivedSlate dco_decode_received_slate(dynamic raw);
+
+  @protected
+  RecoveryState dco_decode_recovery_state(dynamic raw);
 
   @protected
   RefreshProgress dco_decode_refresh_progress(dynamic raw);
@@ -981,6 +1016,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TransactionDetails dco_decode_transaction_details(dynamic raw);
+
+  @protected
+  TransactionRecovery dco_decode_transaction_recovery(dynamic raw);
 
   @protected
   TransportConnection dco_decode_transport_connection(dynamic raw);
@@ -1210,6 +1248,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool sse_decode_box_autoadd_bool(SseDeserializer deserializer);
 
   @protected
+  CancelledReason sse_decode_box_autoadd_cancelled_reason(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ContactChange sse_decode_box_autoadd_contact_change(
     SseDeserializer deserializer,
   );
@@ -1222,6 +1265,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   EpicboxSessionState sse_decode_box_autoadd_epicbox_session_state(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ExpiredReason sse_decode_box_autoadd_expired_reason(
     SseDeserializer deserializer,
   );
 
@@ -1285,6 +1333,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PinSettings sse_decode_box_autoadd_pin_settings(SseDeserializer deserializer);
 
   @protected
+  RecoveryState sse_decode_box_autoadd_recovery_state(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ScanFound sse_decode_box_autoadd_scan_found(SseDeserializer deserializer);
 
   @protected
@@ -1315,6 +1368,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TorFailureKind sse_decode_box_autoadd_tor_failure_kind(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  TransactionRecovery sse_decode_box_autoadd_transaction_recovery(
     SseDeserializer deserializer,
   );
 
@@ -1355,6 +1413,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   WalletSummary sse_decode_box_autoadd_wallet_summary(
     SseDeserializer deserializer,
   );
+
+  @protected
+  CancelledReason sse_decode_cancelled_reason(SseDeserializer deserializer);
 
   @protected
   Chain sse_decode_chain(SseDeserializer deserializer);
@@ -1452,6 +1513,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   EpictxView sse_decode_epictx_view(SseDeserializer deserializer);
+
+  @protected
+  ExpiredReason sse_decode_expired_reason(SseDeserializer deserializer);
 
   @protected
   FailedPairing sse_decode_failed_pairing(SseDeserializer deserializer);
@@ -1752,6 +1816,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool? sse_decode_opt_box_autoadd_bool(SseDeserializer deserializer);
 
   @protected
+  CancelledReason? sse_decode_opt_box_autoadd_cancelled_reason(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ContactChange? sse_decode_opt_box_autoadd_contact_change(
     SseDeserializer deserializer,
   );
@@ -1768,6 +1837,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   EpicboxSessionState? sse_decode_opt_box_autoadd_epicbox_session_state(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ExpiredReason? sse_decode_opt_box_autoadd_expired_reason(
     SseDeserializer deserializer,
   );
 
@@ -1830,6 +1904,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  RecoveryState? sse_decode_opt_box_autoadd_recovery_state(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ScanFound? sse_decode_opt_box_autoadd_scan_found(
     SseDeserializer deserializer,
   );
@@ -1861,6 +1940,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TorFailureKind? sse_decode_opt_box_autoadd_tor_failure_kind(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  TransactionRecovery? sse_decode_opt_box_autoadd_transaction_recovery(
     SseDeserializer deserializer,
   );
 
@@ -1996,6 +2080,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ReceivedSlate sse_decode_received_slate(SseDeserializer deserializer);
 
   @protected
+  RecoveryState sse_decode_recovery_state(SseDeserializer deserializer);
+
+  @protected
   RefreshProgress sse_decode_refresh_progress(SseDeserializer deserializer);
 
   @protected
@@ -2119,6 +2206,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TransactionDetails sse_decode_transaction_details(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  TransactionRecovery sse_decode_transaction_recovery(
     SseDeserializer deserializer,
   );
 
@@ -2396,6 +2488,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_box_autoadd_bool(bool self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_cancelled_reason(
+    CancelledReason self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_contact_change(
     ContactChange self,
     SseSerializer serializer,
@@ -2416,6 +2514,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_epicbox_session_state(
     EpicboxSessionState self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_expired_reason(
+    ExpiredReason self,
     SseSerializer serializer,
   );
 
@@ -2510,6 +2614,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_recovery_state(
+    RecoveryState self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_scan_found(
     ScanFound self,
     SseSerializer serializer,
@@ -2558,6 +2668,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_transaction_recovery(
+    TransactionRecovery self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_transport_connection(
     TransportConnection self,
     SseSerializer serializer,
@@ -2602,6 +2718,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_wallet_summary(
     WalletSummary self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_cancelled_reason(
+    CancelledReason self,
     SseSerializer serializer,
   );
 
@@ -2727,6 +2849,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_epictx_view(EpictxView self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_expired_reason(ExpiredReason self, SseSerializer serializer);
 
   @protected
   void sse_encode_failed_pairing(FailedPairing self, SseSerializer serializer);
@@ -3092,6 +3217,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_opt_box_autoadd_bool(bool? self, SseSerializer serializer);
 
   @protected
+  void sse_encode_opt_box_autoadd_cancelled_reason(
+    CancelledReason? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_contact_change(
     ContactChange? self,
     SseSerializer serializer,
@@ -3112,6 +3243,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_epicbox_session_state(
     EpicboxSessionState? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_expired_reason(
+    ExpiredReason? self,
     SseSerializer serializer,
   );
 
@@ -3188,6 +3325,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_opt_box_autoadd_recovery_state(
+    RecoveryState? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_scan_found(
     ScanFound? self,
     SseSerializer serializer,
@@ -3226,6 +3369,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_tor_failure_kind(
     TorFailureKind? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_transaction_recovery(
+    TransactionRecovery? self,
     SseSerializer serializer,
   );
 
@@ -3392,6 +3541,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_received_slate(ReceivedSlate self, SseSerializer serializer);
 
   @protected
+  void sse_encode_recovery_state(RecoveryState self, SseSerializer serializer);
+
+  @protected
   void sse_encode_refresh_progress(
     RefreshProgress self,
     SseSerializer serializer,
@@ -3538,6 +3690,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_transaction_details(
     TransactionDetails self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_transaction_recovery(
+    TransactionRecovery self,
     SseSerializer serializer,
   );
 

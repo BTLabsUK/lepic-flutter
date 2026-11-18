@@ -12,7 +12,14 @@ import 'policy.dart';
 import 'tor.dart';
 
 // These functions are ignored because they are not marked as `pub`: `engine`, `network`, `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+
+/// Why the wallet ended a transaction `Cancelled`. Values are only added, at the end.
+enum CancelledReason {
+  /// A recovery spent the send's inputs back to this wallet and reached its confirmations,
+  /// so the send can never be mined.
+  recovered,
+}
 
 /// Which Epic chain the wallet talks to.
 enum Chain { mainnet, floonet }
@@ -1076,6 +1083,13 @@ class EpictxView {
           purpose == other.purpose &&
           reference == other.reference &&
           expires == other.expires;
+}
+
+/// Why the wallet ended a transaction `Expired`. Values are only added, at the end.
+enum ExpiredReason {
+  /// A send whose every push the node's pool refused until its cutoff passed. Its inputs are
+  /// spendable again. If another node mines it after all, it becomes `Confirmed`.
+  rejectedByNode,
 }
 
 /// A pairing in progress that ended with nothing stored.
@@ -3023,6 +3037,25 @@ class ReceivedSlate {
           format == other.format;
 }
 
+/// Where a recovery stands. Values are only added, at the end.
+enum RecoveryState {
+  /// Stored, and no push has reached the node yet. A refresh pushes it again.
+  uncertain,
+
+  /// The node took it; its kernel is not on chain yet.
+  posted,
+
+  /// Its kernel is on chain, with fewer confirmations than `needed`.
+  confirming,
+
+  /// It reached `needed` confirmations: the send is `Cancelled` and its coins are back.
+  done,
+
+  /// It ended without being mined, as when the node refused it. `error` says why. The send
+  /// is as it was before the recovery.
+  failed,
+}
+
 /// Progress of `EpicWallet::refresh`. Only the last event of a successful refresh has `summary`.
 class RefreshProgress {
   /// 0..=100, never falling.
@@ -3868,6 +3901,29 @@ class TransactionDetails {
   /// `false` for a transaction restored from a backup, which keeps no relay ids.
   final bool relayCancellable;
 
+  /// For status `Expired`: why the wallet ended it. `None` for any other status, and for an
+  /// expiry with no recorded reason.
+  final ExpiredReason? expiredReason;
+
+  /// For status `Cancelled`: why the wallet ended it. `None` for any other status, and for a
+  /// send the user or its counterparty cancelled.
+  final CancelledReason? cancelledReason;
+
+  /// The latest recovery of this send (`EpicWallet::recover_transaction`), in any state.
+  /// `None` for a transaction never recovered.
+  final TransactionRecovery? recovery;
+
+  /// For an entry of the self-send pair of an open recovery: the `tx_id` of the send it
+  /// recovers. The wallet neither posts nor cancels the entry until the recovery ends.
+  /// `None` for any other transaction.
+  final int? recoveryOf;
+
+  /// Whether `EpicWallet::recover_transaction` takes the transaction by what the wallet
+  /// stores: a send that is finalized, posted, cancelled or expired, with no open recovery,
+  /// whose inputs are all held for it and pay the recovery's fee. The node may still refuse
+  /// it: the call then fails with `InPool` or `OnChain`.
+  final bool recoverable;
+
   const TransactionDetails({
     required this.txId,
     required this.direction,
@@ -3900,6 +3956,11 @@ class TransactionDetails {
     required this.unverified,
     required this.coinbase,
     required this.relayCancellable,
+    this.expiredReason,
+    this.cancelledReason,
+    this.recovery,
+    this.recoveryOf,
+    required this.recoverable,
   });
 
   @override
@@ -3934,7 +3995,12 @@ class TransactionDetails {
       receiverDeclinedAtMs.hashCode ^
       unverified.hashCode ^
       coinbase.hashCode ^
-      relayCancellable.hashCode;
+      relayCancellable.hashCode ^
+      expiredReason.hashCode ^
+      cancelledReason.hashCode ^
+      recovery.hashCode ^
+      recoveryOf.hashCode ^
+      recoverable.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -3971,7 +4037,71 @@ class TransactionDetails {
           receiverDeclinedAtMs == other.receiverDeclinedAtMs &&
           unverified == other.unverified &&
           coinbase == other.coinbase &&
-          relayCancellable == other.relayCancellable;
+          relayCancellable == other.relayCancellable &&
+          expiredReason == other.expiredReason &&
+          cancelledReason == other.cancelledReason &&
+          recovery == other.recovery &&
+          recoveryOf == other.recoveryOf &&
+          recoverable == other.recoverable;
+}
+
+/// A recovery of a send: a send to this wallet that spends the send's own inputs, so the send
+/// can never be mined and its coins come back. Pay again only once it is `Done`.
+class TransactionRecovery {
+  /// The outgoing entry of the recovery's self-send pair. Both entries are ordinary
+  /// transactions in the list.
+  final int sentTxId;
+
+  /// The incoming entry of the recovery's self-send pair.
+  final int receivedTxId;
+  final RecoveryState state;
+
+  /// The blocks from the one holding the recovery's kernel up to the last confirmed height,
+  /// counting both. 0 until the chain holds the kernel.
+  final BigInt confirmations;
+
+  /// The confirmations at which the recovery ends the send.
+  final BigInt needed;
+
+  /// The recovery's fee in base units.
+  final BigInt? fee;
+
+  /// Why the last push of the recovery failed, or why the recovery failed. `None` once the
+  /// chain holds its kernel.
+  final String? error;
+
+  const TransactionRecovery({
+    required this.sentTxId,
+    required this.receivedTxId,
+    required this.state,
+    required this.confirmations,
+    required this.needed,
+    this.fee,
+    this.error,
+  });
+
+  @override
+  int get hashCode =>
+      sentTxId.hashCode ^
+      receivedTxId.hashCode ^
+      state.hashCode ^
+      confirmations.hashCode ^
+      needed.hashCode ^
+      fee.hashCode ^
+      error.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TransactionRecovery &&
+          runtimeType == other.runtimeType &&
+          sentTxId == other.sentTxId &&
+          receivedTxId == other.receivedTxId &&
+          state == other.state &&
+          confirmations == other.confirmations &&
+          needed == other.needed &&
+          fee == other.fee &&
+          error == other.error;
 }
 
 /// Which of a transport's connections changed. A drain connects on its own beside a running
@@ -4280,6 +4410,9 @@ class WalletEvent {
   /// For `InPersonAnswer`: an earlier answer to the code had the same check code.
   final bool? sameCode;
 
+  /// For `RecoveryChanged`: the state the recovery moved to.
+  final RecoveryState? recoveryState;
+
   const WalletEvent({
     required this.kind,
     this.session,
@@ -4314,6 +4447,7 @@ class WalletEvent {
     this.answer,
     this.checkCode,
     this.sameCode,
+    this.recoveryState,
   });
 
   @override
@@ -4350,7 +4484,8 @@ class WalletEvent {
       endedReason.hashCode ^
       answer.hashCode ^
       checkCode.hashCode ^
-      sameCode.hashCode;
+      sameCode.hashCode ^
+      recoveryState.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -4389,7 +4524,8 @@ class WalletEvent {
           endedReason == other.endedReason &&
           answer == other.answer &&
           checkCode == other.checkCode &&
-          sameCode == other.sameCode;
+          sameCode == other.sameCode &&
+          recoveryState == other.recoveryState;
 }
 
 enum WalletEventKind {
@@ -4568,8 +4704,11 @@ enum WalletEventKind {
   pairingRequested,
 
   /// The node did not take a finalized transaction: `tx_id`, `slate_id` and `message` (why)
-  /// are set. The transaction stays finalized, its inputs locked; nothing is retried. Call
-  /// `EpicWallet::repost_transaction` when the connection is back, or cancel it.
+  /// are set. The transaction stays finalized, its inputs locked. While the session is
+  /// online, the wallet's refresh pushes it again until it is mined or its cutoff passes;
+  /// `EpicWallet::repost_transaction` pushes it at once, and cancelling it gives it up. The
+  /// event comes once per distinct failure: again only when the kind of failure or the node's
+  /// text changes.
   notPosted,
 
   /// The contact `contact_id` sent newer details that name its mailbox on another relay,
@@ -4597,6 +4736,10 @@ enum WalletEventKind {
   /// with its check code, and finalize the one the user picks with
   /// `EpicWallet::in_person_finalize`. Raised once per answer.
   inPersonAnswer,
+
+  /// The recovery of a send moved to another state: `tx_id` (the send) and `recovery_state`
+  /// are set. Raised once per change; read `TransactionDetails.recovery` for the rest.
+  recoveryChanged,
 }
 
 /// An output of the wallet, from `EpicWallet::outputs`.

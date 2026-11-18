@@ -991,8 +991,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// time to live the payer set.
   ///
   /// Finalizing the same answer again returns the stored result. Fails with `NotPosted` when
-  /// it was finalized but the node did not accept it; post it again with
-  /// [`EpicWallet::repost_transaction`].
+  /// it was finalized but the node did not accept it: a refresh pushes it again until it is
+  /// mined or its cutoff passes, and [`EpicWallet::repost_transaction`] pushes it at once.
   Future<FinalizedTx> finalizeAndPost({required String slateJson});
 
   /// [`EpicWallet::finalize_and_post`] for the answer file at `path`.
@@ -1614,6 +1614,23 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// expired.
   Future<ReceivedSlate> receiveSlate({required String slateJson});
 
+  /// Recovers send `tx_id` once `TransactionDetails.recoverable` says it can: builds a send
+  /// to this wallet that spends the send's own inputs and pushes it, so the send can never be
+  /// mined and its coins come back. Returns the send's details, whose `recovery` the push
+  /// left `Posted`, `Uncertain` (a refresh pushes it again) or `Failed` with its `error`
+  /// when the node refused it. The recovery's two entries are ordinary self-send
+  /// transactions. The send is `Cancelled` once the recovery is `Done`; pay again only then.
+  ///
+  /// The recovery pays the fee of its inputs: 0.004 EPIC for one input, 0.003 for two, 0.002
+  /// for three and 0.001 for four or more. Inputs worth less than the fee cannot be
+  /// recovered.
+  ///
+  /// Fails, storing nothing, with `InPool` or `OnChain` when the node holds the send's
+  /// kernel, `RecoveryOpen` while an earlier recovery of it is open, `NotRecoverable` when it
+  /// is not a recoverable send, `InvalidArgument` for an unknown transaction, and `Offline`
+  /// or `NodeUnreachable` when the node cannot be asked.
+  Future<TransactionDetails> recoverTransaction({required int txId});
+
   /// `summary(refresh: true)` as a stream: a first event at 0 percent, then one with
   /// `summary` set at 100. A failure ends the stream with its [`WalletError`] as the stream's
   /// error, after the first event.
@@ -1659,7 +1676,8 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// holds the transaction, and with `NodeUnreachable` when the node cannot be asked.
   Future<void> releaseTransaction({required int txId});
 
-  /// Posts the stored final transaction of `tx_id` to the node again.
+  /// Posts the stored final transaction of `tx_id` to the node again, at once. A refresh
+  /// also pushes a `finalized` one again by itself, until it is mined or its cutoff passes.
   Future<void> repostTransaction({required int txId});
 
   /// Delivers the slate of send `tx_id` again over Epicbox, to the address it was sent to,
@@ -1918,8 +1936,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// outputs to merge; with `NotEnoughFunds` when the inputs cannot pay the fee, the amounts
   /// and one base unit into each other output; and otherwise as
   /// [`EpicWallet::estimate_fee`]. Fails with `NotPosted` when it was stored but the node
-  /// did not take it: post the send again with [`EpicWallet::repost_transaction`] or cancel
-  /// it with [`EpicWallet::cancel_transaction`].
+  /// did not take it: a refresh pushes it again until it is mined or its cutoff passes;
+  /// [`EpicWallet::repost_transaction`] pushes it at once, and
+  /// [`EpicWallet::cancel_transaction`] gives it up.
   Future<SelfSentTx> sendToSelf({
     required SelfSendRequest request,
     required BigInt minimumConfirmations,

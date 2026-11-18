@@ -120,8 +120,9 @@ enum WalletErrorKind {
   /// The app's [`crate::api::secret_store::AppSecretStore`] failed or returned damaged data.
   secretStore,
 
-  /// The transaction was finalized and stored, but the node did not accept it. Post it again
-  /// with `repost_transaction`.
+  /// The transaction was finalized and stored, but the node did not accept it. A refresh
+  /// pushes it again until it is mined or its cutoff passes; `repost_transaction` pushes it
+  /// at once.
   notPosted,
 
   /// The operation, or the transaction it was for, was cancelled.
@@ -143,7 +144,7 @@ enum WalletErrorKind {
   changedDuringCancel,
 
   /// The node already holds the transaction's kernel, so it can no longer be cancelled or
-  /// released. The next refresh confirms it.
+  /// recovered. The next refresh confirms it.
   onChain,
 
   /// The app data file is intact but belongs to a wallet with another seed.
@@ -153,7 +154,7 @@ enum WalletErrorKind {
   damagedAppData,
 
   /// The node's transaction pool holds the transaction, so it may still be mined and is not
-  /// released. Refresh later.
+  /// recovered. Refresh later.
   inPool,
 
   /// The transaction is not a finalized or posted send, or no refresh has yet missed its
@@ -483,7 +484,16 @@ enum WalletErrorKind {
   /// The Epicbox relay refused the slate because the other party cancelled the transaction
   /// there. The transaction (`tx_id`) is cancelled in this wallet as well; nothing is left to
   /// do with it.
-  cancelledOnRelay;
+  cancelledOnRelay,
+
+  /// The transaction has a recovery that may still be mined or has not reached its
+  /// confirmations: it cannot be recovered again or cancelled until that recovery ends.
+  recoveryOpen,
+
+  /// The transaction cannot be recovered: it is not a send that is finalized, posted,
+  /// cancelled or expired, its inputs are not all held for it, or they cannot pay the fee of
+  /// the recovery. Nothing was stored.
+  notRecoverable;
 
   /// The stable number of this kind.
   Future<int> code() =>
