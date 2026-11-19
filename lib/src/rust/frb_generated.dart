@@ -11848,15 +11848,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   MailboxView dco_decode_mailbox_view(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 6)
-      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
     return MailboxView(
       host: dco_decode_String(arr[0]),
       origin: dco_decode_mailbox_origin(arr[1]),
       push: dco_decode_opt_box_autoadd_bool(arr[2]),
-      lastSuccessAtMs: dco_decode_opt_box_autoadd_i_64(arr[3]),
-      failures: dco_decode_u_32(arr[4]),
-      lastError: dco_decode_opt_String(arr[5]),
+      noMux: dco_decode_bool(arr[3]),
+      lastSuccessAtMs: dco_decode_opt_box_autoadd_i_64(arr[4]),
+      failures: dco_decode_u_32(arr[5]),
+      lastError: dco_decode_opt_String(arr[6]),
     );
   }
 
@@ -13046,14 +13047,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   WalletError dco_decode_wallet_error(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
     return WalletError(
       kind: dco_decode_wallet_error_kind(arr[0]),
       code: dco_decode_u_32(arr[1]),
       message: dco_decode_String(arr[2]),
       txId: dco_decode_opt_box_autoadd_u_32(arr[3]),
       setAside: dco_decode_opt_String(arr[4]),
+      retryAfterSecs: dco_decode_opt_box_autoadd_u_32(arr[5]),
     );
   }
 
@@ -15257,6 +15259,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_host = sse_decode_String(deserializer);
     var var_origin = sse_decode_mailbox_origin(deserializer);
     var var_push = sse_decode_opt_box_autoadd_bool(deserializer);
+    var var_noMux = sse_decode_bool(deserializer);
     var var_lastSuccessAtMs = sse_decode_opt_box_autoadd_i_64(deserializer);
     var var_failures = sse_decode_u_32(deserializer);
     var var_lastError = sse_decode_opt_String(deserializer);
@@ -15264,6 +15267,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       host: var_host,
       origin: var_origin,
       push: var_push,
+      noMux: var_noMux,
       lastSuccessAtMs: var_lastSuccessAtMs,
       failures: var_failures,
       lastError: var_lastError,
@@ -16884,12 +16888,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_message = sse_decode_String(deserializer);
     var var_txId = sse_decode_opt_box_autoadd_u_32(deserializer);
     var var_setAside = sse_decode_opt_String(deserializer);
+    var var_retryAfterSecs = sse_decode_opt_box_autoadd_u_32(deserializer);
     return WalletError(
       kind: var_kind,
       code: var_code,
       message: var_message,
       txId: var_txId,
       setAside: var_setAside,
+      retryAfterSecs: var_retryAfterSecs,
     );
   }
 
@@ -18987,6 +18993,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.host, serializer);
     sse_encode_mailbox_origin(self.origin, serializer);
     sse_encode_opt_box_autoadd_bool(self.push, serializer);
+    sse_encode_bool(self.noMux, serializer);
     sse_encode_opt_box_autoadd_i_64(self.lastSuccessAtMs, serializer);
     sse_encode_u_32(self.failures, serializer);
     sse_encode_opt_String(self.lastError, serializer);
@@ -20306,6 +20313,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.message, serializer);
     sse_encode_opt_box_autoadd_u_32(self.txId, serializer);
     sse_encode_opt_String(self.setAside, serializer);
+    sse_encode_opt_box_autoadd_u_32(self.retryAfterSecs, serializer);
   }
 
   @protected

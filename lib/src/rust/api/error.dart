@@ -31,12 +31,18 @@ class WalletError implements FrbException {
   /// `None` for every other kind.
   final String? setAside;
 
+  /// The seconds a mailbox or peer asked the wallet to wait before it posts again, when a
+  /// refusal named a wait (a rate limit or a full slot): a send, a payment or a contact
+  /// message can be tried again after it. A longer wait than `u32` holds reads as `u32::MAX`.
+  final int? retryAfterSecs;
+
   const WalletError({
     required this.kind,
     required this.code,
     required this.message,
     this.txId,
     this.setAside,
+    this.retryAfterSecs,
   });
 
   @override
@@ -48,7 +54,8 @@ class WalletError implements FrbException {
       code.hashCode ^
       message.hashCode ^
       txId.hashCode ^
-      setAside.hashCode;
+      setAside.hashCode ^
+      retryAfterSecs.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -59,7 +66,8 @@ class WalletError implements FrbException {
           code == other.code &&
           message == other.message &&
           txId == other.txId &&
-          setAside == other.setAside;
+          setAside == other.setAside &&
+          retryAfterSecs == other.retryAfterSecs;
 }
 
 /// What went wrong, in terms the app can act on. The numbers in [`WalletErrorKind::code`] are

@@ -2157,6 +2157,10 @@ class MailboxView {
   /// Whether the mailbox offered push at its last greeting; none before any answer.
   final bool? push;
 
+  /// The mailbox is known to lack mux/1: it is reachable, but the wallet never posts native
+  /// mail there and reads no slot on it. Show it apart from an unreachable mailbox.
+  final bool noMux;
+
   /// When a socket last attached to it; none when none has yet.
   final PlatformInt64? lastSuccessAtMs;
 
@@ -2168,6 +2172,7 @@ class MailboxView {
     required this.host,
     required this.origin,
     this.push,
+    required this.noMux,
     this.lastSuccessAtMs,
     required this.failures,
     this.lastError,
@@ -2178,6 +2183,7 @@ class MailboxView {
       host.hashCode ^
       origin.hashCode ^
       push.hashCode ^
+      noMux.hashCode ^
       lastSuccessAtMs.hashCode ^
       failures.hashCode ^
       lastError.hashCode;
@@ -2190,6 +2196,7 @@ class MailboxView {
           host == other.host &&
           origin == other.origin &&
           push == other.push &&
+          noMux == other.noMux &&
           lastSuccessAtMs == other.lastSuccessAtMs &&
           failures == other.failures &&
           lastError == other.lastError;
