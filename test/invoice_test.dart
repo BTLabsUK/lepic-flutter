@@ -357,11 +357,14 @@ void main() {
 
   test('the delivery loop reads mail by push and a wake delivers the outbox', () async {
     final p = await parties('delivery');
+    Iterable<EpicboxSessionView> sessions() => p.payer.epicboxSessions().where(
+      (session) => session.relay == '$relayDomain:443',
+    );
     Future<void> until(bool Function() done) async {
       final deadline = DateTime.now().add(const Duration(seconds: 10));
       while (!done()) {
         if (DateTime.now().isAfter(deadline)) {
-          throw TimeoutException('${p.payer.deliveryState()}');
+          throw TimeoutException('${p.payer.epicboxSessions()}');
         }
         await Future<void>.delayed(const Duration(milliseconds: 20));
       }
@@ -369,15 +372,14 @@ void main() {
 
     // The pairing wakes opened the payer's push session, which stays with no loop running; the
     // loop follows its pushes.
-    expect(p.payer.deliveryState().single.relay, '$relayDomain:443');
-    expect(p.payer.deliveryState().single.push, EpicboxSessionState.attached);
+    expect(sessions().single.state, EpicboxSessionState.attached);
     p.payer.setDelivery(mode: online);
-    expect(p.payer.deliveryState().single.usable, isTrue);
+    expect(p.payer.mailboxList().single.push, isTrue);
     final sessionKinds = <EpicboxSessionEventKind>[];
-    final sessions = p.payer.watchEpicboxSessions().listen(
+    final watched = p.payer.watchEpicboxSessions().listen(
       (event) => sessionKinds.add(event.kind),
     );
-    addTearDown(sessions.cancel);
+    addTearDown(watched.cancel);
     // The loop's first tick and the tick the attached session asks for must be over, so only
     // a push can bring the mail inside the bound below.
     await Future<void>.delayed(const Duration(seconds: 3));
@@ -404,7 +406,7 @@ void main() {
     expect(sessionKinds, contains(EpicboxSessionEventKind.mailQueued));
 
     p.payer.setDelivery(mode: offline);
-    await until(() => p.payer.deliveryState().single.push == null);
+    await until(() => sessions().isEmpty);
   });
 
   test('errors of the invoice calls carry their stable codes', () async {
