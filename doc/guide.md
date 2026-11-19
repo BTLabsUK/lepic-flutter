@@ -1416,13 +1416,14 @@ Each call's doc comment lists the kinds it throws. The numbers are part of the A
 | 22 | `restoreScanRequired` | a restored wallet needs one full `scan` before it creates outputs |
 | 25 | `foreignAppData` | the app data file belongs to a wallet with another seed |
 | 26 | `damagedAppData` | the app data file belongs to this wallet but was changed or cut short |
-| 37 | `damagedDatabase` | LEPIC renamed the database file to `<file>.damaged-<unix seconds>`; opening again rebuilds it from the vault, so `scan` to the end |
+| 37 | `damagedDatabase` | LEPIC renamed the database file to `<file>.damaged-<unix seconds>` and kept it; `setAside` names it. Nothing new was made: ask the user, then call `startOver` (or `startOverWithPin`) and `scan` to the end |
 | 74 | `phraseMismatch` | the phrase given to `resetPassword` belongs to another wallet |
 | 90 | `wrongKey` | the database does not open with the key the phrase gives; nothing changed |
 | 113 | `walletTooNew` | a newer LEPIC or app version wrote the database; update the app and keep the data |
+| 124 | `damagedKept` | no database, and a damaged one set aside earlier is kept; `setAside` names it. Opening again never helps: `startOver` (or `startOverWithPin`) once the user asks |
 
-After `damagedDatabase`, the transaction history, labels and messages are not in the rebuilt
-database. After `walletTooNew`, do not delete or restore the wallet.
+After `startOver`, the transaction history, labels, messages, contacts and open payments are
+not in the new database; they stay in the set-aside file. After `walletTooNew`, do not delete or restore the wallet.
 
 ### General
 

@@ -191,6 +191,7 @@ const errorCodes = {
   WalletErrorKind.mailboxNotPublic: 121,
   WalletErrorKind.mailboxListFull: 122,
   WalletErrorKind.lastMailbox: 123,
+  WalletErrorKind.damagedKept: 124,
 };
 
 Matcher throwsWalletError(WalletErrorKind kind) => throwsA(
