@@ -625,9 +625,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  List<RelayDelivery> dco_decode_list_relay_delivery(dynamic raw);
-
-  @protected
   List<SasEntry> dco_decode_list_sas_entry(dynamic raw);
 
   @protected
@@ -913,9 +910,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   RelayCancelOutcome dco_decode_relay_cancel_outcome(dynamic raw);
-
-  @protected
-  RelayDelivery dco_decode_relay_delivery(dynamic raw);
 
   @protected
   RetiredPlainStore dco_decode_retired_plain_store(dynamic raw);
@@ -1741,11 +1735,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  List<RelayDelivery> sse_decode_list_relay_delivery(
-    SseDeserializer deserializer,
-  );
-
-  @protected
   List<SasEntry> sse_decode_list_sas_entry(SseDeserializer deserializer);
 
   @protected
@@ -2109,9 +2098,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RelayCancelOutcome sse_decode_relay_cancel_outcome(
     SseDeserializer deserializer,
   );
-
-  @protected
-  RelayDelivery sse_decode_relay_delivery(SseDeserializer deserializer);
 
   @protected
   RetiredPlainStore sse_decode_retired_plain_store(
@@ -3132,12 +3118,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_list_relay_delivery(
-    List<RelayDelivery> self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_list_sas_entry(List<SasEntry> self, SseSerializer serializer);
 
   @protected
@@ -3583,9 +3563,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     RelayCancelOutcome self,
     SseSerializer serializer,
   );
-
-  @protected
-  void sse_encode_relay_delivery(RelayDelivery self, SseSerializer serializer);
 
   @protected
   void sse_encode_retired_plain_store(

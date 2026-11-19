@@ -692,12 +692,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     pin: pin,
   );
 
-  /// Each mailbox of the list in use, in order, as [`EpicWallet::mailbox_list`] gives it. With
-  /// each, whether it serves epic1 as far as the wallet knows, and the state of the contacts'
-  /// push session on it, `None` when it has none. A tick in `Online` opens that session, from
-  /// the loop or from [`EpicWallet::delivery_wake`]. Opens no connection.
-  List<RelayDelivery> deliveryState();
-
   /// Runs one tick of the delivery loop now, after any tick under way, in the mode of
   /// [`EpicWallet::set_delivery`], or `Online` when none was set. Use it for a pull to
   /// refresh. A relay that does not answer raises `HomeRelayUnreachable` and is tried again
@@ -806,17 +800,16 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// the other network, and `Epic1CannotPay` when it names no relay this wallet can use.
   Future<Epic1LinkRead> epic1LinkRead({required String link});
 
-  /// Pays an epic1 link `amount` atomic units with `message`, or with `None` the amount and
-  /// the message the link asks; an empty `message`, or one of spaces only, pays without one. The payment is stored, then posted to the link's first `http`
-  /// or `tor` entry. A post that was not sent, or was refused, goes to the next entry at once;
-  /// one sent and not answered stays on its entry, posted again later, until
-  /// [`EpicWallet::epic1_post_next`] moves it on. A link without such entries is posted to the
-  /// payee's delivery mailbox on each mailbox of the list not known to lack mux/1, or on those
-  /// of `mailboxes` alone when it names any: the payee's own, given by the user. The
-  /// payee answers on the relay it read the payment from, or in the reply to an `http` or
-  /// `tor` post. The delivery loop reads the answer on the relays the payment went to and on
-  /// those of the list, and finalizes it. A second payment to a link is made while the first
-  /// waits.
+  /// Pays an epic1 link `amount` atomic units with `message`, or with `None` the amount and the
+  /// message the link asks; an empty `message`, or one of spaces only, pays without one. The
+  /// payment is stored, then posted to the link's first `http` or `tor` entry. A post that was
+  /// not sent, or was refused, goes to the next entry at once; one sent and not answered stays on
+  /// its entry and is posted again later. A link without such entries is posted to the payee's
+  /// delivery mailbox on each mailbox of the list not known to lack mux/1, or on those of
+  /// `mailboxes` alone when it names any: the payee's own, given by the user. The payee answers
+  /// on the relay it read the payment from, or in the reply to an `http` or `tor` post. The
+  /// delivery loop reads the answer on the relays the payment went to and on those of the list,
+  /// and finalizes it. A second payment to a link is made while the first waits.
   ///
   /// Fails as [`EpicWallet::epic1_link_read`] does, with `InvalidArgument` for a zero amount
   /// or none when the link asks none, `MailboxInvalid` or `MailboxNotPublic` for a host of
@@ -831,16 +824,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
     String? message,
     SendOptions? options,
     required List<String> mailboxes,
-    required ContactRelayMode relayMode,
-  });
-
-  /// Posts the stored payment `slate_id` again, the same bytes, to the entry of its link
-  /// after the one it was last posted to.
-  ///
-  /// Fails with `Epic1NotFound` when no payment is stored, `Epic1Finalized` once it was
-  /// finalized, and `Epic1NoMoreRelays` when every entry was tried.
-  Future<Epic1Paid> epic1PostNext({
-    required String slateId,
     required ContactRelayMode relayMode,
   });
 
