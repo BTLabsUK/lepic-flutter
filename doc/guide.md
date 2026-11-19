@@ -1077,8 +1077,11 @@ The app calls `setDelivery` again when what the loop may do changes:
 `offline` ends the loop and lets go of the contacts' push sessions. What is queued
 waits until the loop runs `online` again.
 
-`deliveryWake()` runs one tick now, after any tick under way, in the mode `setDelivery` set, or
-`online` when none was set. Use it for a pull to refresh. A relay that does not answer raises
+`deliveryWake(open:)` runs one tick now, after any tick under way, in the mode `setDelivery` set,
+or `online` when none was set. Use it with `open: false` for a pull to refresh. Pass `open: true`
+when the app opens, unlocks or comes to the front: that tick takes back at once a mailbox another
+install of the wallet took over, such as the epic1 one; with `open: false` it stays with the other
+install until its hold-off ends. A relay that does not answer raises
 `homeRelayUnreachable` and is tried again later; the call does not fail for it. A message is taken
 off a relay only once its effect is stored, so a tick cut short loses nothing. In `offline` mode
 the call fails with `ContactsOffline` before connecting. In
