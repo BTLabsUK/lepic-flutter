@@ -12763,8 +12763,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TransactionDetails dco_decode_transaction_details(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 36)
-      throw Exception('unexpected arr length: expect 36 but see ${arr.length}');
+    if (arr.length != 37)
+      throw Exception('unexpected arr length: expect 37 but see ${arr.length}');
     return TransactionDetails(
       txId: dco_decode_u_32(arr[0]),
       direction: dco_decode_tx_direction(arr[1]),
@@ -12802,6 +12802,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       recoverable: dco_decode_bool(arr[33]),
       delivery: dco_decode_opt_box_autoadd_delivery_view(arr[34]),
       post: dco_decode_opt_box_autoadd_node_post_view(arr[35]),
+      receivedAtEpic1: dco_decode_bool(arr[36]),
     );
   }
 
@@ -16571,6 +16572,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_recoverable = sse_decode_bool(deserializer);
     var var_delivery = sse_decode_opt_box_autoadd_delivery_view(deserializer);
     var var_post = sse_decode_opt_box_autoadd_node_post_view(deserializer);
+    var var_receivedAtEpic1 = sse_decode_bool(deserializer);
     return TransactionDetails(
       txId: var_txId,
       direction: var_direction,
@@ -16608,6 +16610,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       recoverable: var_recoverable,
       delivery: var_delivery,
       post: var_post,
+      receivedAtEpic1: var_receivedAtEpic1,
     );
   }
 
@@ -20057,6 +20060,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self.recoverable, serializer);
     sse_encode_opt_box_autoadd_delivery_view(self.delivery, serializer);
     sse_encode_opt_box_autoadd_node_post_view(self.post, serializer);
+    sse_encode_bool(self.receivedAtEpic1, serializer);
   }
 
   @protected

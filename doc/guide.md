@@ -625,6 +625,10 @@ when the node holds the send, `RecoveryOpen` while an earlier recovery of it is 
 
 ### Transaction details
 
+`TransactionDetails.receivedAtEpic1` is `true` for a payment received at the account's epic1
+address: a link's payment or an epic1 file opened here. Its `transport` is the same as for any
+other receive, so this is the field that tells it apart.
+
 `TransactionDetails.delivery` (`DeliveryView`) is set once the wallet posted the payment's slate
 to a route of an epic1 link or to a contact's mailbox. Its `state` is `queued`, `sent`,
 `uncertain` (the post went unanswered and is posted again on the same route; it may have arrived)

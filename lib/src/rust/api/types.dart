@@ -3846,6 +3846,11 @@ class TransactionDetails {
   /// push.
   final NodePostView? post;
 
+  /// A payment received at the account's epic1 address: a link's payment or an epic1 file
+  /// opened here. LEPIC lists its transport as for any other receive. `false` for every other
+  /// transaction.
+  final bool receivedAtEpic1;
+
   const TransactionDetails({
     required this.txId,
     required this.direction,
@@ -3883,6 +3888,7 @@ class TransactionDetails {
     required this.recoverable,
     this.delivery,
     this.post,
+    required this.receivedAtEpic1,
   });
 
   @override
@@ -3922,7 +3928,8 @@ class TransactionDetails {
       recoveryOf.hashCode ^
       recoverable.hashCode ^
       delivery.hashCode ^
-      post.hashCode;
+      post.hashCode ^
+      receivedAtEpic1.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -3964,7 +3971,8 @@ class TransactionDetails {
           recoveryOf == other.recoveryOf &&
           recoverable == other.recoverable &&
           delivery == other.delivery &&
-          post == other.post;
+          post == other.post &&
+          receivedAtEpic1 == other.receivedAtEpic1;
 }
 
 /// A recovery of a send: a send to this wallet that spends the send's own inputs, so the send
