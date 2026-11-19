@@ -144,7 +144,6 @@ const errorCodes = {
   WalletErrorKind.contactNotFound: 62,
   WalletErrorKind.pairingNotFound: 63,
   WalletErrorKind.contactNotVerified: 64,
-  WalletErrorKind.pairingWordsUnavailable: 65,
   WalletErrorKind.sealingOff: 66,
   WalletErrorKind.noSlateToSend: 67,
   WalletErrorKind.sealedForAnotherWallet: 68,
@@ -177,7 +176,6 @@ const errorCodes = {
   WalletErrorKind.epic1CannotPay: 103,
   WalletErrorKind.epic1NoMoreRelays: 104,
   WalletErrorKind.epic1NotFound: 106,
-  WalletErrorKind.ownRelayLocal: 107,
   WalletErrorKind.epic1RelayInvalid: 108,
   WalletErrorKind.epic1MessageInvalid: 109,
   WalletErrorKind.epic1Finalized: 110,
@@ -188,6 +186,11 @@ const errorCodes = {
   WalletErrorKind.recoveryOpen: 116,
   WalletErrorKind.notRecoverable: 117,
   WalletErrorKind.slateTooLarge: 118,
+  WalletErrorKind.noSharedMailbox: 119,
+  WalletErrorKind.mailboxInvalid: 120,
+  WalletErrorKind.mailboxNotPublic: 121,
+  WalletErrorKind.mailboxListFull: 122,
+  WalletErrorKind.lastMailbox: 123,
 };
 
 Matcher throwsWalletError(WalletErrorKind kind) => throwsA(
