@@ -1185,35 +1185,34 @@ fails with `UrCodeIncomplete` while parts are missing.
 
 An epic1 address is a payments address derived from the recovery phrase: it holds a seal key and
 a delivery key for the network. The delivery key is the address's mailbox, which a payer posts to
-on the relays of its relay list. A link is the account's next epic1 address with what it asks: a
-payment, optionally of a fixed amount, and a message. Payer and payee both run LEPIC.
+on the relays of its relay list. Each account has one epic1 address. A link is a request: that
+address with an amount and a message for the payer to fill in. The wallet stores nothing for a
+link. Payer and payee both run LEPIC.
 [LEPIC's epic1 page](https://github.com/BTLabsUK/lepic/blob/main/docs/protocols/epic1.md)
 describes the address and the link.
 
 | Side | Call | Use |
 |---|---|---|
-| Payee | `epic1Address()` | the wallet's public epic1 address as an `Epic1Link`, index 0 |
-| Payee | `epic1LinkMake(amount:, message:, relayMode:)` | issues a link; a null `amount` lets the payer choose |
-| Payee | `epic1Links()`, `epic1LinkRetire(index:)` | lists the open links by the index of their address; retires the open address `index` |
+| Payee | `epic1Address()` | the wallet's epic1 address as an `Epic1Link` |
+| Payee | `epic1LinkMake(amount:, message:)` | makes a request link; a null `amount` lets the payer choose |
 | Payee | `epic1Answers()` | the answers made for payments taken, and whether each was posted |
-| Payee | `epic1Restore(relayMode:)` | after a restore from the phrase, reads the delivery mailboxes of each account's addresses once, on each relay of the relay list |
-| Payer | `epic1LinkRead(link:, relayMode:)` | shows the payee, amount, message and the host of an `http` or `tor` entry; stores nothing |
-| Payer | `epic1Pay(link:, amount:, minimumConfirmations:, ...)` | pays the link |
+| Payee | `epic1Restore(relayMode:)` | after a restore from the phrase, reads the delivery mailbox of each account's address once, on each relay of the relay list |
+| Payer | `epic1LinkRead(link:)` | shows the payee, amount, message and the host of an `http` or `tor` entry; stores nothing |
+| Payer | `epic1Pay(link:, amount:, message:, minimumConfirmations:, ...)` | pays the link, at its amount and with its message unless the call gives others |
 | Payer | `epic1PostNext(slateId:, relayMode:)` | posts the payment again to the next `http` or `tor` entry of the link |
 | Both | `setMeetingRelays(hosts:)`, `meetingRelays()` | sets and reads the meeting relays of the relay list |
 | Both | `deliveryState()` | each relay and whether it serves epic1, with its push state ([Delivery](#delivery)) |
 
-`epic1LinkMake` returns an `Epic1Link` with the `link` text (`epic:epic1…`), the `qr` text, the
-`address` and its `index` in the default account. `qr` is the text to draw as a QR code: the address
-and the amount, without the message. A link with neither an amount nor a route entry is written in
-upper case there, which takes fewer QR modules; a reader takes it as the same link. The link stays
-open until `epic1LinkRetire` retires its address, and has no expiry. The [delivery loop](#delivery)
-reads the delivery mailbox of every open address on each relay of the relay list. Making a link
-connects to no relay: `relayMode` only builds the wallet's relay list. `epic1LinkMake` fails with
-`Epic1TooManyOpen` when the account holds as many open links as it may, `Epic1MessageInvalid` for a
-message longer than a link carries or with control characters, and `InvalidArgument` for a zero
-amount or a relay list of another network. `epic1LinkRetire` fails with `Epic1NotFound` for index 0,
-the public address, and for an index that is not open.
+`epic1LinkMake` returns an `Epic1Link` with the `link` text (`epic:epic1…`), the `qr` text and the
+default account's `address`. `qr` is the text to draw as a QR code: the address and the amount,
+without the message. A link with neither an amount nor a route entry is written in upper case there,
+which takes fewer QR modules; a reader takes it as the same link. The same amount and message make
+the same link, and a link never expires. The [delivery loop](#delivery) reads the delivery mailbox
+of each account's address on each relay of the relay list. A payment is taken for any amount and
+message: the payer may change both, so credit a payment by what the payer wrote. Making or reading
+a link connects to no relay. `epic1LinkMake` fails with `Epic1MessageInvalid` for a message longer
+than a link carries or with control characters, and `InvalidArgument` for a zero amount or a relay
+list of another network.
 
 The payer reads the link first and shows the user the amount, the payee (`Epic1LinkRead.address`)
 and, for a link with an `http` or `tor` entry, its host (`httpHost`). The user confirms, and
@@ -1368,8 +1367,8 @@ When `txId` is set, the call stored a transaction and a later step failed. Cance
 `cancelTransaction(txId:)` or run the step again; until then its inputs stay locked.
 
 Each call's doc comment lists the kinds it throws. The numbers are part of the API. Numbers 28,
-32 to 36, 38, 39, 83, 86, 94, 97 to 101 and 114 are unused. `WalletErrorKind.code()` is an `async`
-call that returns the number; a caught `WalletError` already carries it in `code`.
+32 to 36, 38, 39, 83, 86, 94, 97 to 101, 105 and 114 are unused. `WalletErrorKind.code()` is an
+`async` call that returns the number; a caught `WalletError` already carries it in `code`.
 
 ### Wallet and password
 
@@ -1507,8 +1506,7 @@ locked, and `txId` is set.
 |---|---|---|
 | 103 | `epic1CannotPay` | the link names no transport this wallet can use |
 | 104 | `epic1NoMoreRelays` | the payment went to every transport of the link |
-| 105 | `epic1TooManyOpen` | the account holds as many open epic1 links as it may; retire one |
-| 106 | `epic1NotFound` | no open link or address has that number, no epic1 payment or answer for the slate, or the address was never handed out by this wallet |
+| 106 | `epic1NotFound` | no epic1 payment or answer for the slate, or the address was never handed out by this wallet |
 | 107 | `ownRelayLocal` | the wallet's relay is on this device, so no other device reaches the reply mailbox a payment names on it |
 | 108 | `epic1RelayInvalid` | a link entry is not an `http` host or onion with an optional port, its host is on this device, or there are more than three |
 | 109 | `epic1MessageInvalid` | the message is longer than a link carries or holds control characters |
