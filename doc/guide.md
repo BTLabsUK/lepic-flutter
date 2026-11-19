@@ -622,7 +622,6 @@ to a route of an epic1 link or to a contact's mailbox. Its `state` is `queued`, 
 `uncertain` (the post went unanswered and is posted again on the same route; it may have arrived)
 or `failed` (no route took it, or its time or cutoff ran out); `updatedAtMs` and `error` go with
 it. Each change raises one `deliveryChanged` event with `slateId`, `relay` and `deliveryState`.
-`epic1PostNext` moves an uncertain or failed epic1 payment to the next route of its link.
 
 `TransactionDetails.post` (`NodePostView`) holds the wallet's pushes of the finalized transaction
 to the node, and is null until the first push: `attempts`, `lastOutcome` (`accepted`, `refused`
@@ -1089,15 +1088,8 @@ the call fails with `ContactsOffline` before connecting. In
 loop running, until `setDelivery` with `offline` or a lock ends them; a switch of
 the Epicbox relay ends those on the old relay.
 
-`deliveryState()` (synchronous) lists the mailboxes the loop uses, in the order of
-`mailboxList()`. Each `RelayDelivery` has `relay` (`domain:port`), `usable` and
-`push`. `usable` is true when the relay offered mux/1 when a socket of this process greeted it,
-false when it answered without mux/1 or never answered, and null when no socket greeted it yet. The
-delivery mailboxes of epic1 addresses are read and posted to only on a relay not known to lack
-mux/1, so a relay with `usable == false` carries no epic1 payment. `push` is the state of the
-contacts' push session on the relay ([Push sessions](#push-sessions)), and null when it has none.
-The call opens no connection. It fails with `Unsupported` when the configuration names no Epicbox
-relay.
+`mailboxList()` shows which mailboxes offered mux/1 (`push`), and `epicboxSessions()` the push
+sessions the loop opened ([Push sessions](#push-sessions)).
 
 `lock()` ends the loop and its push sessions and forgets the mode. The FFI has no unlock: the app
 opens the wallet again on a new handle, which has no loop until it calls `mailboxSet` and
@@ -1204,9 +1196,7 @@ describes the address and the link.
 | Payee | `epic1Restore(relayMode:)` | after a restore from the phrase, reads the delivery mailbox of each account's address once, on each mailbox of the list, and names those it could not read |
 | Payer | `epic1LinkRead(link:)` | shows the payee, amount, message and the host of an `http` or `tor` entry; stores nothing |
 | Payer | `epic1Pay(link:, amount:, message:, minimumConfirmations:, mailboxes:, ...)` | pays the link, at its amount and with its message unless the call gives others |
-| Payer | `epic1PostNext(slateId:, relayMode:)` | posts the payment again to the next `http` or `tor` entry of the link |
 | Both | `mailboxSet`, `mailboxList`, `mailboxAdd`, `mailboxRemove`, `mailboxProbe` | the [mailbox list](#the-mailbox-list) |
-| Both | `deliveryState()` | each mailbox and whether it serves epic1, with its push state ([Delivery](#delivery)) |
 
 `epic1LinkMake` returns an `Epic1Link` with the `link` text (`epic:epic1…`), the `qr` text and the
 default account's `address`. `qr` is the text to draw as a QR code: the address and the amount,
@@ -1225,8 +1215,7 @@ and, for a link with an `http` or `tor` entry, its host (`httpHost`). The user c
 none. `Epic1LinkRead.ignoredMailboxes` counts the `mailbox=` entries of the link, which LEPIC
 never uses. A payment to a link with `http` or `tor` entries goes to
 the first entry. A post that was not sent or was refused goes to the next entry at once. A post sent
-and not answered stays on its entry and is posted again later, until `epic1PostNext` moves it to the
-next. A payment to a link without entries goes to the payee's delivery mailbox on each mailbox of the
+and not answered stays on its entry and is posted again later. A payment to a link without entries goes to the payee's delivery mailbox on each mailbox of the
 list, or only on those `mailboxes` names when it names any. When the list keeps none of the
 shipped mailboxes and `mailboxes` is empty, `epic1Pay` fails with `NoSharedMailbox` before
 anything is stored: nothing says the payee reads the user's mailboxes. Ask the user for the
@@ -1234,9 +1223,7 @@ payee's mailbox and pay again with it in `mailboxes`. `Epic1Paid.attempts` lists
 0, the payment was posted on, and `uncertain` the first route that may hold the payment though its
 post failed: show that the payment may still arrive and do not offer to pay again. A second payment
 to a link is made while the first waits. The delivery loop reads the payment's answer on the relays
-the payment went to and on those of the list, and finalizes it. `epic1PostNext` fails with
-`Epic1NotFound`, with `Epic1Finalized` once the payment is finalized and with `Epic1NoMoreRelays`
-when every entry was tried. `epic1LinkRead` fails with `NotAnEpic1Link`, `Epic1WrongNetwork` or
+the payment went to and on those of the list, and finalizes it. `epic1LinkRead` fails with `NotAnEpic1Link`, `Epic1WrongNetwork` or
 `Epic1CannotPay` for a link that names no relay this wallet can use.
 
 The payee answers each payment on the relay it read the payment from, during a tick of the delivery
