@@ -371,11 +371,8 @@ enum WalletErrorKind {
   /// The payment went to every transport of the link: none is left to try.
   epic1NoMoreRelays,
 
-  /// The account holds as many open epic1 links as it may: retire one first.
-  epic1TooManyOpen,
-
-  /// No open link or address has that number, the wallet holds no epic1 payment or answer
-  /// for the slate, or the address was never handed out by this wallet.
+  /// The wallet holds no epic1 payment or answer for the slate, or the address was never
+  /// handed out by this wallet.
   epic1NotFound,
 
   /// The wallet's relay is on this device, so no other device reaches the reply mailbox a

@@ -416,9 +416,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Epic1LinkRead dco_decode_epic_1_link_read(dynamic raw);
 
   @protected
-  Epic1LinkView dco_decode_epic_1_link_view(dynamic raw);
-
-  @protected
   Epic1Paid dco_decode_epic_1_paid(dynamic raw);
 
   @protected
@@ -570,9 +567,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<Epic1Attempt> dco_decode_list_epic_1_attempt(dynamic raw);
-
-  @protected
-  List<Epic1LinkView> dco_decode_list_epic_1_link_view(dynamic raw);
 
   @protected
   List<EpicboxSessionView> dco_decode_list_epicbox_session_view(dynamic raw);
@@ -1462,9 +1456,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Epic1LinkRead sse_decode_epic_1_link_read(SseDeserializer deserializer);
 
   @protected
-  Epic1LinkView sse_decode_epic_1_link_view(SseDeserializer deserializer);
-
-  @protected
   Epic1Paid sse_decode_epic_1_paid(SseDeserializer deserializer);
 
   @protected
@@ -1640,11 +1631,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<Epic1Attempt> sse_decode_list_epic_1_attempt(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  List<Epic1LinkView> sse_decode_list_epic_1_link_view(
     SseDeserializer deserializer,
   );
 
@@ -2764,12 +2750,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
-  void sse_encode_epic_1_link_view(
-    Epic1LinkView self,
-    SseSerializer serializer,
-  );
-
-  @protected
   void sse_encode_epic_1_paid(Epic1Paid self, SseSerializer serializer);
 
   @protected
@@ -2976,12 +2956,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_epic_1_attempt(
     List<Epic1Attempt> self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_list_epic_1_link_view(
-    List<Epic1LinkView> self,
     SseSerializer serializer,
   );
 

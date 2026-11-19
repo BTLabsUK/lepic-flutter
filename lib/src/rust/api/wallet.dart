@@ -768,73 +768,48 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// Ends the boost `id` before its window does. False when it ended already.
   bool endBoost({required BigInt id});
 
-  /// The epic1 address of the default account, index 0: its seal key and its delivery key on
-  /// the wallet's network, with the bare link to share and the text of its QR code.
+  /// The epic1 address of the default account: its seal key and its delivery key on the
+  /// wallet's network, with the bare link to share and the text of its QR code.
   Future<Epic1Link> epic1Address();
 
   /// The answers this wallet made for payments taken at its delivery mailboxes, each posted
   /// on the relay its payment was read from, and whether it was posted.
   Future<List<Epic1AnswerView>> epic1Answers();
 
-  /// Whether the listener `socket` takes payments sealed to the wallet's epic1 addresses from
+  /// Whether the listener `socket` takes payments sealed to the wallet's epic1 address from
   /// its next start, as [`EpicWallet::set_epic1_at_listener`] last saved it.
   bool epic1AtListener({required ListenerSocket socket});
 
-  /// Makes this restored install the one that issues new numbered epic1 addresses. Call it
-  /// once no other install on the same recovery phrase issues them: two installs that both
-  /// issue hand the same address to two payers. Calling it again changes nothing.
-  Future<void> epic1IssueHere();
-
-  /// Whether this install issues new numbered epic1 addresses. A wallet created fresh does;
-  /// one restored from its recovery phrase does once [`EpicWallet::epic1_issue_here`] made it
-  /// the issuer. The address [`EpicWallet::epic1_address`] shows is there either way.
-  Future<bool> epic1Issuing();
-
-  /// Issues a link: the default account's next epic1 address, asking `amount` atomic units or,
-  /// with `None`, any amount the payer chooses. A payment to it comes to the address's delivery
-  /// mailbox, which the delivery loop reads on every relay the wallet uses. The link is open
-  /// until it is retired and has no expiry.
+  /// Makes a request link: the default account's epic1 address, asking `amount` atomic units
+  /// or, with `None`, any amount the payer chooses. The wallet stores nothing for it, and the
+  /// same fields give the same link. A payment to it comes to the address's delivery mailbox,
+  /// which the delivery loop reads on every relay the wallet uses; the payer may pay another
+  /// amount, and the payment is taken.
   ///
-  /// Fails with `InvalidArgument` for a zero amount, `Epic1TooManyOpen` when the account holds
-  /// as many open links as it may, and `Epic1MessageInvalid` for a message longer than a link
-  /// carries or with control characters. Making a link connects to no relay: `relay_mode`
-  /// only builds the wallet's relay list, which is checked to be on the wallet's network
-  /// (`InvalidArgument`) as `lepic epic1 link` checks it; no mode refuses the call. Fails with
-  /// `Unsupported` when the configuration names no Epicbox relay.
-  Future<Epic1Link> epic1LinkMake({
-    BigInt? amount,
-    String? message,
-    required ContactRelayMode relayMode,
-  });
+  /// Fails with `InvalidArgument` for a zero amount or a relay list off the wallet's
+  /// network, as `lepic epic1 link` checks it, `Epic1MessageInvalid` for a message longer
+  /// than a link carries or with control characters, and `Unsupported` when the
+  /// configuration names no Epicbox relay. Connects to no relay.
+  Future<Epic1Link> epic1LinkMake({BigInt? amount, String? message});
 
   /// Reads an epic1 link: the address it pays, what it asks, and the host of its first
   /// `http` or `tor` entry, or none for a payment that goes to the payee's mailbox, to show
-  /// before the user pays. Nothing is stored.
+  /// before the user pays. Nothing is stored and no relay is reached.
   ///
   /// Fails with `NotAnEpic1Link` for text that is not one, `Epic1WrongNetwork` for a link of
   /// the other network, and `Epic1CannotPay` when it names no relay this wallet can use.
-  Future<Epic1LinkRead> epic1LinkRead({
-    required String link,
-    required ContactRelayMode relayMode,
-  });
+  Future<Epic1LinkRead> epic1LinkRead({required String link});
 
-  /// Retires the open address `index`, link or not: its delivery mailbox is no longer read,
-  /// and a payment to it is not taken. Fails with `Epic1NotFound` for index 0, the public
-  /// address, and for an index not open.
-  Future<void> epic1LinkRetire({required int index});
-
-  /// The open links of the default account, by the index of their address.
-  Future<List<Epic1LinkView>> epic1Links();
-
-  /// Pays an epic1 link `amount` atomic units, or with `None` the amount the link asks. The
-  /// payment is stored, then posted to the link's first `http` or `tor` entry. A post that was
-  /// not sent, or was refused, goes to the next entry at once; one sent and not answered stays
-  /// on its entry, posted again later, until [`EpicWallet::epic1_post_next`] moves it on. A
-  /// link without such entries is posted to the payee's delivery mailbox on each relay of the
-  /// relay list not known to lack mux/1. The payee answers on the relay it read the
-  /// payment from, or in the reply to an `http` or `tor` post. The delivery loop reads the answer
-  /// on the relays the payment went to and on those of the list, and finalizes it. A second
-  /// payment to a link is made while the first waits.
+  /// Pays an epic1 link `amount` atomic units with `message`, or with `None` the amount and
+  /// the message the link asks. The payment is stored, then posted to the link's first `http`
+  /// or `tor` entry. A post that was not sent, or was refused, goes to the next entry at once;
+  /// one sent and not answered stays on its entry, posted again later, until
+  /// [`EpicWallet::epic1_post_next`] moves it on. A link without such entries is posted to the
+  /// payee's delivery mailbox on each relay of the relay list not known to lack mux/1. The
+  /// payee answers on the relay it read the payment from, or in the reply to an `http` or
+  /// `tor` post. The delivery loop reads the answer on the relays the payment went to and on
+  /// those of the list, and finalizes it. A second payment to a link is made while the first
+  /// waits.
   ///
   /// Fails as [`EpicWallet::epic1_link_read`] does, with `InvalidArgument` for a zero amount
   /// or none when the link asks none, `OwnRelayLocal` when the wallet's own relay is on this
@@ -859,13 +834,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   });
 
   /// After a restore from the phrase: reads, once, on the wallet's own relay and on each other
-  /// relay of the relay list not known to lack mux/1, the delivery mailboxes of each
-  /// account's addresses, and the reply mailboxes of the pending payments.
-  /// An account in its restore gap is read up to 101 past the highest index it knows or
-  /// finds paid, 50 past the first address it would issue; any other account at its open
-  /// addresses only. An address that held a payment is open from then on; payments on relays
-  /// outside the list are not found, so set the meeting relays first. Returns how many
-  /// payments were taken and answers finalized.
+  /// relay of the relay list not known to lack mux/1, the delivery mailbox of each account's
+  /// address, and the reply mailboxes of the pending payments. Payments on relays outside the
+  /// list are not found, so set the meeting relays first. Returns how many payments were
+  /// taken and answers finalized.
   ///
   /// Fails with `TransportFailed` when a relay of the list was not read.
   Future<int> epic1Restore({required ContactRelayMode relayMode});
@@ -1809,9 +1781,9 @@ abstract class EpicWallet implements RustOpaqueInterface {
   void setDelivery({required ContactRelayMode mode});
 
   /// Turns on or off, for the listener `socket`, taking payments sealed to the wallet's epic1
-  /// addresses at its native endpoint. It is off for both sockets until this turns it on:
+  /// address at its native endpoint. It is off for both sockets until this turns it on:
   /// the listener then answers such a payment as one sealed to a key it does not hold, so
-  /// whoever has one of the wallet's epic1 addresses cannot tell that the listener is the same
+  /// whoever has the wallet's epic1 address cannot tell that the listener is the same
   /// wallet. The setting is kept in the wallet's directory and takes effect when the listener
   /// next starts. Deleting the wallet removes it.
   ///
