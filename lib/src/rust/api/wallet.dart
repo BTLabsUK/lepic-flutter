@@ -708,8 +708,13 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// with no loop running, until `set_delivery` with `Offline` or a lock ends
   /// them; a switch of the Epicbox relay ends those on the old relay.
   ///
+  /// The host passes `open` true when the app opens, unlocks or comes to the front: the
+  /// tick then takes back at once a mailbox another install of the wallet took over, such as
+  /// the epic1 one. With `open` false, as for a pull to refresh, such a mailbox stays with the
+  /// other install until its hold-off ends.
+  ///
   /// Fails with `ContactsOffline` before connecting, as the mode says.
-  Future<void> deliveryWake();
+  Future<void> deliveryWake({required bool open});
 
   /// Signs a device-link `transcript` with this wallet's device-link key, an Ed25519 key of
   /// the phrase made for nothing else, under the tag `lepic/device-link/v1`, and returns the
