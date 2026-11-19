@@ -176,7 +176,6 @@ const errorCodes = {
   WalletErrorKind.savedTransaction: 102,
   WalletErrorKind.epic1CannotPay: 103,
   WalletErrorKind.epic1NoMoreRelays: 104,
-  WalletErrorKind.epic1TooManyOpen: 105,
   WalletErrorKind.epic1NotFound: 106,
   WalletErrorKind.ownRelayLocal: 107,
   WalletErrorKind.epic1RelayInvalid: 108,
@@ -2286,7 +2285,7 @@ void main() {
   });
 
   test('an epic1 address and link carry the text of their QR code', () async {
-    // A link names the wallet's relays, so the wallet needs one; making it connects to none.
+    // Making a link checks it against the wallet's relay list and connects to no relay.
     final alice = await EpicWallet.create(
       runtime: runtime,
       config: WalletConfig(
@@ -2312,8 +2311,8 @@ void main() {
     final made = await alice.epic1LinkMake(
       amount: BigInt.from(2 * epic),
       message: 'tea',
-      relayMode: ContactRelayMode.offline,
     );
+    expect(made.address, address.address);
     expect(made.link, contains('message=tea'));
     expect(made.qr, made.qr.toLowerCase());
     expect(made.qr, startsWith('epic:${made.address}?'));
