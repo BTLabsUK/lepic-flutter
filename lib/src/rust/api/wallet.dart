@@ -1282,10 +1282,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// Opens the wallet in `config.data_dir`. Any password that opens the vault opens it, also
   /// one shorter than `create` accepts today. Fails with `WrongPassword`, `WalletNotFound`
-  /// when `store` holds no vault, `ForeignWallet` and `WalletBusy`, and with
-  /// `DamagedDatabase` when the database was damaged and has just been set aside: open again
-  /// to rebuild it, then `scan` without a start height, which then starts at genesis, to the
-  /// end; [`EpicWallet::restore_scan_required`] says when it has.
+  /// when `store` holds no vault, `ForeignWallet` and `WalletBusy`, with `DamagedDatabase`
+  /// when the database was damaged and has just been set aside, and with `DamagedKept` when
+  /// one set aside earlier is kept and no database replaced it. Both make nothing; the error's
+  /// `set_aside` names the file. Opening again does not help: ask the user, then call
+  /// [`EpicWallet::start_over`].
   ///
   /// Every attempt is counted in `store` as `lepic.pin-failures`, and waits, as
   /// [`EpicWallet::open_with_pin`] describes; a right password clears the count. Attempts of
@@ -1949,6 +1950,42 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// is off the delivery loop reads the contact mailboxes through the same session. Fails with
   /// `InvalidArgument` for an empty or too long group or an interval of 0 or over a day.
   Stream<ListenerEvent> startListenerVia({required ListenVia via});
+
+  /// [`EpicWallet::open`], making a new, empty database where a damaged one was set aside,
+  /// for a user who was told of `DamagedDatabase` or `DamagedKept` and asked to start over.
+  /// The set-aside file stays where it is, with the transaction history, labels, messages,
+  /// contacts and open payments, none of which the new database holds. Then run `scan`
+  /// without a start height, which starts at genesis, to the end before sending or
+  /// receiving; [`EpicWallet::restore_scan_required`] says when it has. A database that
+  /// exists opens as it is. Attempts are counted and delayed, and it fails, as
+  /// [`EpicWallet::open`] does.
+  static Future<EpicWallet> startOver({
+    required LepicRuntime runtime,
+    required WalletConfig config,
+    required AppSecretStore store,
+    required String password,
+  }) => RustLib.instance.api.crateApiWalletEpicWalletStartOver(
+    runtime: runtime,
+    config: config,
+    store: store,
+    password: password,
+  );
+
+  /// [`EpicWallet::start_over`] with the wallet password sealed in `sealed_password`, opened
+  /// with `pin` as in [`EpicWallet::open_with_pin`], whose attempts and failures it shares.
+  static Future<EpicWallet> startOverWithPin({
+    required LepicRuntime runtime,
+    required WalletConfig config,
+    required AppSecretStore store,
+    required String pin,
+    required String sealedPassword,
+  }) => RustLib.instance.api.crateApiWalletEpicWalletStartOverWithPin(
+    runtime: runtime,
+    config: config,
+    store: store,
+    pin: pin,
+    sealedPassword: sealedPassword,
+  );
 
   /// Starts the wallet's tor from the binary at `tor_binary`, with `lib_dir` on the library
   /// path for the libraries the Tor Expert Bundle ships on Linux, and streams what it does

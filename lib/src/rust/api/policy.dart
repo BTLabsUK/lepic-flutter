@@ -20,11 +20,11 @@ class HostPolicy {
   final SelectionStrategy? defaultStrategy;
 
   /// Blocks after which this wallet neither finalizes nor posts an app send and expires it
-  /// if unanswered; file slates carry it as their TTL. At least 1. Default 1,440, a day.
+  /// if unanswered; file slates carry it as their TTL. At least 1. Default 10,080, a week.
   final BigInt? sendTtlBlocks;
 
   /// The TTL of an invoice the app issues, so a payer refuses a request older than it.
-  /// At least 1. Default 1,440, a day. It does not move `max_invoice_ttl_lead_blocks`.
+  /// At least 1. Default 1,440, a day, which released payers take. It does not move `max_invoice_ttl_lead_blocks`.
   final BigInt? invoiceTtlBlocks;
 
   /// The most change outputs a send may ask for; each one costs a range proof. At least 1.

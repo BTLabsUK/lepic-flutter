@@ -27,11 +27,16 @@ class WalletError implements FrbException {
   /// `cancel_transaction`, or try its step again. `None` when nothing was left behind.
   final int? txId;
 
+  /// The file a damaged database was moved to, for `DamagedDatabase` and `DamagedKept`.
+  /// `None` for every other kind.
+  final String? setAside;
+
   const WalletError({
     required this.kind,
     required this.code,
     required this.message,
     this.txId,
+    this.setAside,
   });
 
   @override
@@ -39,7 +44,11 @@ class WalletError implements FrbException {
 
   @override
   int get hashCode =>
-      kind.hashCode ^ code.hashCode ^ message.hashCode ^ txId.hashCode;
+      kind.hashCode ^
+      code.hashCode ^
+      message.hashCode ^
+      txId.hashCode ^
+      setAside.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -49,7 +58,8 @@ class WalletError implements FrbException {
           kind == other.kind &&
           code == other.code &&
           message == other.message &&
-          txId == other.txId;
+          txId == other.txId &&
+          setAside == other.setAside;
 }
 
 /// What went wrong, in terms the app can act on. The numbers in [`WalletErrorKind::code`] are
@@ -139,10 +149,12 @@ enum WalletErrorKind {
   notDelivered,
 
   /// The wallet database was damaged. LEPIC renamed it, with its log files, to
-  /// `wallet.sqlite3.damaged-<unix seconds>` in the data directory and kept it. Opening the
-  /// wallet again rebuilds the database from the vault, as for a restore: run `scan` to the
-  /// end before sending or receiving. Transaction history, labels and messages are not in the
-  /// new database.
+  /// `wallet.sqlite3.damaged-<unix seconds>` in the data directory and kept it;
+  /// [`WalletError::set_aside`] names the file. Nothing new was made: opening again fails
+  /// with `DamagedKept`. Ask the user, then call `start_over` (or `start_over_with_pin`),
+  /// which makes a new, empty database from the vault, as for a restore: run `scan` to the
+  /// end before sending or receiving. Transaction history, labels and messages are not in
+  /// the new database; they stay in the set-aside file.
   damagedDatabase,
 
   /// The address of the other wallet is not an `http(s)://host[:port][/path]` URL, or names
@@ -391,9 +403,9 @@ enum WalletErrorKind {
   /// Nothing was changed; update the app to open the wallet. Do not delete or restore it.
   walletTooNew,
 
-  /// The Epicbox relay refused the slate because the other party cancelled the transaction
-  /// there. The transaction (`tx_id`) is cancelled in this wallet as well; nothing is left to
-  /// do with it.
+  /// The mailbox refused the slate because the other party cancelled the transaction there.
+  /// Nothing changes in this wallet: the transaction (`tx_id`) keeps its inputs locked until
+  /// it is cancelled here or expires.
   cancelledOnRelay,
 
   /// The transaction has a recovery that may still be mined or has not reached its
@@ -425,7 +437,14 @@ enum WalletErrorKind {
   mailboxListFull,
 
   /// The mailbox is the last one of the list, which may not go.
-  lastMailbox;
+  lastMailbox,
+
+  /// The data directory holds no wallet database, and a damaged one that was set aside
+  /// earlier is kept there; [`WalletError::set_aside`] names it. Nothing was made. Opening
+  /// again gives this again; `start_over` (or `start_over_with_pin`) makes a new, empty
+  /// database once the user asks for it. Unlike `DamagedDatabase`, retrying the open never
+  /// helps.
+  damagedKept;
 
   /// The stable number of this kind.
   Future<int> code() =>
