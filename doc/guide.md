@@ -608,6 +608,14 @@ invoice it sets `senderReportedCancelledAtMs`; for the sender of a send it sets
 `receiverDeclinedAtMs`. The events `paymentCancelled`, `paymentDeclined`, `invoiceDeclined` and
 `invoiceWithdrawn` report it once. It never finalizes: a transaction already in the pool or on the
 chain is kept and still lands.
+
+A notice is different (LEPIC ADR 0067). No notice changes a transaction. When the receiver of a
+send declines it with a notice, the wallet sets `receiverDeclinedAtMs` and raises
+`paymentDeclined` once; the send stays open until the app calls `cancelTransaction`. A cancel that
+was already made returns the usual error and can be ignored. A sender's `posted` or `cancelled`
+notice sets `senderReportedPostedAtMs` or `senderReportedCancelledAtMs` and raises its event; the
+payment itself stays as it is. App payloads (`contactPostPayload`) use the same path: they raise
+no `deliveryChanged` and `contactOutbox` does not list them.
 `recoverTransaction(txId:)` gives up a send the network may never mine, once
 `TransactionDetails.recoverable` says it can: it pushes a send to this wallet that spends the send's
 own inputs, so the coins come back and the send can never be mined. The returned details carry the

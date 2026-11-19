@@ -3793,9 +3793,9 @@ class TransactionDetails {
   final PlatformInt64? senderReportedCancelledAtMs;
 
   /// For a send this wallet made: when its receiver refused it unanswered, as a wallet set to
-  /// refuse payments nobody asked for does (`PaymentDeclined`, ADR 0045). The send was
-  /// cancelled then and its inputs are free: show it as declined by the receiver. `None` for
-  /// every other transaction.
+  /// refuse payments nobody asked for does (`PaymentDeclined`, ADR 0045). The send is not
+  /// cancelled by it (ADR 0067): `cancel_transaction` frees its inputs. `None` for every other
+  /// transaction.
   final PlatformInt64? receiverDeclinedAtMs;
 
   /// For origin `OtherWallet` outgoing: no completed scan has covered its blocks yet, so the
@@ -4612,10 +4612,11 @@ enum WalletEventKind {
   contactPayloadsParked,
 
   /// The receiver of a send this wallet made refused it unanswered, as a wallet set to refuse
-  /// payments nobody asked for does (ADR 0045): `tx_id` and `slate_id` are set. The send was
-  /// cancelled, as `cancel_transaction` does, so its inputs are free; its `Transaction` event
-  /// to `Cancelled` comes with it. Its `receiver_declined_at_ms` is set from now on. Raised
-  /// once per send, over Epicbox from a LEPIC receiver or from a paired contact.
+  /// payments nobody asked for does (ADR 0045): `tx_id` and `slate_id` are set. The send is
+  /// not cancelled by it (ADR 0067): call `cancel_transaction` to free its inputs. Its
+  /// `receiver_declined_at_ms` is set from now on. Raised once per send, over Epicbox from a
+  /// LEPIC receiver or from a paired contact. A receiver that cancelled the payment on an
+  /// Epicbox 3.1.0 relay raises it too, after the send's `Transaction` event to `Cancelled`.
   paymentDeclined,
 
   /// An answer to an in-person code this wallet showed was taken, from its reply mailbox or

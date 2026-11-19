@@ -73,7 +73,7 @@ class HostPolicy {
   final BigInt? contactHoldPatienceS;
 
   /// Refuse a payment nobody asked for: an S1 at the payments address, over HTTP or Tor, or
-  /// from a contact. A LEPIC sender hears `declined` and cancels its send (ADR 0045). A
+  /// from a contact. A LEPIC sender hears `declined`; its host cancels the send (ADR 0067). A
   /// payment for a listing and a slate taken by hand are still received. Default off.
   final bool? refuseUnsolicitedPayments;
 
