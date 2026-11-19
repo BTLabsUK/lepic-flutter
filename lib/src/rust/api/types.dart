@@ -12,7 +12,7 @@ import 'policy.dart';
 import 'tor.dart';
 
 // These functions are ignored because they are not marked as `pub`: `engine`, `network`, `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Why the wallet ended a transaction `Cancelled`. Values are only added, at the end.
 enum CancelledReason {
@@ -576,12 +576,17 @@ class Epic1LinkRead {
   /// posted to the payee's mailbox on the relays of the list.
   final String? httpHost;
 
+  /// How many `mailbox=` entries the link holds. A payment never goes to a mailbox a link
+  /// names: it is read past, and none is connected to.
+  final int ignoredMailboxes;
+
   const Epic1LinkRead({
     required this.address,
     this.amount,
     this.message,
     this.label,
     this.httpHost,
+    required this.ignoredMailboxes,
   });
 
   @override
@@ -590,7 +595,8 @@ class Epic1LinkRead {
       amount.hashCode ^
       message.hashCode ^
       label.hashCode ^
-      httpHost.hashCode;
+      httpHost.hashCode ^
+      ignoredMailboxes.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -601,7 +607,40 @@ class Epic1LinkRead {
           amount == other.amount &&
           message == other.message &&
           label == other.label &&
-          httpHost == other.httpHost;
+          httpHost == other.httpHost &&
+          ignoredMailboxes == other.ignoredMailboxes;
+}
+
+/// A mailbox a restore did not read.
+class Epic1NotRead {
+  /// The mailbox, `domain:port`.
+  final String host;
+  final Epic1NotReadReason reason;
+
+  const Epic1NotRead({required this.host, required this.reason});
+
+  @override
+  int get hashCode => host.hashCode ^ reason.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Epic1NotRead &&
+          runtimeType == other.runtimeType &&
+          host == other.host &&
+          reason == other.reason;
+}
+
+/// Why a restore did not read a mailbox.
+enum Epic1NotReadReason {
+  /// The mailbox does not offer push (mux/1).
+  noPush,
+
+  /// No session to the mailbox could be had, or none of its sessions answered.
+  notAnswering,
+
+  /// Some of the slots to read could not be watched on it.
+  slotsLeftOut,
 }
 
 /// A payment made to an epic1 link, from `EpicWallet::epic1_pay` or
@@ -659,6 +698,29 @@ class Epic1Paid {
           format == other.format;
 }
 
+/// What [`crate::api::wallet::EpicWallet::epic1_restore`] did.
+class Epic1Restored {
+  /// Payments taken and answers finalized.
+  final int taken;
+
+  /// The mailboxes of the list that were not read, each with why. Payments on them are found
+  /// once the delivery loop reads them.
+  final List<Epic1NotRead> notRead;
+
+  const Epic1Restored({required this.taken, required this.notRead});
+
+  @override
+  int get hashCode => taken.hashCode ^ notRead.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Epic1Restored &&
+          runtimeType == other.runtimeType &&
+          taken == other.taken &&
+          notRead == other.notRead;
+}
+
 /// What [`crate::api::wallet::EpicWallet::watch_epicbox_sessions`] streams.
 class EpicboxSessionEvent {
   final EpicboxSessionEventKind kind;
@@ -696,6 +758,13 @@ enum EpicboxSessionEventKind {
 
   /// The relay pushed mail the session queued, for the delivery loop or the listener.
   mailQueued,
+
+  /// No mailbox of the list can be reached: each lost its last socket or answered without
+  /// push. Told once, until a mailbox comes back; `relay` and `group` are empty.
+  noneReachable,
+
+  /// A socket of `relay` attached after no mailbox could be reached; `group` is empty.
+  mailboxBack,
 }
 
 /// Where a push session of the relay is.
@@ -1948,6 +2017,184 @@ class ListingRef {
           runtimeType == other.runtimeType &&
           serviceKey == other.serviceKey &&
           generation == other.generation;
+}
+
+/// What [`crate::api::wallet::EpicWallet::mailbox_add`] did.
+class MailboxAdded {
+  /// The mailbox joined the list. False when its test failed and `anyway` was not given, or
+  /// when it was in the list already.
+  final bool added;
+  final MailboxProbe probe;
+  final MailboxChanges changes;
+
+  const MailboxAdded({
+    required this.added,
+    required this.probe,
+    required this.changes,
+  });
+
+  @override
+  int get hashCode => added.hashCode ^ probe.hashCode ^ changes.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MailboxAdded &&
+          runtimeType == other.runtimeType &&
+          added == other.added &&
+          probe == other.probe &&
+          changes == other.changes;
+}
+
+/// The user's changes to the shipped list, for the app to store in its settings and pass to
+/// [`crate::api::wallet::EpicWallet::mailbox_set`] after each open.
+class MailboxChanges {
+  final List<String> added;
+  final List<String> removed;
+
+  const MailboxChanges({required this.added, required this.removed});
+
+  @override
+  int get hashCode => added.hashCode ^ removed.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MailboxChanges &&
+          runtimeType == other.runtimeType &&
+          added == other.added &&
+          removed == other.removed;
+}
+
+/// Where a mailbox of the list comes from.
+enum MailboxOrigin {
+  /// The app ships it.
+  shipped,
+
+  /// The user added it.
+  added,
+}
+
+/// A test of one mailbox: a TLS connection, the mailbox's greeting, and push offered in it.
+class MailboxProbe {
+  final String host;
+  final MailboxProbeStep tls;
+  final MailboxProbeStep greeting;
+  final MailboxProbeStep push;
+
+  /// Why the step that failed failed; none when every step passed.
+  final String? failure;
+
+  /// Every step passed.
+  final bool passed;
+
+  const MailboxProbe({
+    required this.host,
+    required this.tls,
+    required this.greeting,
+    required this.push,
+    this.failure,
+    required this.passed,
+  });
+
+  @override
+  int get hashCode =>
+      host.hashCode ^
+      tls.hashCode ^
+      greeting.hashCode ^
+      push.hashCode ^
+      failure.hashCode ^
+      passed.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MailboxProbe &&
+          runtimeType == other.runtimeType &&
+          host == other.host &&
+          tls == other.tls &&
+          greeting == other.greeting &&
+          push == other.push &&
+          failure == other.failure &&
+          passed == other.passed;
+}
+
+/// One step of a mailbox test.
+enum MailboxProbeStep {
+  passed,
+
+  /// The step failed; [`MailboxProbe::failure`] says why.
+  failed,
+
+  /// An earlier step failed.
+  notReached,
+}
+
+/// What [`crate::api::wallet::EpicWallet::mailbox_remove`] did.
+class MailboxRemoved {
+  /// The mailbox left the list; false when it was not in it.
+  final bool removed;
+  final MailboxChanges changes;
+
+  const MailboxRemoved({required this.removed, required this.changes});
+
+  @override
+  int get hashCode => removed.hashCode ^ changes.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MailboxRemoved &&
+          runtimeType == other.runtimeType &&
+          removed == other.removed &&
+          changes == other.changes;
+}
+
+/// A mailbox of the list with its health as the running sessions saw it.
+class MailboxView {
+  /// `domain` on port 443, `domain:port` on any other.
+  final String host;
+  final MailboxOrigin origin;
+
+  /// Whether the mailbox offered push at its last greeting; none before any answer.
+  final bool? push;
+
+  /// When a socket last attached to it; none when none has yet.
+  final PlatformInt64? lastSuccessAtMs;
+
+  /// Sockets lost since the last success.
+  final int failures;
+  final String? lastError;
+
+  const MailboxView({
+    required this.host,
+    required this.origin,
+    this.push,
+    this.lastSuccessAtMs,
+    required this.failures,
+    this.lastError,
+  });
+
+  @override
+  int get hashCode =>
+      host.hashCode ^
+      origin.hashCode ^
+      push.hashCode ^
+      lastSuccessAtMs.hashCode ^
+      failures.hashCode ^
+      lastError.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MailboxView &&
+          runtimeType == other.runtimeType &&
+          host == other.host &&
+          origin == other.origin &&
+          push == other.push &&
+          lastSuccessAtMs == other.lastSuccessAtMs &&
+          failures == other.failures &&
+          lastError == other.lastError;
 }
 
 /// The app configuration's `[node]`, `[epicbox]`, `[http]` and `[tor]` tuning keys. Every

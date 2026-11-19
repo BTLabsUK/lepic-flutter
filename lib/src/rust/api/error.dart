@@ -7,8 +7,8 @@ import '../frb_generated.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `contact_encode_kind`, `engine_kind`, `epic1_kind`, `from_inner`, `from_send`, `in_person_kind`, `new`, `refused_offline`, `schema_too_new`, `with_tx`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
+// These functions are ignored because they are not marked as `pub`: `app_data_kind`, `chained`, `contact_encode_kind`, `engine_kind`, `epic1_kind`, `from_inner`, `from_send`, `in_person_kind`, `mailbox_kind`, `new`, `refused_offline`, `schema_too_new`, `with_tx`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// The error of every fallible call. `message` is English for logs and bug reports; it never
 /// holds a secret.
@@ -238,10 +238,6 @@ enum WalletErrorKind {
   /// a verified contact. Nothing was paid or changed.
   contactNotVerified,
 
-  /// Pairing words are offered only on LEPIC's built-in relays, and this wallet's relay is
-  /// not one. Share the link instead.
-  pairingWordsUnavailable,
-
   /// Sealing is off for the contact, or its wallet cannot open sealed text. Send the slate
   /// plain.
   sealingOff,
@@ -375,10 +371,6 @@ enum WalletErrorKind {
   /// handed out by this wallet.
   epic1NotFound,
 
-  /// The wallet's relay is on this device, so no other device reaches the reply mailbox a
-  /// payment names on it.
-  ownRelayLocal,
-
   /// A link entry is not an `http` host or onion with an optional port, its host is on this
   /// device, or there are more than three.
   epic1RelayInvalid,
@@ -416,7 +408,24 @@ enum WalletErrorKind {
   /// The payment spends so many outputs that its slate, or the receiver's answer to it, is
   /// longer than the Epicbox relay takes; `message` gives the size and the limit. Nothing was
   /// stored. Consolidate the wallet's outputs or pay a smaller amount.
-  slateTooLarge;
+  slateTooLarge,
+
+  /// The payer and the payee share no mailbox: the payer's list holds none of the shipped
+  /// ones. `message` names them. Add one back, or pay with the payee's mailbox given in
+  /// `mailboxes`. Nothing was stored.
+  noSharedMailbox,
+
+  /// The mailbox is not a host name with an optional port other than 0.
+  mailboxInvalid,
+
+  /// The mailbox is on this device or a private network, which no other device reaches.
+  mailboxNotPublic,
+
+  /// The mailbox list holds 16 mailboxes, as many as it may.
+  mailboxListFull,
+
+  /// The mailbox is the last one of the list, which may not go.
+  lastMailbox;
 
   /// The stable number of this kind.
   Future<int> code() =>

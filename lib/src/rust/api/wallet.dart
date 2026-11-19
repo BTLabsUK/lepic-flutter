@@ -692,10 +692,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
     pin: pin,
   );
 
-  /// Each relay of the relay list, in order: the wallet's own Epicbox relay, then the meeting
-  /// relays. With each, whether it serves epic1 as far as the wallet knows, and the state of
-  /// the contacts' push session on it, `None` when it has none. A tick in `Online` opens that
-  /// session, from the loop or from [`EpicWallet::delivery_wake`]. Opens no connection.
+  /// Each mailbox of the list in use, in order, as [`EpicWallet::mailbox_list`] gives it. With
+  /// each, whether it serves epic1 as far as the wallet knows, and the state of the contacts'
+  /// push session on it, `None` when it has none. A tick in `Online` opens that session, from
+  /// the loop or from [`EpicWallet::delivery_wake`]. Opens no connection.
   List<RelayDelivery> deliveryState();
 
   /// Runs one tick of the delivery loop now, after any tick under way, in the mode of
@@ -794,32 +794,38 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// Reads an epic1 link: the address it pays, what it asks, and the host of its first
   /// `http` or `tor` entry, or none for a payment that goes to the payee's mailbox, to show
-  /// before the user pays. Nothing is stored and no relay is reached.
+  /// before the user pays, and how many `mailbox=` entries it holds, which a payment never
+  /// uses. Nothing is stored and no relay is reached.
   ///
   /// Fails with `NotAnEpic1Link` for text that is not one, `Epic1WrongNetwork` for a link of
   /// the other network, and `Epic1CannotPay` when it names no relay this wallet can use.
   Future<Epic1LinkRead> epic1LinkRead({required String link});
 
   /// Pays an epic1 link `amount` atomic units with `message`, or with `None` the amount and
-  /// the message the link asks. The payment is stored, then posted to the link's first `http`
+  /// the message the link asks; an empty `message`, or one of spaces only, pays without one. The payment is stored, then posted to the link's first `http`
   /// or `tor` entry. A post that was not sent, or was refused, goes to the next entry at once;
   /// one sent and not answered stays on its entry, posted again later, until
   /// [`EpicWallet::epic1_post_next`] moves it on. A link without such entries is posted to the
-  /// payee's delivery mailbox on each relay of the relay list not known to lack mux/1. The
+  /// payee's delivery mailbox on each mailbox of the list not known to lack mux/1, or on those
+  /// of `mailboxes` alone when it names any: the payee's own, given by the user. The
   /// payee answers on the relay it read the payment from, or in the reply to an `http` or
   /// `tor` post. The delivery loop reads the answer on the relays the payment went to and on
   /// those of the list, and finalizes it. A second payment to a link is made while the first
   /// waits.
   ///
   /// Fails as [`EpicWallet::epic1_link_read`] does, with `InvalidArgument` for a zero amount
-  /// or none when the link asks none, `OwnRelayLocal` when the wallet's own relay is on this
-  /// device, and as `send` fails.
+  /// or none when the link asks none, `MailboxInvalid` or `MailboxNotPublic` for a host of
+  /// `mailboxes`, `NoSharedMailbox` before anything is stored when a payment to the
+  /// payee's mailbox would go through a list that keeps none of the shipped mailboxes and
+  /// `mailboxes` names none (the message names the shipped ones; ask the user for the
+  /// payee's mailbox), and as `send` fails.
   Future<Epic1Paid> epic1Pay({
     required String link,
     BigInt? amount,
     required BigInt minimumConfirmations,
     String? message,
     SendOptions? options,
+    required List<String> mailboxes,
     required ContactRelayMode relayMode,
   });
 
@@ -833,14 +839,16 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required ContactRelayMode relayMode,
   });
 
-  /// After a restore from the phrase: reads, once, on the wallet's own relay and on each other
-  /// relay of the relay list not known to lack mux/1, the delivery mailbox of each account's
-  /// address, and the reply mailboxes of the pending payments. Payments on relays outside the
-  /// list are not found, so set the meeting relays first. Returns how many payments were
-  /// taken and answers finalized.
+  /// After a restore from the phrase: reads, once, on each mailbox of the list, the delivery
+  /// mailbox of each account's address and the reply mailboxes of the pending payments.
+  /// Payments on mailboxes outside the list are not found, so call
+  /// [`EpicWallet::mailbox_set`] first. Returns how many payments were taken and answers
+  /// finalized, and the mailboxes that were not read, each with why; a mailbox not read is
+  /// no failure.
   ///
-  /// Fails with `TransportFailed` when a relay of the list was not read.
-  Future<int> epic1Restore({required ContactRelayMode relayMode});
+  /// Fails with `ContactsOffline` in `Offline` mode and `TransportFailed` when no mailbox
+  /// of the list could be read.
+  Future<Epic1Restored> epic1Restore({required ContactRelayMode relayMode});
 
   /// The wallet's Epicbox address, `<key>@<domain>[:port]`. Fails with `Unsupported` when
   /// the configuration names no relay.
@@ -1193,10 +1201,57 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// with its resend, one finalized is posted again with [`EpicWallet::repost_transaction`].
   void lock();
 
-  /// The meeting relays as [`EpicWallet::set_meeting_relays`] set them, lowercased: `domain`
-  /// on port 443, `domain:port` on any other. The wallet's own relay given as one stays here
-  /// as set; the relay list holds each relay once.
-  List<String> meetingRelays();
+  /// Tests the mailbox at `host`, then adds it to the list when the test passed, or when
+  /// `anyway` is set: the user chose to add a mailbox that failed its test. Returns the test
+  /// either way, and the user's changes for the app to store. The list never drops a mailbox
+  /// for its health afterwards.
+  ///
+  /// Fails, changing nothing, with `MailboxInvalid` or `MailboxNotPublic` for the host,
+  /// anyway or not, `MailboxListFull` when the list holds 16, and `InvalidArgument` before
+  /// [`EpicWallet::mailbox_set`].
+  Future<MailboxAdded> mailboxAdd({required String host, required bool anyway});
+
+  /// The mailbox list in use, in order, each with its origin and its health as the running
+  /// push sessions saw it; before [`EpicWallet::mailbox_set`], the wallet's own Epicbox relay
+  /// alone. Opens no connection.
+  ///
+  /// Fails with `Unsupported` when the configuration names no Epicbox relay.
+  List<MailboxView> mailboxList();
+
+  /// One test of the mailbox at `host` over the wallet's relay route: a TLS connection, its
+  /// greeting, and push. Changes nothing.
+  ///
+  /// Fails with `MailboxInvalid` or `MailboxNotPublic` for the host, and `Unsupported` when
+  /// the configuration names no Epicbox relay.
+  Future<MailboxProbe> mailboxProbe({required String host});
+
+  /// Takes the mailbox at `host` out of the list: a shipped one is marked removed, an added
+  /// one goes. Returns the user's changes for the app to store.
+  ///
+  /// Fails, changing nothing, with `MailboxInvalid` or `MailboxNotPublic` for the host,
+  /// `LastMailbox` for the list's last mailbox, and `InvalidArgument` before
+  /// [`EpicWallet::mailbox_set`].
+  MailboxRemoved mailboxRemove({required String host});
+
+  /// Sets the mailbox list native mail goes to: `shipped`, the app's own list, without the
+  /// mailboxes in `removed`, then those in `added`, each `domain[:port]` (443 when no port is
+  /// given) reached over TLS. The app keeps the list, not the session: its shipped list in its
+  /// configuration and the user's `added` and `removed` in its settings, as
+  /// [`EpicWallet::mailbox_add`] and [`EpicWallet::mailbox_remove`] return them. Set it after
+  /// every open, before [`EpicWallet::set_delivery`], and again whenever the app's list
+  /// changes; it applies to running sessions at the delivery loop's next tick or claim. Until
+  /// it is set, calls that take a [`ContactRelayMode`] use the wallet's own Epicbox relay
+  /// alone.
+  ///
+  /// Fails, changing nothing, with `MailboxInvalid` for a host that is not a domain with an
+  /// optional port other than 0, `MailboxNotPublic` for one on this device or a private
+  /// network, `MailboxListFull` for a list over 16, and `InvalidArgument` for a list that
+  /// leaves no mailbox.
+  void mailboxSet({
+    required List<String> shipped,
+    required List<String> added,
+    required List<String> removed,
+  });
 
   /// The confirmations an output needs to count as spendable in `summary` and to be spent by
   /// a send: the wallet's setting, 6 until `set_minimum_confirmations` changes it. Reads only
@@ -1812,20 +1867,6 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// onion and to send to onions. Sends to onions ([`EpicWallet::send_tor`]) always go
   /// through tor. A send in progress finishes on its own connection.
   void setHttpOverTor({required bool enabled});
-
-  /// Sets the meeting relays: the relays of the wallet's relay list after its own Epicbox relay,
-  /// in order, each `domain[:port]` (443 when no port is given) reached over TLS. Every call that
-  /// takes a [`ContactRelayMode`] uses the list. The session holds them in memory and has none
-  /// when the wallet opens: set them after opening and again when the user edits the list. An
-  /// empty list clears them; a host given twice is kept once. A new list takes effect at the next
-  /// contact or epic1 call; a running push session gets it at the delivery loop's next tick or
-  /// claim. Set it before [`EpicWallet::set_delivery`] after opening: a tick or claim without it
-  /// stops watching the meeting relays' mailboxes until the next call with the list, and a
-  /// restore without it reads the wallet's own relay only.
-  ///
-  /// Fails with `InvalidArgument`, changing nothing, for a host that is not a domain with an
-  /// optional port other than 0, or for more than 16 hosts.
-  void setMeetingRelays({required List<String> hosts});
 
   /// Sets the wallet's minimum confirmations, 1 to 30 (anything else fails with
   /// `InvalidArgument`), and re-splits the balance at once without the node: the next

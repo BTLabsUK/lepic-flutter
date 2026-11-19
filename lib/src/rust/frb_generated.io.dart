@@ -414,7 +414,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Epic1LinkRead dco_decode_epic_1_link_read(dynamic raw);
 
   @protected
+  Epic1NotRead dco_decode_epic_1_not_read(dynamic raw);
+
+  @protected
+  Epic1NotReadReason dco_decode_epic_1_not_read_reason(dynamic raw);
+
+  @protected
   Epic1Paid dco_decode_epic_1_paid(dynamic raw);
+
+  @protected
+  Epic1Restored dco_decode_epic_1_restored(dynamic raw);
 
   @protected
   EpicboxSessionEvent dco_decode_epicbox_session_event(dynamic raw);
@@ -567,6 +576,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<Epic1Attempt> dco_decode_list_epic_1_attempt(dynamic raw);
 
   @protected
+  List<Epic1NotRead> dco_decode_list_epic_1_not_read(dynamic raw);
+
+  @protected
   List<EpicboxSessionView> dco_decode_list_epicbox_session_view(dynamic raw);
 
   @protected
@@ -580,6 +592,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<LogField> dco_decode_list_log_field(dynamic raw);
+
+  @protected
+  List<MailboxView> dco_decode_list_mailbox_view(dynamic raw);
 
   @protected
   List<OnionRoute> dco_decode_list_onion_route(dynamic raw);
@@ -648,6 +663,27 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   LogLevel dco_decode_log_level(dynamic raw);
+
+  @protected
+  MailboxAdded dco_decode_mailbox_added(dynamic raw);
+
+  @protected
+  MailboxChanges dco_decode_mailbox_changes(dynamic raw);
+
+  @protected
+  MailboxOrigin dco_decode_mailbox_origin(dynamic raw);
+
+  @protected
+  MailboxProbe dco_decode_mailbox_probe(dynamic raw);
+
+  @protected
+  MailboxProbeStep dco_decode_mailbox_probe_step(dynamic raw);
+
+  @protected
+  MailboxRemoved dco_decode_mailbox_removed(dynamic raw);
+
+  @protected
+  MailboxView dco_decode_mailbox_view(dynamic raw);
 
   @protected
   NetTuning dco_decode_net_tuning(dynamic raw);
@@ -1454,7 +1490,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Epic1LinkRead sse_decode_epic_1_link_read(SseDeserializer deserializer);
 
   @protected
+  Epic1NotRead sse_decode_epic_1_not_read(SseDeserializer deserializer);
+
+  @protected
+  Epic1NotReadReason sse_decode_epic_1_not_read_reason(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   Epic1Paid sse_decode_epic_1_paid(SseDeserializer deserializer);
+
+  @protected
+  Epic1Restored sse_decode_epic_1_restored(SseDeserializer deserializer);
 
   @protected
   EpicboxSessionEvent sse_decode_epicbox_session_event(
@@ -1633,6 +1680,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  List<Epic1NotRead> sse_decode_list_epic_1_not_read(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   List<EpicboxSessionView> sse_decode_list_epicbox_session_view(
     SseDeserializer deserializer,
   );
@@ -1652,6 +1704,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<LogField> sse_decode_list_log_field(SseDeserializer deserializer);
+
+  @protected
+  List<MailboxView> sse_decode_list_mailbox_view(SseDeserializer deserializer);
 
   @protected
   List<OnionRoute> sse_decode_list_onion_route(SseDeserializer deserializer);
@@ -1734,6 +1789,27 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   LogLevel sse_decode_log_level(SseDeserializer deserializer);
+
+  @protected
+  MailboxAdded sse_decode_mailbox_added(SseDeserializer deserializer);
+
+  @protected
+  MailboxChanges sse_decode_mailbox_changes(SseDeserializer deserializer);
+
+  @protected
+  MailboxOrigin sse_decode_mailbox_origin(SseDeserializer deserializer);
+
+  @protected
+  MailboxProbe sse_decode_mailbox_probe(SseDeserializer deserializer);
+
+  @protected
+  MailboxProbeStep sse_decode_mailbox_probe_step(SseDeserializer deserializer);
+
+  @protected
+  MailboxRemoved sse_decode_mailbox_removed(SseDeserializer deserializer);
+
+  @protected
+  MailboxView sse_decode_mailbox_view(SseDeserializer deserializer);
 
   @protected
   NetTuning sse_decode_net_tuning(SseDeserializer deserializer);
@@ -2748,7 +2824,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_epic_1_not_read(Epic1NotRead self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_epic_1_not_read_reason(
+    Epic1NotReadReason self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_epic_1_paid(Epic1Paid self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_epic_1_restored(Epic1Restored self, SseSerializer serializer);
 
   @protected
   void sse_encode_epicbox_session_event(
@@ -2958,6 +3046,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_epic_1_not_read(
+    List<Epic1NotRead> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_epicbox_session_view(
     List<EpicboxSessionView> self,
     SseSerializer serializer,
@@ -2983,6 +3077,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_list_log_field(List<LogField> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_mailbox_view(
+    List<MailboxView> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_onion_route(
@@ -3088,6 +3188,36 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_log_level(LogLevel self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_mailbox_added(MailboxAdded self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_mailbox_changes(
+    MailboxChanges self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_mailbox_origin(MailboxOrigin self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_mailbox_probe(MailboxProbe self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_mailbox_probe_step(
+    MailboxProbeStep self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_mailbox_removed(
+    MailboxRemoved self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_mailbox_view(MailboxView self, SseSerializer serializer);
 
   @protected
   void sse_encode_net_tuning(NetTuning self, SseSerializer serializer);
