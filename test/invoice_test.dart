@@ -157,7 +157,7 @@ void main() {
       reference: 'order 42',
       relayMode: online,
     );
-    await p.payer.deliveryWake();
+    await p.payer.deliveryWake(open: false);
     final waiting = await p.payer.contactInvoices();
     expect(waiting, hasLength(1));
     return (issued, waiting.single);
@@ -221,7 +221,7 @@ void main() {
       OutboxState.delivered,
     );
 
-    await p.issuer.deliveryWake();
+    await p.issuer.deliveryWake(open: false);
     expect(chain.pushedCount(), 1);
     expect(
       (await p.issuer.transaction(txId: issued.txId)).status,
@@ -252,7 +252,7 @@ void main() {
       );
       // Paid, but the issuer has not read the payment yet: its wake below does.
       expect((await invoiceOutput()).category, OutputCategory.unpaidInvoice);
-      await p.issuer.deliveryWake();
+      await p.issuer.deliveryWake(open: false);
 
       expect(
         (await invoiceOutput()).category,
@@ -286,8 +286,8 @@ void main() {
       p.payer.contactDeclineInvoice(slateId: 'not-a-slate-id'),
       throwsWalletError(WalletErrorKind.invalidArgument),
     );
-    await p.payer.deliveryWake();
-    await p.issuer.deliveryWake();
+    await p.payer.deliveryWake(open: false);
+    await p.issuer.deliveryWake(open: false);
     final declined = await eventWhere(
       p.issuerEvents,
       (e) => e.kind == WalletEventKind.invoiceDeclined,
@@ -309,7 +309,7 @@ void main() {
       purpose: SlatePurpose.request,
       relayMode: online,
     );
-    await p.payer.deliveryWake();
+    await p.payer.deliveryWake(open: false);
     expect(await p.payer.contactInvoices(), isEmpty);
     expect(
       p.payerEvents.where((e) => e.kind == WalletEventKind.invoiceFromContact),
@@ -393,7 +393,7 @@ void main() {
             .singleWhere((entry) => entry.slateId == issued.slateId)
             .state;
     expect(await state(), OutboxState.queued);
-    await p.issuer.deliveryWake();
+    await p.issuer.deliveryWake(open: false);
     expect(await state(), OutboxState.delivered);
     final received = await eventWhere(
       p.payerEvents,

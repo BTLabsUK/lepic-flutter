@@ -45,14 +45,14 @@ Future<({String annaSide, String benSide})> pairContacts(
     pairingClass: PairingClass.contact,
   );
   expect(answer.posted, isTrue);
-  await anna.deliveryWake();
-  await ben.deliveryWake();
+  await anna.deliveryWake(open: false);
+  await ben.deliveryWake(open: false);
   expect(
     (await ben.contact(contactId: answer.contactId)).status,
     PairingStatus.paired,
   );
   // Ben says it finished as its confirm arrives; Anna hears Ben by that notice.
-  await anna.deliveryWake();
+  await anna.deliveryWake(open: false);
   expect(
     (await anna.contact(contactId: invite.contactId)).status,
     PairingStatus.paired,
@@ -149,8 +149,8 @@ void main() {
         relayMode: online,
         pairingClass: PairingClass.contact,
       );
-      await anna.deliveryWake();
-      await ben.deliveryWake();
+      await anna.deliveryWake(open: false);
+      await ben.deliveryWake(open: false);
 
       final replied = await eventWhere(
         annaEvents,
@@ -231,7 +231,7 @@ void main() {
 
     anna.setDelivery(mode: offline);
     await expectLater(
-      anna.deliveryWake(),
+      anna.deliveryWake(open: false),
       throwsWalletError(WalletErrorKind.contactsOffline),
     );
   });
@@ -256,8 +256,8 @@ void main() {
       pairingClass: PairingClass.private,
     );
     expect(answer.posted, isTrue);
-    await phone.deliveryWake();
-    await desk.deliveryWake();
+    await phone.deliveryWake(open: false);
+    await desk.deliveryWake(open: false);
     final phoneSide = (await phone.privatePairings()).single;
     final deskSide = (await desk.privatePairings()).single;
     expect(phoneSide.sas, deskSide.sas);
@@ -278,7 +278,7 @@ void main() {
       payload: [1, 2, 3],
       relayMode: online,
     );
-    await desk.deliveryWake();
+    await desk.deliveryWake(open: false);
     final kept = (await desk.contactPayloads()).single;
     expect(kept.id, id);
     expect(kept.payload, [1, 2, 3]);
@@ -288,7 +288,7 @@ void main() {
       payload: [4],
       relayMode: online,
     );
-    await phone.deliveryWake();
+    await phone.deliveryWake(open: false);
     expect((await phone.contactPayloads()).single.payload, [4]);
   });
 
