@@ -1263,7 +1263,7 @@ refused.
 
 | Call | Use |
 |---|---|
-| `mailboxList()` | each `MailboxView`: `host`, `origin` (`shipped` or `added`), `push`, `lastSuccessAtMs`, `failures`, `lastError`; synchronous, opens no connection |
+| `mailboxList()` | each `MailboxView`: `host`, `origin` (`shipped` or `added`), `push`, `noMux`, `lastSuccessAtMs`, `failures`, `lastError`; `noMux` is true for a reachable mailbox known to lack mux/1: the wallet posts no native mail there, so show it apart from an unreachable one; synchronous, opens no connection |
 | `mailboxProbe(host:)` | tests TLS, the greeting and push; `MailboxProbe` has a `MailboxProbeStep` per step (`passed`, `failed`, `notReached`), `failure` with why the failed step failed, and `passed` |
 | `mailboxAdd(host:, anyway:)` | tests the mailbox and adds it when the test passed or `anyway` is set |
 | `mailboxRemove(host:)` | takes the mailbox off the list |
@@ -1374,6 +1374,7 @@ Every fallible call throws a `WalletError`. Its fields:
 | `code` | the kind's stable number, for an app that stores or sends the error |
 | `message` | English text for logs and bug reports; it never holds a secret |
 | `txId` | the stored transaction a failed call left behind with its inputs locked, if any |
+| `retryAfterSecs` | the seconds a mailbox or peer asked the wallet to wait before it posts again, when a refusal named a wait (a rate limit or a full slot); `null` otherwise |
 
 `toString` prints `WalletError(<kind name>, <code>): <message>`. Branch on `kind`, not on the
 message.
