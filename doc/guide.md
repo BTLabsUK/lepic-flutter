@@ -326,8 +326,8 @@ wallet.setDelivery(mode: ContactRelayMode.online);
 `<file>.damaged-<unix seconds>`. Opening again builds a new database from the seed, and
 `scan` without a start height then runs from genesis.
 
-An opened wallet has no [delivery loop](#delivery) until the app calls `setDelivery`. With
-meeting relays, call `setMeetingRelays(hosts:)` first ([The relay list](#the-relay-list)).
+An opened wallet has no [delivery loop](#delivery) until the app calls `setDelivery`. Call
+`mailboxSet(shipped:, added:, removed:)` first ([The mailbox list](#the-mailbox-list)).
 
 Every `open` attempt counts as a failure in the store (`lepic.pin-failures`) and may wait; a right
 password clears the count ([PIN rules](#pin-rules)). Attempts of one runtime run one at a time.
@@ -774,6 +774,8 @@ switch to a wallet without a relay.
 |---|---|
 | `state` | the session is in `state`: the first event of a session, then one per change |
 | `mailQueued` | the relay pushed mail for the delivery loop or the listener; `state` is `null` |
+| `noneReachable` | no mailbox of the list can be reached; told once until one comes back; `relay` is empty |
+| `mailboxBack` | a socket of `relay` attached after no mailbox could be reached |
 
 ### HTTP listener
 
@@ -897,8 +899,8 @@ Every call that may reach a relay takes a `ContactRelayMode`:
 Calls that need the relay fail with `ContactsOffline` in `offline` mode, with nothing sent. Contact,
 device, epic1, in-person and pairing calls go through mailboxes; a switch for the classic Epicbox
 address does not reach them, so the app keeps them `online` while that switch is off. Calls that queue a message store it and return. The calls
-reach the relays of the wallet's relay list, its own Epicbox relay and then the meeting relays
-([The relay list](#the-relay-list)), and the home relays of contacts.
+reach the mailboxes of the wallet's [mailbox list](#the-mailbox-list) and the home relays of
+contacts.
 
 ### Pairing
 
@@ -1051,7 +1053,7 @@ addresses by itself, in a delivery loop. The loop runs once the app sets its mod
 open:
 
 ```dart
-wallet.setMeetingRelays(hosts: meetingRelays); // the user's meeting relays, if any
+wallet.mailboxSet(shipped: shipped, added: added, removed: removed); // the app's list
 wallet.setDelivery(mode: ContactRelayMode.online);
 ```
 
@@ -1084,8 +1086,8 @@ the call fails with `ContactsOffline` before connecting. In
 loop running, until `setDelivery` with `offline` or a lock ends them; a switch of
 the Epicbox relay ends those on the old relay.
 
-`deliveryState()` (synchronous) lists the relays the loop uses, in order: the wallet's own Epicbox
-relay, then the meeting relays. Each `RelayDelivery` has `relay` (`domain:port`), `usable` and
+`deliveryState()` (synchronous) lists the mailboxes the loop uses, in the order of
+`mailboxList()`. Each `RelayDelivery` has `relay` (`domain:port`), `usable` and
 `push`. `usable` is true when the relay offered mux/1 when a socket of this process greeted it,
 false when it answered without mux/1 or never answered, and null when no socket greeted it yet. The
 delivery mailboxes of epic1 addresses are read and posted to only on a relay not known to lack
@@ -1095,7 +1097,7 @@ The call opens no connection. It fails with `Unsupported` when the configuration
 relay.
 
 `lock()` ends the loop and its push sessions and forgets the mode. The FFI has no unlock: the app
-opens the wallet again on a new handle, which has no loop until it calls `setMeetingRelays` and
+opens the wallet again on a new handle, which has no loop until it calls `mailboxSet` and
 `setDelivery` again.
 
 `boost(poller: Poller.relays, durationSecs:, intervalSecs:)` runs the loop's ticks at most every
@@ -1185,7 +1187,7 @@ fails with `UrCodeIncomplete` while parts are missing.
 
 An epic1 address is a payments address derived from the recovery phrase: it holds a seal key and
 a delivery key for the network. The delivery key is the address's mailbox, which a payer posts to
-on the relays of its relay list. Each account has one epic1 address. A link is a request: that
+on the mailboxes of its mailbox list. Each account has one epic1 address. A link is a request: that
 address with an amount and a message for the payer to fill in. The wallet stores nothing for a
 link. Payer and payee both run LEPIC.
 [LEPIC's epic1 page](https://github.com/BTLabsUK/lepic/blob/main/docs/protocols/epic1.md)
@@ -1196,19 +1198,19 @@ describes the address and the link.
 | Payee | `epic1Address()` | the wallet's epic1 address as an `Epic1Link` |
 | Payee | `epic1LinkMake(amount:, message:)` | makes a request link; a null `amount` lets the payer choose |
 | Payee | `epic1Answers()` | the answers made for payments taken, and whether each was posted |
-| Payee | `epic1Restore(relayMode:)` | after a restore from the phrase, reads the delivery mailbox of each account's address once, on each relay of the relay list |
+| Payee | `epic1Restore(relayMode:)` | after a restore from the phrase, reads the delivery mailbox of each account's address once, on each mailbox of the list, and names those it could not read |
 | Payer | `epic1LinkRead(link:)` | shows the payee, amount, message and the host of an `http` or `tor` entry; stores nothing |
-| Payer | `epic1Pay(link:, amount:, message:, minimumConfirmations:, ...)` | pays the link, at its amount and with its message unless the call gives others |
+| Payer | `epic1Pay(link:, amount:, message:, minimumConfirmations:, mailboxes:, ...)` | pays the link, at its amount and with its message unless the call gives others |
 | Payer | `epic1PostNext(slateId:, relayMode:)` | posts the payment again to the next `http` or `tor` entry of the link |
-| Both | `setMeetingRelays(hosts:)`, `meetingRelays()` | sets and reads the meeting relays of the relay list |
-| Both | `deliveryState()` | each relay and whether it serves epic1, with its push state ([Delivery](#delivery)) |
+| Both | `mailboxSet`, `mailboxList`, `mailboxAdd`, `mailboxRemove`, `mailboxProbe` | the [mailbox list](#the-mailbox-list) |
+| Both | `deliveryState()` | each mailbox and whether it serves epic1, with its push state ([Delivery](#delivery)) |
 
 `epic1LinkMake` returns an `Epic1Link` with the `link` text (`epic:epic1…`), the `qr` text and the
 default account's `address`. `qr` is the text to draw as a QR code: the address and the amount,
 without the message. A link with neither an amount nor a route entry is written in upper case there,
 which takes fewer QR modules; a reader takes it as the same link. The same amount and message make
 the same link, and a link never expires. The [delivery loop](#delivery) reads the delivery mailbox
-of each account's address on each relay of the relay list. A payment is taken for any amount and
+of each account's address on each mailbox of the list. A payment is taken for any amount and
 message: the payer may change both, so credit a payment by what the payer wrote. Making or reading
 a link connects to no relay. `epic1LinkMake` fails with `Epic1MessageInvalid` for a message longer
 than a link carries or with control characters, and `InvalidArgument` for a zero amount or a relay
@@ -1216,12 +1218,16 @@ list of another network.
 
 The payer reads the link first and shows the user the amount, the payee (`Epic1LinkRead.address`)
 and, for a link with an `http` or `tor` entry, its host (`httpHost`). The user confirms, and
-`epic1Pay` pays. It fails with `OwnRelayLocal` when the wallet's own relay, which holds the
-payment's reply mailbox, is on this device. A payment to a link with `http` or `tor` entries goes to
+`epic1Pay` pays. A null `message` pays the link's message; an empty one, or spaces only, pays
+none. `Epic1LinkRead.ignoredMailboxes` counts the `mailbox=` entries of the link, which LEPIC
+never uses. A payment to a link with `http` or `tor` entries goes to
 the first entry. A post that was not sent or was refused goes to the next entry at once. A post sent
 and not answered stays on its entry and is posted again later, until `epic1PostNext` moves it to the
-next. A payment to a link without entries goes to the payee's delivery mailbox on each relay of the
-relay list not known to lack mux/1. `Epic1Paid.attempts` lists the posts, `posted` the route, from
+next. A payment to a link without entries goes to the payee's delivery mailbox on each mailbox of the
+list, or only on those `mailboxes` names when it names any. When the list keeps none of the
+shipped mailboxes and `mailboxes` is empty, `epic1Pay` fails with `NoSharedMailbox` before
+anything is stored: nothing says the payee reads the user's mailboxes. Ask the user for the
+payee's mailbox and pay again with it in `mailboxes`. `Epic1Paid.attempts` lists the posts, `posted` the route, from
 0, the payment was posted on, and `uncertain` the first route that may hold the payment though its
 post failed: show that the payment may still arrive and do not offer to pay again. A second payment
 to a link is made while the first waits. The delivery loop reads the payment's answer on the relays
@@ -1235,24 +1241,47 @@ loop, or in the reply to an `http` or `tor` post. `epic1Answers` lists the answe
 (`mailbox`) and whether each was `posted`. Both sides write native slates (`format` is always
 `Native`).
 
-### The relay list
+### The mailbox list
 
-The relay list is the wallet's own Epicbox relay, then the meeting relays, in order. Delivery
-mailboxes are posted to and read on each relay of the list not known to lack mux/1, and every call
-that takes a `relayMode` uses the list. The session holds the meeting relays in memory and has none
-when the wallet opens. Call `setMeetingRelays(hosts:)` after each open, the open on a fresh handle
-after a lock included, before `setDelivery`, and again when the user edits the list: a tick or claim
-without it stops watching the meeting relays' mailboxes until the next call with the list, and
-`epic1Restore` without it reads the wallet's own relay only. Each host is `domain[:port]`, 443 when
-no port is given, reached over TLS. An empty list clears the meeting relays, and a host given twice
-is kept once. A new list takes effect at the next contact or epic1 call; a running push session gets
-it at the delivery loop's next tick or claim. `setMeetingRelays` fails with `InvalidArgument`,
-changing nothing, for a host that is not a domain with an optional port other than 0, or for more
-than 16 hosts.
+Native mail goes to every mailbox of one list: the app's shipped mailboxes less those the user
+removed, then those the user added, at most 16. The app keeps the list. Its shipped mailboxes are
+in its configuration and the user's changes in its settings; the session holds the list in memory
+only. Call `mailboxSet(shipped:, added:, removed:)` after each open, the open on a fresh handle
+after a lock included, before `setDelivery`, and again when the app's shipped list changes. Until
+then, every call that takes a `relayMode` uses the wallet's own Epicbox relay alone, and
+`mailboxAdd` and `mailboxRemove` fail with `InvalidArgument`. A new list takes effect at the next
+contact or epic1 call; a running push session gets it at the delivery loop's next tick or claim.
 
-`meetingRelays()` returns the meeting relays as set, lowercased: `domain` on port 443,
-`domain:port` on any other. `deliveryState()` lists each relay of the list and whether it serves
-epic1 ([Delivery](#delivery)).
+Each mailbox is `domain[:port]`, 443 when no port is given, reached over TLS. The list keeps the
+host lowercased, without `:443`. `mailboxSet` fails, changing nothing, with `MailboxInvalid` for
+a host that is not a domain with an optional port other than 0, `MailboxNotPublic` for an address,
+a single label, this device or a private-network name, `MailboxListFull` for more than 16 and
+`InvalidArgument` for a list that leaves no mailbox. The error message starts with the host it
+refused.
+
+| Call | Use |
+|---|---|
+| `mailboxList()` | each `MailboxView`: `host`, `origin` (`shipped` or `added`), `push`, `lastSuccessAtMs`, `failures`, `lastError`; synchronous, opens no connection |
+| `mailboxProbe(host:)` | tests TLS, the greeting and push; `MailboxProbe` has a `MailboxProbeStep` per step (`passed`, `failed`, `notReached`), `failure` with why the failed step failed, and `passed` |
+| `mailboxAdd(host:, anyway:)` | tests the mailbox and adds it when the test passed or `anyway` is set |
+| `mailboxRemove(host:)` | takes the mailbox off the list |
+
+`mailboxAdd` returns `MailboxAdded`: `added`, the `probe`, and `changes`. `mailboxRemove` returns
+`MailboxRemoved`: `removed` and `changes`. `changes` (`MailboxChanges`) holds the user's `added`
+and `removed` lists: store them in the app's settings and give them to the next `mailboxSet`.
+When the test fails, show it and offer to add the mailbox anyway; `added` is false until the user
+chooses that. A removed shipped mailbox added again comes back as shipped. `mailboxAdd` fails with
+`MailboxListFull` when the list holds 16, and `mailboxRemove` with `LastMailbox` for the last
+one. Both fail with `MailboxInvalid` or `MailboxNotPublic` for the host, `anyway` or not. Health
+never takes a mailbox off the list.
+
+`epic1Restore` reads every mailbox of the list and returns `Epic1Restored`: `taken` and
+`notRead`, each mailbox it could not read (`Epic1NotRead`: `host` and `reason`, `noPush`,
+`notAnswering` or `slotsLeftOut`). It fails with `TransportFailed` only when no mailbox could be
+read.
+
+`watchEpicboxSessions` tells `noneReachable` once when no mailbox of the list can be reached, and
+`mailboxBack` when one attaches again.
 
 ### Sealed text
 
@@ -1367,7 +1396,7 @@ When `txId` is set, the call stored a transaction and a later step failed. Cance
 `cancelTransaction(txId:)` or run the step again; until then its inputs stay locked.
 
 Each call's doc comment lists the kinds it throws. The numbers are part of the API. Numbers 28,
-32 to 36, 38, 39, 83, 86, 94, 97 to 101, 105 and 114 are unused. `WalletErrorKind.code()` is an
+32 to 36, 38, 39, 65, 83, 86, 94, 97 to 101, 105, 107 and 114 are unused. `WalletErrorKind.code()` is an
 `async` call that returns the number; a caught `WalletError` already carries it in `code`.
 
 ### Wallet and password
@@ -1482,7 +1511,6 @@ locked, and `txId` is set.
 | 62 | `contactNotFound` | no paired contact has that id, or it is not in the state the call needs |
 | 63 | `pairingNotFound` | no pairing in progress has that id |
 | 64 | `contactNotVerified` | the contact's words were not checked; invoices need a verified contact |
-| 65 | `pairingWordsUnavailable` | pairing words exist only on LEPIC's built-in relays; share the link |
 | 66 | `sealingOff` | sealing is off for the contact, or its wallet cannot open sealed text |
 | 67 | `noSlateToSend` | the transaction has no slate to send, or the outbox has no entry with that id |
 | 68 | `sealedForAnotherWallet` | the sealed text is for another wallet or install, or signed by someone else |
@@ -1507,12 +1535,16 @@ locked, and `txId` is set.
 | 103 | `epic1CannotPay` | the link names no transport this wallet can use |
 | 104 | `epic1NoMoreRelays` | the payment went to every transport of the link |
 | 106 | `epic1NotFound` | no epic1 payment or answer for the slate, or the address was never handed out by this wallet |
-| 107 | `ownRelayLocal` | the wallet's relay is on this device, so no other device reaches the reply mailbox a payment names on it |
 | 108 | `epic1RelayInvalid` | a link entry is not an `http` host or onion with an optional port, its host is on this device, or there are more than three |
 | 109 | `epic1MessageInvalid` | the message is longer than a link carries or holds control characters |
 | 110 | `epic1Finalized` | the epic1 payment was finalized already |
 | 111 | `epic1WrongNetwork` | the link or its slate is for another network |
 | 112 | `notAnEpic1Link` | the text is not an epic1 link |
+| 119 | `noSharedMailbox` | the payer's mailbox list keeps none of the shipped mailboxes and the call names none; nothing was stored |
+| 120 | `mailboxInvalid` | the mailbox is not a host name with an optional port other than 0 |
+| 121 | `mailboxNotPublic` | the mailbox is an address, a single label, this device or a private-network name |
+| 122 | `mailboxListFull` | the mailbox list holds 16 |
+| 123 | `lastMailbox` | the last mailbox of the list cannot be removed |
 
 ## Testing
 
