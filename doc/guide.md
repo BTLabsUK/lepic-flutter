@@ -1395,6 +1395,7 @@ Every fallible call throws a `WalletError`. Its fields:
 | `txId` | the stored transaction a failed call left behind with its inputs locked, if any |
 | `setAside` | for `DamagedDatabase` and `DamagedKept`, the path of the damaged database file LEPIC kept; `null` otherwise |
 | `retryAfterSecs` | the seconds a mailbox or peer asked the wallet to wait before it posts again, when a refusal named a wait (a rate limit or a full slot); `null` otherwise |
+| `mailbox` | the mailbox, `host[:port]`, that refused a post, or that an epic1 link of an earlier release names, when the error says which; `null` otherwise |
 
 `toString` prints `WalletError(<kind name>, <code>): <message>`. Branch on `kind`, not on the
 message.
@@ -1569,6 +1570,7 @@ locked, and `txId` is set.
 | 121 | `mailboxNotPublic` | the mailbox is an address, a single label, this device or a private-network name |
 | 122 | `mailboxListFull` | the mailbox list holds 16 |
 | 123 | `lastMailbox` | the last mailbox of the list cannot be removed |
+| 125 | `earlierEpic1Address` | the text is an epic1 address or link of LEPIC 0.5 or earlier, which this version cannot read; nothing was stored. `mailbox` names the link's mailbox when it has one. Ask for the payee's Epicbox address or an epic1 address or link from an updated wallet |
 
 ## Testing
 

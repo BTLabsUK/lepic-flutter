@@ -36,6 +36,11 @@ class WalletError implements FrbException {
   /// message can be tried again after it. A longer wait than `u32` holds reads as `u32::MAX`.
   final int? retryAfterSecs;
 
+  /// The mailbox, `host[:port]`, that refused a post (a rate limit, a full slot, a refusal),
+  /// or that an epic1 link of an earlier release names (`EarlierEpic1Address`). `None` when
+  /// the error names none, as for a bare address or a refusal of a native endpoint.
+  final String? mailbox;
+
   const WalletError({
     required this.kind,
     required this.code,
@@ -43,6 +48,7 @@ class WalletError implements FrbException {
     this.txId,
     this.setAside,
     this.retryAfterSecs,
+    this.mailbox,
   });
 
   @override
@@ -55,7 +61,8 @@ class WalletError implements FrbException {
       message.hashCode ^
       txId.hashCode ^
       setAside.hashCode ^
-      retryAfterSecs.hashCode;
+      retryAfterSecs.hashCode ^
+      mailbox.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -67,7 +74,8 @@ class WalletError implements FrbException {
           message == other.message &&
           txId == other.txId &&
           setAside == other.setAside &&
-          retryAfterSecs == other.retryAfterSecs;
+          retryAfterSecs == other.retryAfterSecs &&
+          mailbox == other.mailbox;
 }
 
 /// What went wrong, in terms the app can act on. The numbers in [`WalletErrorKind::code`] are
@@ -452,7 +460,13 @@ enum WalletErrorKind {
   /// again gives this again; `start_over` (or `start_over_with_pin`) makes a new, empty
   /// database once the user asks for it. Unlike `DamagedDatabase`, retrying the open never
   /// helps.
-  damagedKept;
+  damagedKept,
+
+  /// The text is an epic1 address or link of LEPIC 0.5 or earlier. This version cannot read
+  /// it, and nothing was stored. When the link names a mailbox, [`WalletError::mailbox`] has
+  /// it. Ask the payee for their Epicbox address (the one with an `@`) or an epic1 address
+  /// or link from an updated wallet.
+  earlierEpic1Address;
 
   /// The stable number of this kind.
   Future<int> code() =>

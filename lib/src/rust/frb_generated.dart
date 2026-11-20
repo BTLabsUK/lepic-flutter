@@ -13066,8 +13066,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   WalletError dco_decode_wallet_error(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 6)
-      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
     return WalletError(
       kind: dco_decode_wallet_error_kind(arr[0]),
       code: dco_decode_u_32(arr[1]),
@@ -13075,6 +13075,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       txId: dco_decode_opt_box_autoadd_u_32(arr[3]),
       setAside: dco_decode_opt_String(arr[4]),
       retryAfterSecs: dco_decode_opt_box_autoadd_u_32(arr[5]),
+      mailbox: dco_decode_opt_String(arr[6]),
     );
   }
 
@@ -16937,6 +16938,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_txId = sse_decode_opt_box_autoadd_u_32(deserializer);
     var var_setAside = sse_decode_opt_String(deserializer);
     var var_retryAfterSecs = sse_decode_opt_box_autoadd_u_32(deserializer);
+    var var_mailbox = sse_decode_opt_String(deserializer);
     return WalletError(
       kind: var_kind,
       code: var_code,
@@ -16944,6 +16946,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       txId: var_txId,
       setAside: var_setAside,
       retryAfterSecs: var_retryAfterSecs,
+      mailbox: var_mailbox,
     );
   }
 
@@ -20393,6 +20396,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_u_32(self.txId, serializer);
     sse_encode_opt_String(self.setAside, serializer);
     sse_encode_opt_box_autoadd_u_32(self.retryAfterSecs, serializer);
+    sse_encode_opt_String(self.mailbox, serializer);
   }
 
   @protected
