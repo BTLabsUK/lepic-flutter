@@ -451,10 +451,10 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// that is not one or more than 256 of them.
   Future<int> contactPayloadsAck({required List<String> ids});
 
-  /// Sends `payload`, at most 64 KiB, to `contact_id`, a contact or a private pairing: sealed
-  /// to its keys and signed with this pairing's, queued in the outbox and posted at once when
-  /// the mode is `Online`; the outbox retries it as it retries slates and lists it with the
-  /// returned id as `slate_id`. The other wallet keeps it once under that id, raises
+  /// Sends `payload`, at most 65,535 bytes, to `contact_id`, a contact or a private pairing:
+  /// sealed to its keys and signed with this pairing's, queued in the outbox and posted at once
+  /// when the mode is `Online`; the outbox retries it as it retries slates and lists it with
+  /// the returned id as `slate_id`. The other wallet keeps it once under that id, raises
   /// `ContactPayload` and returns it from [`EpicWallet::contact_payloads`]. LEPIC never reads
   /// the bytes; the app gives them their meaning.
   ///

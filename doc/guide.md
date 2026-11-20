@@ -322,9 +322,12 @@ wallet.setDelivery(mode: ContactRelayMode.online);
 ```
 
 `open` fails with `WrongPassword`, `WalletNotFound` (the store holds no vault), `ForeignWallet`,
-`WalletBusy` and `DamagedDatabase`. On `DamagedDatabase` LEPIC has renamed the database file to
-`<file>.damaged-<unix seconds>`. Opening again builds a new database from the seed, and
-`scan` without a start height then runs from genesis.
+`WalletBusy`, `DamagedDatabase` and `DamagedKept`. On `DamagedDatabase` LEPIC has just renamed
+the database file to `<file>.damaged-<unix seconds>` and kept it; `DamagedKept` means one set
+aside earlier is kept and nothing replaced it. Neither makes a new database, and
+`WalletError.setAside` names the kept file. Opening again fails again with `DamagedKept`: ask the
+user, then call `startOver` (or `startOverWithPin`) and `scan` to the end
+([Errors](#wallet-and-password)).
 
 An opened wallet has no [delivery loop](#delivery) until the app calls `setDelivery`. Call
 `mailboxSet(shipped:, added:, removed:)` first ([The mailbox list](#the-mailbox-list)).
@@ -516,6 +519,7 @@ restarting the app does not reset it.
 | `invoiceFinalized`, `invoicePosted`, `invoiceExpired`, `invoiceDeclined`, `invoiceWithdrawn` | the course of an invoice ([Invoices](#invoices)) |
 | `withdrawalFromContact`, `sealedReceived` | a contact's payment arrived and was received |
 | `contactPaymentFinalized`, `paymentDeclined`, `paymentCancelled`, `notPosted` | the course of a payment this wallet sent |
+| `paymentRefused` | a new payment nobody asked for was refused at an open receipt cap ([Receiving](#receiving)) |
 | `receiveSuperseded`, `paymentPosted` | news about a payment this wallet received |
 | `pairingReplied`, `pairingConfirmed`, `pairingFailed` | pairing steps ([Contacts and pairing](#contacts-and-pairing)) |
 | `contactUpdated`, `contactKeysRestored`, `contactKeysChanged`, `contactRelayMoveRequested`, `contactUnpaired`, `contactPayload`, `contactPayloadsParked` | changes to a contact |
@@ -602,20 +606,19 @@ which), `noRelayId`, or `unsupported` (a relay before 3.1.0). It does not cancel
 `cancelTransaction` after it. A relay that cannot be reached throws; the local cancel can still
 go ahead.
 
-A cancel that arrives from the other wallet is applied by the wallet itself, with no notice. It
-cancels the transaction and unlocks its coins. For the receiver of a send and the payer of an
-invoice it sets `senderReportedCancelledAtMs`; for the sender of a send it sets
-`receiverDeclinedAtMs`. The events `paymentCancelled`, `paymentDeclined`, `invoiceDeclined` and
-`invoiceWithdrawn` report it once. It never finalizes: a transaction already in the pool or on the
-chain is kept and still lands.
+A cancellation the relay reports for the other wallet changes nothing here: LEPIC logs it and
+raises no event. Only the other wallet's own notice or the chain moves a transaction.
 
-A notice is different (LEPIC ADR 0067). No notice changes a transaction. When the receiver of a
-send declines it with a notice, the wallet sets `receiverDeclinedAtMs` and raises
-`paymentDeclined` once; the send stays open until the app calls `cancelTransaction`. A cancel that
-was already made returns the usual error and can be ignored. A sender's `posted` or `cancelled`
-notice sets `senderReportedPostedAtMs` or `senderReportedCancelledAtMs` and raises its event; the
-payment itself stays as it is. App payloads (`contactPostPayload`) use the same path: they raise
-no `deliveryChanged` and `contactOutbox` does not list them.
+When the receiver of a send declines it unanswered with a notice (a paired contact, or the payee
+of an epic1 payment), the send never happened: LEPIC erases it with its change and unlocks its
+inputs, and raises `paymentDeclined` once with its `txId` and `slateId`. That `txId` no longer
+names a stored transaction, so drop the send from the list. `receiverDeclinedAtMs` is set only on
+a send an older version recorded as declined, or one a decline could not erase (a send to the
+wallet itself, or one an open recovery holds); show such a send as declined by the receiver. A
+sender's `posted` or `cancelled` notice sets `senderReportedPostedAtMs` or
+`senderReportedCancelledAtMs` and raises its event; the payment itself stays as it is. App
+payloads (`contactPostPayload`) use the same path: they raise no `deliveryChanged` and
+`contactOutbox` does not list them.
 `recoverTransaction(txId:)` gives up a send the network may never mine, once
 `TransactionDetails.recoverable` says it can: it pushes a send to this wallet that spends the send's
 own inputs, so the coins come back and the send can never be mined. The returned details carry the
@@ -634,6 +637,14 @@ to a route of an epic1 link or to a contact's mailbox. Its `state` is `queued`, 
 `uncertain` (the post went unanswered and is posted again on the same route; it may have arrived)
 or `failed` (no route took it, or its time or cutoff ran out); `updatedAtMs` and `error` go with
 it. Each change raises one `deliveryChanged` event with `slateId`, `relay` and `deliveryState`.
+
+A send over stock Epicbox that is still unanswered a day after it was made is marked once by a
+refresh: `TransactionDetails.unansweredAtMs` gives when, `delivery` reads `uncertain` from that
+time with no `error`, and one `deliveryChanged` event with `deliveryState` `uncertain` and the
+receiver's address as `relay` is raised. Nothing is posted again. Such a receiver may be offline
+or at its open receipt caps and cannot say so: show the send as not answered, and offer
+`cancelTransaction` or waiting. A later answer still finalizes it. `unansweredAtMs` is null for
+every other transaction and once the send leaves `sent`.
 
 `TransactionDetails.post` (`NodePostView`) holds the wallet's pushes of the finalized transaction
 to the node, and is null until the first push: `attempts`, `lastOutcome` (`accepted`, `refused`
@@ -673,6 +684,14 @@ Payments over Epicbox, HTTP and Tor arrive through the [listeners](#listeners-an
 `drainEpicbox()`, which connects once, handles every pending message and disconnects. It returns an
 `InboxReport` with counts of what was received, finalized, repeated, rejected, held on the relay,
 noticed, dropped and buffered.
+
+A new payment nobody asked for is refused while the wallet holds too many open receipts: 10 from
+one sender's key or 100 in all by default. Nothing is signed or stored, and the wallet raises
+`paymentRefused` with `slateId`, `transport`, `receiptCap` (`perSender` or `total`) and, when the
+transport names the sender's key, `sender`. It is advisory and comes once per refused delivery, so
+a relay that offers the same payment again raises it again. The count drops as open receipts
+confirm or end. An HTTP or Tor sender is told to retry later; a stock Epicbox sender is not told
+and its send waits unanswered.
 
 `drainEpicboxListings(listings:)` drains up to 16 name-service listings (`ListingRef`) one after
 the other on one relay connection where it can, and returns one result per listing in the
@@ -1020,7 +1039,7 @@ the contact's unpaid invoices.
 
 ### Payloads
 
-`contactPostPayload(contactId:, payload:, relayMode:)` sends bytes, at most 64 KiB, to a contact or
+`contactPostPayload(contactId:, payload:, relayMode:)` sends bytes, at most 65,535, to a contact or
 a private pairing, sealed and signed like a slate. LEPIC does not read them. The other wallet raises
 `contactPayload` and keeps the payload until `contactPayloadsAck(ids:)`. `contactPayloads()` lists
 the kept payloads: at most 256 from private pairings together and 32 from each contact. A contact
@@ -1374,6 +1393,7 @@ Every fallible call throws a `WalletError`. Its fields:
 | `code` | the kind's stable number, for an app that stores or sends the error |
 | `message` | English text for logs and bug reports; it never holds a secret |
 | `txId` | the stored transaction a failed call left behind with its inputs locked, if any |
+| `setAside` | for `DamagedDatabase` and `DamagedKept`, the path of the damaged database file LEPIC kept; `null` otherwise |
 | `retryAfterSecs` | the seconds a mailbox or peer asked the wallet to wait before it posts again, when a refusal named a wait (a rate limit or a full slot); `null` otherwise |
 
 `toString` prints `WalletError(<kind name>, <code>): <message>`. Branch on `kind`, not on the

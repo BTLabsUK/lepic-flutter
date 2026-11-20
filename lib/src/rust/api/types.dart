@@ -12,7 +12,7 @@ import 'policy.dart';
 import 'tor.dart';
 
 // These functions are ignored because they are not marked as `pub`: `engine`, `network`, `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Why the wallet ended a transaction `Cancelled`. Values are only added, at the end.
 enum CancelledReason {
@@ -412,6 +412,8 @@ enum DeliveryState {
   sent,
 
   /// The post went unanswered and is posted again on the same route; it may have arrived.
+  /// For a send over stock Epicbox, the receiver has not answered for a day
+  /// (`TransactionDetails.unanswered_at_ms`); nothing is posted again.
   uncertain,
 
   /// No route took it, or its time or cutoff ran out.
@@ -2914,6 +2916,15 @@ class QuarantinedMessageView {
           size == other.size;
 }
 
+/// An open receipt cap, for `PaymentRefused`. Values are only added, at the end.
+enum ReceiptCap {
+  /// The cap on open receipts from one sender's key.
+  perSender,
+
+  /// The cap on open receipts in all.
+  total,
+}
+
 /// The answer to a received slate, from `EpicWallet::receive_slate` and
 /// `EpicWallet::receive_file`.
 class ReceivedSlate {
@@ -3800,10 +3811,19 @@ class TransactionDetails {
   final PlatformInt64? senderReportedCancelledAtMs;
 
   /// For a send this wallet made: when its receiver refused it unanswered, as a wallet set to
-  /// refuse payments nobody asked for does (`PaymentDeclined`, ADR 0045). The send is not
-  /// cancelled by it (ADR 0067): `cancel_transaction` frees its inputs. `None` for every other
-  /// transaction.
+  /// refuse payments nobody asked for does (ADR 0045). A send declined now is erased with its
+  /// change and its inputs unlocked (`PaymentDeclined`), so this is set only on a send an
+  /// older version recorded as declined, or one a decline could not erase: a send to the
+  /// wallet itself, or one an open recovery holds. Show the send as declined by the receiver.
+  /// `None` for every other transaction.
   final PlatformInt64? receiverDeclinedAtMs;
+
+  /// For a send over stock Epicbox still waiting for its answer: when a refresh marked it
+  /// unanswered, a day after it was made. Such a receiver may be offline or at its open
+  /// receipt caps, and cannot say so. Show the send as not answered; an answer that comes
+  /// later still finalizes it. `delivery` reads `Uncertain` from the same time. `None` for
+  /// every other transaction, and once the send leaves `Sent`.
+  final PlatformInt64? unansweredAtMs;
 
   /// For origin `OtherWallet` outgoing: no completed scan has covered its blocks yet, so the
   /// node's answers are its only evidence. Show it as unverified until a scan confirms it.
@@ -3885,6 +3905,7 @@ class TransactionDetails {
     this.senderReportedPostedAtMs,
     this.senderReportedCancelledAtMs,
     this.receiverDeclinedAtMs,
+    this.unansweredAtMs,
     required this.unverified,
     required this.coinbase,
     required this.relayCancellable,
@@ -3926,6 +3947,7 @@ class TransactionDetails {
       senderReportedPostedAtMs.hashCode ^
       senderReportedCancelledAtMs.hashCode ^
       receiverDeclinedAtMs.hashCode ^
+      unansweredAtMs.hashCode ^
       unverified.hashCode ^
       coinbase.hashCode ^
       relayCancellable.hashCode ^
@@ -3969,6 +3991,7 @@ class TransactionDetails {
           senderReportedPostedAtMs == other.senderReportedPostedAtMs &&
           senderReportedCancelledAtMs == other.senderReportedCancelledAtMs &&
           receiverDeclinedAtMs == other.receiverDeclinedAtMs &&
+          unansweredAtMs == other.unansweredAtMs &&
           unverified == other.unverified &&
           coinbase == other.coinbase &&
           relayCancellable == other.relayCancellable &&
@@ -4297,7 +4320,8 @@ class WalletEvent {
   /// Hex of the kernel excess, for `InvoicePosted` and `PaymentPosted`.
   final String? kernelExcess;
 
-  /// The Epicbox address a message came from, for `UnknownSlate`.
+  /// The Epicbox address a message came from, for `UnknownSlate`; for `PaymentRefused`, the
+  /// sender's key as the transport names it.
   final String? sender;
 
   /// The slate's stage, `S2` or `I2`, for `UnknownSlate`.
@@ -4346,6 +4370,9 @@ class WalletEvent {
   /// For `DeliveryChanged`: the state the post moved to.
   final DeliveryState? deliveryState;
 
+  /// For `PaymentRefused`: the cap that refused it; `None` for a cap a later core adds.
+  final ReceiptCap? receiptCap;
+
   const WalletEvent({
     required this.kind,
     this.session,
@@ -4379,6 +4406,7 @@ class WalletEvent {
     this.sameCode,
     this.recoveryState,
     this.deliveryState,
+    this.receiptCap,
   });
 
   @override
@@ -4414,7 +4442,8 @@ class WalletEvent {
       checkCode.hashCode ^
       sameCode.hashCode ^
       recoveryState.hashCode ^
-      deliveryState.hashCode;
+      deliveryState.hashCode ^
+      receiptCap.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -4452,7 +4481,8 @@ class WalletEvent {
           checkCode == other.checkCode &&
           sameCode == other.sameCode &&
           recoveryState == other.recoveryState &&
-          deliveryState == other.deliveryState;
+          deliveryState == other.deliveryState &&
+          receiptCap == other.receiptCap;
 }
 
 enum WalletEventKind {
@@ -4627,11 +4657,11 @@ enum WalletEventKind {
   contactPayloadsParked,
 
   /// The receiver of a send this wallet made refused it unanswered, as a wallet set to refuse
-  /// payments nobody asked for does (ADR 0045): `tx_id` and `slate_id` are set. The send is
-  /// not cancelled by it (ADR 0067): call `cancel_transaction` to free its inputs. Its
-  /// `receiver_declined_at_ms` is set from now on. Raised once per send, over Epicbox from a
-  /// LEPIC receiver or from a paired contact. A receiver that cancelled the payment on an
-  /// Epicbox 3.1.0 relay raises it too, after the send's `Transaction` event to `Cancelled`.
+  /// payments nobody asked for does (ADR 0045), and said so authenticated: a paired contact,
+  /// or the payee of an epic1 payment to the send's reply key. `tx_id` and `slate_id` are
+  /// set. The send never happened: it was erased with its change and its inputs unlocked, so
+  /// `tx_id` no longer names a stored transaction. Raised once per send. A cancellation the
+  /// relay reports raises nothing.
   paymentDeclined,
 
   /// An answer to an in-person code this wallet showed was taken, from its reply mailbox or
@@ -4650,6 +4680,14 @@ enum WalletEventKind {
   /// took it, or its time or cutoff ran out), or from `Uncertain` to `Sent` (the same route
   /// took it later). Raised once per change.
   deliveryChanged,
+
+  /// A new payment nobody asked for was refused at an open receipt cap, the sender's or the
+  /// wallet's in all: `slate_id`, `transport`, `receipt_cap` and, when the transport names
+  /// the sender's key, `sender` are set. Nothing was signed or stored and no receipt was
+  /// cancelled. Advisory: the count drops as open receipts confirm or end. Raised once per
+  /// refused delivery, so a relay that offers the same payment again raises it again; over
+  /// stock Epicbox the sender is not told.
+  paymentRefused,
 }
 
 /// An output of the wallet, from `EpicWallet::outputs`.

@@ -10600,6 +10600,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ReceiptCap dco_decode_box_autoadd_receipt_cap(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_receipt_cap(raw);
+  }
+
+  @protected
   RecoveryState dco_decode_box_autoadd_recovery_state(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_recovery_state(raw);
@@ -12093,6 +12099,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ReceiptCap? dco_decode_opt_box_autoadd_receipt_cap(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_receipt_cap(raw);
+  }
+
+  @protected
   RecoveryState? dco_decode_opt_box_autoadd_recovery_state(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_box_autoadd_recovery_state(raw);
@@ -12439,6 +12451,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       attempts: dco_decode_u_32(arr[4]),
       size: dco_decode_u_64(arr[5]),
     );
+  }
+
+  @protected
+  ReceiptCap dco_decode_receipt_cap(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ReceiptCap.values[raw as int];
   }
 
   @protected
@@ -12873,8 +12891,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TransactionDetails dco_decode_transaction_details(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 37)
-      throw Exception('unexpected arr length: expect 37 but see ${arr.length}');
+    if (arr.length != 38)
+      throw Exception('unexpected arr length: expect 38 but see ${arr.length}');
     return TransactionDetails(
       txId: dco_decode_u_32(arr[0]),
       direction: dco_decode_tx_direction(arr[1]),
@@ -12902,17 +12920,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       senderReportedPostedAtMs: dco_decode_opt_box_autoadd_i_64(arr[23]),
       senderReportedCancelledAtMs: dco_decode_opt_box_autoadd_i_64(arr[24]),
       receiverDeclinedAtMs: dco_decode_opt_box_autoadd_i_64(arr[25]),
-      unverified: dco_decode_bool(arr[26]),
-      coinbase: dco_decode_bool(arr[27]),
-      relayCancellable: dco_decode_bool(arr[28]),
-      expiredReason: dco_decode_opt_box_autoadd_expired_reason(arr[29]),
-      cancelledReason: dco_decode_opt_box_autoadd_cancelled_reason(arr[30]),
-      recovery: dco_decode_opt_box_autoadd_transaction_recovery(arr[31]),
-      recoveryOf: dco_decode_opt_box_autoadd_u_32(arr[32]),
-      recoverable: dco_decode_bool(arr[33]),
-      delivery: dco_decode_opt_box_autoadd_delivery_view(arr[34]),
-      post: dco_decode_opt_box_autoadd_node_post_view(arr[35]),
-      receivedAtEpic1: dco_decode_bool(arr[36]),
+      unansweredAtMs: dco_decode_opt_box_autoadd_i_64(arr[26]),
+      unverified: dco_decode_bool(arr[27]),
+      coinbase: dco_decode_bool(arr[28]),
+      relayCancellable: dco_decode_bool(arr[29]),
+      expiredReason: dco_decode_opt_box_autoadd_expired_reason(arr[30]),
+      cancelledReason: dco_decode_opt_box_autoadd_cancelled_reason(arr[31]),
+      recovery: dco_decode_opt_box_autoadd_transaction_recovery(arr[32]),
+      recoveryOf: dco_decode_opt_box_autoadd_u_32(arr[33]),
+      recoverable: dco_decode_bool(arr[34]),
+      delivery: dco_decode_opt_box_autoadd_delivery_view(arr[35]),
+      post: dco_decode_opt_box_autoadd_node_post_view(arr[36]),
+      receivedAtEpic1: dco_decode_bool(arr[37]),
     );
   }
 
@@ -13069,8 +13088,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   WalletEvent dco_decode_wallet_event(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 32)
-      throw Exception('unexpected arr length: expect 32 but see ${arr.length}');
+    if (arr.length != 33)
+      throw Exception('unexpected arr length: expect 33 but see ${arr.length}');
     return WalletEvent(
       kind: dco_decode_wallet_event_kind(arr[0]),
       session: dco_decode_opt_box_autoadd_session_state(arr[1]),
@@ -13108,6 +13127,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       sameCode: dco_decode_opt_box_autoadd_bool(arr[29]),
       recoveryState: dco_decode_opt_box_autoadd_recovery_state(arr[30]),
       deliveryState: dco_decode_opt_box_autoadd_delivery_state(arr[31]),
+      receiptCap: dco_decode_opt_box_autoadd_receipt_cap(arr[32]),
     );
   }
 
@@ -13650,6 +13670,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_pin_settings(deserializer));
+  }
+
+  @protected
+  ReceiptCap sse_decode_box_autoadd_receipt_cap(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_receipt_cap(deserializer));
   }
 
   @protected
@@ -15656,6 +15682,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ReceiptCap? sse_decode_opt_box_autoadd_receipt_cap(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_receipt_cap(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   RecoveryState? sse_decode_opt_box_autoadd_recovery_state(
     SseDeserializer deserializer,
   ) {
@@ -16151,6 +16190,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       attempts: var_attempts,
       size: var_size,
     );
+  }
+
+  @protected
+  ReceiptCap sse_decode_receipt_cap(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return ReceiptCap.values[inner];
   }
 
   @protected
@@ -16670,6 +16716,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_receiverDeclinedAtMs = sse_decode_opt_box_autoadd_i_64(
       deserializer,
     );
+    var var_unansweredAtMs = sse_decode_opt_box_autoadd_i_64(deserializer);
     var var_unverified = sse_decode_bool(deserializer);
     var var_coinbase = sse_decode_bool(deserializer);
     var var_relayCancellable = sse_decode_bool(deserializer);
@@ -16714,6 +16761,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       senderReportedPostedAtMs: var_senderReportedPostedAtMs,
       senderReportedCancelledAtMs: var_senderReportedCancelledAtMs,
       receiverDeclinedAtMs: var_receiverDeclinedAtMs,
+      unansweredAtMs: var_unansweredAtMs,
       unverified: var_unverified,
       coinbase: var_coinbase,
       relayCancellable: var_relayCancellable,
@@ -16954,6 +17002,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_deliveryState = sse_decode_opt_box_autoadd_delivery_state(
       deserializer,
     );
+    var var_receiptCap = sse_decode_opt_box_autoadd_receipt_cap(deserializer);
     return WalletEvent(
       kind: var_kind,
       session: var_session,
@@ -16987,6 +17036,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       sameCode: var_sameCode,
       recoveryState: var_recoveryState,
       deliveryState: var_deliveryState,
+      receiptCap: var_receiptCap,
     );
   }
 
@@ -17710,6 +17760,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_pin_settings(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_receipt_cap(
+    ReceiptCap self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_receipt_cap(self, serializer);
   }
 
   @protected
@@ -19346,6 +19405,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_opt_box_autoadd_receipt_cap(
+    ReceiptCap? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_receipt_cap(self, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_opt_box_autoadd_recovery_state(
     RecoveryState? self,
     SseSerializer serializer,
@@ -19781,6 +19853,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_receipt_cap(ReceiptCap self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
   void sse_encode_received_slate(ReceivedSlate self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_32(self.txId, serializer);
@@ -20166,6 +20244,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       serializer,
     );
     sse_encode_opt_box_autoadd_i_64(self.receiverDeclinedAtMs, serializer);
+    sse_encode_opt_box_autoadd_i_64(self.unansweredAtMs, serializer);
     sse_encode_bool(self.unverified, serializer);
     sse_encode_bool(self.coinbase, serializer);
     sse_encode_bool(self.relayCancellable, serializer);
@@ -20366,6 +20445,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_bool(self.sameCode, serializer);
     sse_encode_opt_box_autoadd_recovery_state(self.recoveryState, serializer);
     sse_encode_opt_box_autoadd_delivery_state(self.deliveryState, serializer);
+    sse_encode_opt_box_autoadd_receipt_cap(self.receiptCap, serializer);
   }
 
   @protected
@@ -20798,10 +20878,10 @@ class EpicWalletImpl extends RustOpaque implements EpicWallet {
       .api
       .crateApiWalletEpicWalletContactPayloadsAck(that: this, ids: ids);
 
-  /// Sends `payload`, at most 64 KiB, to `contact_id`, a contact or a private pairing: sealed
-  /// to its keys and signed with this pairing's, queued in the outbox and posted at once when
-  /// the mode is `Online`; the outbox retries it as it retries slates and lists it with the
-  /// returned id as `slate_id`. The other wallet keeps it once under that id, raises
+  /// Sends `payload`, at most 65,535 bytes, to `contact_id`, a contact or a private pairing:
+  /// sealed to its keys and signed with this pairing's, queued in the outbox and posted at once
+  /// when the mode is `Online`; the outbox retries it as it retries slates and lists it with
+  /// the returned id as `slate_id`. The other wallet keeps it once under that id, raises
   /// `ContactPayload` and returns it from [`EpicWallet::contact_payloads`]. LEPIC never reads
   /// the bytes; the app gives them their meaning.
   ///

@@ -303,6 +303,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PinSettings dco_decode_box_autoadd_pin_settings(dynamic raw);
 
   @protected
+  ReceiptCap dco_decode_box_autoadd_receipt_cap(dynamic raw);
+
+  @protected
   RecoveryState dco_decode_box_autoadd_recovery_state(dynamic raw);
 
   @protected
@@ -774,6 +777,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ReceiptCap? dco_decode_opt_box_autoadd_receipt_cap(dynamic raw);
+
+  @protected
   RecoveryState? dco_decode_opt_box_autoadd_recovery_state(dynamic raw);
 
   @protected
@@ -896,6 +902,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   QuarantinedMessageView dco_decode_quarantined_message_view(dynamic raw);
+
+  @protected
+  ReceiptCap dco_decode_receipt_cap(dynamic raw);
 
   @protected
   ReceivedSlate dco_decode_received_slate(dynamic raw);
@@ -1343,6 +1352,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PinSettings sse_decode_box_autoadd_pin_settings(SseDeserializer deserializer);
+
+  @protected
+  ReceiptCap sse_decode_box_autoadd_receipt_cap(SseDeserializer deserializer);
 
   @protected
   RecoveryState sse_decode_box_autoadd_recovery_state(
@@ -1926,6 +1938,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ReceiptCap? sse_decode_opt_box_autoadd_receipt_cap(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   RecoveryState? sse_decode_opt_box_autoadd_recovery_state(
     SseDeserializer deserializer,
   );
@@ -2082,6 +2099,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   QuarantinedMessageView sse_decode_quarantined_message_view(
     SseDeserializer deserializer,
   );
+
+  @protected
+  ReceiptCap sse_decode_receipt_cap(SseDeserializer deserializer);
 
   @protected
   ReceivedSlate sse_decode_received_slate(SseDeserializer deserializer);
@@ -2626,6 +2646,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_box_autoadd_pin_settings(
     PinSettings self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_receipt_cap(
+    ReceiptCap self,
     SseSerializer serializer,
   );
 
@@ -3350,6 +3376,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_opt_box_autoadd_receipt_cap(
+    ReceiptCap? self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_opt_box_autoadd_recovery_state(
     RecoveryState? self,
     SseSerializer serializer,
@@ -3543,6 +3575,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     QuarantinedMessageView self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_receipt_cap(ReceiptCap self, SseSerializer serializer);
 
   @protected
   void sse_encode_received_slate(ReceivedSlate self, SseSerializer serializer);
