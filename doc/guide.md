@@ -1337,7 +1337,8 @@ value is read when the wallet is created, restored or opened; changing it means 
 again. `setServers` and `nodeTipFor` fail with `InvalidArgument` for another value.
 
 Every call that needs the node or the Epicbox relay fails at once with `Offline`, before any name
-lookup or connection. That includes `scan`, a refresh and `kernelOnChain`.
+lookup or connection. That includes `scan`, a refresh and `kernelOnChain`. Sends and resends over
+HTTP or Tor fail the same way, before any coins are locked.
 
 Sending, receiving and finalizing by slate text or file, and their invoice stages, work. They use
 the highest chain tip the last refresh confirmed, and fail with `Offline` when there is none, so
