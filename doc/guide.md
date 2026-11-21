@@ -1201,7 +1201,9 @@ only when relays are not reached over Tor only. `InPersonPosted.routes` lists an
 `InPersonRoutePost` per route, the mailbox first, with the `route`, an `outcome` (`accepted`,
 `refused` or `failed`) and a `reason`. A shop refuses with `already_finalized`, `expired`,
 `inputs_spent` or `bad_answer`; a failed http route in Tor-only mode reads `tor_expected`. A
-refusal cancels nothing: the app cancels the payment when a route refused and none accepted.
+refusal cancels nothing: the app cancels the payment when a direct route refused and no direct
+route accepted, whatever the mailbox did. A direct refusal is final; the shop answers a repeat
+of an answer it finalized as accepted.
 
 ### Animated QR codes
 
