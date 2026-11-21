@@ -270,7 +270,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ImportedTx dco_decode_box_autoadd_imported_tx(dynamic raw);
 
   @protected
+  InPersonClaim dco_decode_box_autoadd_in_person_claim(dynamic raw);
+
+  @protected
   InPersonHost dco_decode_box_autoadd_in_person_host(dynamic raw);
+
+  @protected
+  InPersonInvoiceOptions dco_decode_box_autoadd_in_person_invoice_options(
+    dynamic raw,
+  );
 
   @protected
   InboxReport dco_decode_box_autoadd_inbox_report(dynamic raw);
@@ -506,13 +514,28 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   InPersonAnswerView dco_decode_in_person_answer_view(dynamic raw);
 
   @protected
+  InPersonClaim dco_decode_in_person_claim(dynamic raw);
+
+  @protected
   InPersonCode dco_decode_in_person_code(dynamic raw);
 
   @protected
   InPersonCodeView dco_decode_in_person_code_view(dynamic raw);
 
   @protected
+  InPersonDomainCheck dco_decode_in_person_domain_check(dynamic raw);
+
+  @protected
+  InPersonDomainState dco_decode_in_person_domain_state(dynamic raw);
+
+  @protected
   InPersonHost dco_decode_in_person_host(dynamic raw);
+
+  @protected
+  InPersonInvoiceOptions dco_decode_in_person_invoice_options(dynamic raw);
+
+  @protected
+  InPersonPostOutcome dco_decode_in_person_post_outcome(dynamic raw);
 
   @protected
   InPersonPosted dco_decode_in_person_posted(dynamic raw);
@@ -525,6 +548,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   InPersonReply dco_decode_in_person_reply(dynamic raw);
+
+  @protected
+  InPersonRoute dco_decode_in_person_route(dynamic raw);
+
+  @protected
+  InPersonRoutePost dco_decode_in_person_route_post(dynamic raw);
 
   @protected
   InPersonTaken dco_decode_in_person_taken(dynamic raw);
@@ -588,6 +617,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<InPersonAnswerView> dco_decode_list_in_person_answer_view(dynamic raw);
+
+  @protected
+  List<InPersonRoute> dco_decode_list_in_person_route(dynamic raw);
+
+  @protected
+  List<InPersonRoutePost> dco_decode_list_in_person_route_post(dynamic raw);
 
   @protected
   List<ListingDrain> dco_decode_list_listing_drain(dynamic raw);
@@ -751,6 +786,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImportedTx? dco_decode_opt_box_autoadd_imported_tx(dynamic raw);
+
+  @protected
+  InPersonClaim? dco_decode_opt_box_autoadd_in_person_claim(dynamic raw);
 
   @protected
   InPersonHost? dco_decode_opt_box_autoadd_in_person_host(dynamic raw);
@@ -1311,7 +1349,17 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ImportedTx sse_decode_box_autoadd_imported_tx(SseDeserializer deserializer);
 
   @protected
+  InPersonClaim sse_decode_box_autoadd_in_person_claim(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   InPersonHost sse_decode_box_autoadd_in_person_host(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  InPersonInvoiceOptions sse_decode_box_autoadd_in_person_invoice_options(
     SseDeserializer deserializer,
   );
 
@@ -1601,13 +1649,36 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  InPersonClaim sse_decode_in_person_claim(SseDeserializer deserializer);
+
+  @protected
   InPersonCode sse_decode_in_person_code(SseDeserializer deserializer);
 
   @protected
   InPersonCodeView sse_decode_in_person_code_view(SseDeserializer deserializer);
 
   @protected
+  InPersonDomainCheck sse_decode_in_person_domain_check(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  InPersonDomainState sse_decode_in_person_domain_state(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   InPersonHost sse_decode_in_person_host(SseDeserializer deserializer);
+
+  @protected
+  InPersonInvoiceOptions sse_decode_in_person_invoice_options(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  InPersonPostOutcome sse_decode_in_person_post_outcome(
+    SseDeserializer deserializer,
+  );
 
   @protected
   InPersonPosted sse_decode_in_person_posted(SseDeserializer deserializer);
@@ -1622,6 +1693,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   InPersonReply sse_decode_in_person_reply(SseDeserializer deserializer);
+
+  @protected
+  InPersonRoute sse_decode_in_person_route(SseDeserializer deserializer);
+
+  @protected
+  InPersonRoutePost sse_decode_in_person_route_post(
+    SseDeserializer deserializer,
+  );
 
   @protected
   InPersonTaken sse_decode_in_person_taken(SseDeserializer deserializer);
@@ -1699,6 +1778,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<InPersonAnswerView> sse_decode_list_in_person_answer_view(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<InPersonRoute> sse_decode_list_in_person_route(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  List<InPersonRoutePost> sse_decode_list_in_person_route_post(
     SseDeserializer deserializer,
   );
 
@@ -1896,6 +1985,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ImportedTx? sse_decode_opt_box_autoadd_imported_tx(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  InPersonClaim? sse_decode_opt_box_autoadd_in_person_claim(
     SseDeserializer deserializer,
   );
 
@@ -2586,8 +2680,20 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_in_person_claim(
+    InPersonClaim self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_in_person_host(
     InPersonHost self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_in_person_invoice_options(
+    InPersonInvoiceOptions self,
     SseSerializer serializer,
   );
 
@@ -2955,6 +3061,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_in_person_claim(InPersonClaim self, SseSerializer serializer);
+
+  @protected
   void sse_encode_in_person_code(InPersonCode self, SseSerializer serializer);
 
   @protected
@@ -2964,7 +3073,31 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_in_person_domain_check(
+    InPersonDomainCheck self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_in_person_domain_state(
+    InPersonDomainState self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_in_person_host(InPersonHost self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_in_person_invoice_options(
+    InPersonInvoiceOptions self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_in_person_post_outcome(
+    InPersonPostOutcome self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_in_person_posted(
@@ -2983,6 +3116,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_in_person_reply(InPersonReply self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_in_person_route(InPersonRoute self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_in_person_route_post(
+    InPersonRoutePost self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_in_person_taken(InPersonTaken self, SseSerializer serializer);
@@ -3074,6 +3216,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_in_person_answer_view(
     List<InPersonAnswerView> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_in_person_route(
+    List<InPersonRoute> self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_list_in_person_route_post(
+    List<InPersonRoutePost> self,
     SseSerializer serializer,
   );
 
@@ -3326,6 +3480,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_imported_tx(
     ImportedTx? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_in_person_claim(
+    InPersonClaim? self,
     SseSerializer serializer,
   );
 

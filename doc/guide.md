@@ -51,8 +51,8 @@ every call.
 ([Testing](#testing)). It needs a library built with LEPIC's `mock` feature and is not for apps.
 
 `lib/lepic.dart` does not export `lib/src/rust/api/in_person.dart` or
-`lib/src/rust/api/contact.dart`. The top-level functions `inPersonQrParts`, `inPersonQrRead` and
-`sealedFileExtension` live in those two files.
+`lib/src/rust/api/contact.dart`. The top-level functions `inPersonQrParts`, `inPersonQrRead`,
+`inPersonLinkParse`, `inPersonRequestVerify` and `sealedFileExtension` live in those two files.
 
 The Rust half of the bridge, `frb_generated.rs`, lives in LEPIC. One codegen run writes both
 halves, so the Dart code and the native library must come from the same LEPIC commit. `lepic.rev`
@@ -1163,11 +1163,45 @@ mailbox is a loopback or unspecified host fails with `InvalidSlate`.
 `InPersonRead.mailbox` is an `InPersonHost` (`host`, `port`, `inRelayList`, `localNetwork`) and is
 null when the answer goes back by scan. `inPersonPost` posts to that mailbox from a key made for
 that slate, goes through Tor when Epicbox over Tor is on, and is safe to repeat. It fails with
-`InPersonNotFound`, `InPersonNoMailbox`, `ContactsOffline` and `TransportFailed`.
+`InPersonNotFound`, `InPersonNoMailbox` (no mailbox and no direct route), `ContactsOffline` and
+`TransportFailed` (the mailbox post failed and the code names no direct route).
 
 `InPersonPosted.checkCode` is four digits. The scanning side shows it only after posting, and the
 showing side finalizes only the answer that carries the same code. `InPersonAnswerView.sameCode`
 marks answers whose check codes collide, which the user cannot tell apart by the code.
+
+### Checkout requests
+
+A shop's `lepic serve` issues an in-person invoice for one order, signed for the shop's domain,
+as a QR code and as an invoice link `epiccash://invoice/1/<code>`. The payer opens it with no
+pairing and approves once; the shop finalizes the first valid answer and posts.
+
+| Call | Does |
+|---|---|
+| `inPersonLinkParse(text:)` | the `lepic.v1` bytes an invoice link carries, to pass to `inPersonRead` as a scanned code; `InvalidArgument` for text over 8 KiB or not an invoice link, `InvalidSlate` when the payload is not an I1 |
+| `inPersonRequestVerify(code:, file:, chain:)` | an `InPersonDomainCheck` for the code's claim against the well-known file the app fetched; nothing is fetched or stored |
+| `inPersonInvoiceWith(amount:, message:, ttlBlocks:, options:, relayMode:)` | an invoice issued as `InPersonInvoiceOptions` says: a given `slateId`, `direct` routes, a `claimDomain` to sign for, or the account's `sharedSlot` |
+
+`InPersonRead.claim` is an `InPersonClaim` (`domain`, `key` as 64 hex characters, `issuedAt` in
+Unix seconds) or null for a code without one. `InPersonRead.direct` lists the `InPersonRoute`
+entries (`method` `http` or `tor`, and `value`) the shop's own host takes answers at.
+
+The app fetches `https://<domain>/.well-known/epic-wallet.json` for the claim's domain (HTTPS, no
+redirects, over Tor when relays are reached over Tor only) and passes the body as `file`, or an
+empty list when the fetch failed. `InPersonDomainCheck.state` is one of:
+
+| State | Meaning |
+|---|---|
+| `unsigned` | the code carries no claim |
+| `checked` | the file proves the claim; `domain` is the payee to show |
+| `refused` | do not pay; `domain` is the claimed name and `reason` says why: `file_too_large`, `file_malformed`, `unsupported_version`, `network_absent`, `domain_mismatch`, `no_key_matches`, `bad_signature` or `key_not_listed` |
+
+`inPersonPost` posts to the slot and to each direct route: `tor` routes always, `http` routes
+only when relays are not reached over Tor only. `InPersonPosted.routes` lists an
+`InPersonRoutePost` per route, the mailbox first, with the `route`, an `outcome` (`accepted`,
+`refused` or `failed`) and a `reason`. A shop refuses with `already_finalized`, `expired`,
+`inputs_spent` or `bad_answer`; a failed http route in Tor-only mode reads `tor_expected`. A
+refusal cancels nothing: the app cancels the payment when a route refused and none accepted.
 
 ### Animated QR codes
 

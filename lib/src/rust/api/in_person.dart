@@ -35,3 +35,28 @@ List<String> inPersonQrParts({
 /// that are neither a code nor an answer.
 InPersonQrProgress inPersonQrRead({required List<String> parts}) =>
     RustLib.instance.api.crateApiInPersonInPersonQrRead(parts: parts);
+
+/// The raw `lepic.v1` bytes of the in-person invoice code an invoice link
+/// (`epiccash://invoice/1/…`, as a website shows it) carries, to read with
+/// [`EpicWallet::in_person_read`] as a scanned code. Holds no state.
+///
+/// Fails with `InvalidArgument` for text over 8 KiB or not an invoice link, and
+/// `InvalidSlate` for a link whose payload is not an I1 code.
+Uint8List inPersonLinkParse({required String text}) =>
+    RustLib.instance.api.crateApiInPersonInPersonLinkParse(text: text);
+
+/// Whether `file`, the well-known file fetched from the domain an in-person code's claim names
+/// ([`InPersonRead::claim`]), proves that claim for `chain`. Fetching the file is the app's
+/// part; nothing is fetched or stored here. `Unsigned` for a code without a claim. Show the
+/// domain as the payee's only when this gives `Checked`; with `Refused`, do not pay.
+///
+/// Fails with `InvalidSlate` for a code over 128 KiB.
+InPersonDomainCheck inPersonRequestVerify({
+  required List<int> code,
+  required List<int> file,
+  required Chain chain,
+}) => RustLib.instance.api.crateApiInPersonInPersonRequestVerify(
+  code: code,
+  file: file,
+  chain: chain,
+);

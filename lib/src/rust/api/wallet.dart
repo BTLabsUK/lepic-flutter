@@ -1045,6 +1045,21 @@ abstract class EpicWallet implements RustOpaqueInterface {
     required ContactRelayMode relayMode,
   });
 
+  /// Makes an in-person invoice as [`EpicWallet::in_person_invoice`] does, issued as
+  /// `options` says: under a given slate id, with direct routes the payer also posts the
+  /// answer to, signed for a domain, or answered to the account's shared reply mailbox.
+  ///
+  /// Fails as `in_person_invoice` does, and with `InvalidArgument` for a slate id that is not
+  /// one, a direct route that is not an `http` or `tor` address a code can carry, more than
+  /// four of them, or a domain that is not a domain name.
+  Future<InPersonCode> inPersonInvoiceWith({
+    required BigInt amount,
+    String? message,
+    BigInt? ttlBlocks,
+    required InPersonInvoiceOptions options,
+    required ContactRelayMode relayMode,
+  });
+
   /// Pays a scanned in-person invoice of `amount`, the amount [`EpicWallet::in_person_read`]
   /// showed, as `pay_invoice` pays one, and seals the answer to the code. The payment and
   /// the answer are stored; the inputs stay locked until the code expires or the payment is
@@ -1064,14 +1079,16 @@ abstract class EpicWallet implements RustOpaqueInterface {
 
   /// Posts the stored answer for the slate `slate_id` to the reply mailbox its code named,
   /// from a key used for this slate only, through the wallet's connection to relays (over
-  /// Tor when Epicbox over Tor is on). Posting again is safe.
+  /// Tor when Epicbox over Tor is on), and to each direct route the code names: `tor` routes
+  /// always, `http` routes only when relays are not reached over Tor only. Posting again is
+  /// safe. A route that refuses the answer cancels nothing.
   ///
   /// Fails with `InPersonNotFound` when no answer is stored for the slate, `InPersonNoMailbox`
-  /// when its code named no mailbox, `ContactsOffline` before connecting, and
-  /// `TransportFailed` when the post failed.
+  /// when its code named no mailbox and no direct route, `ContactsOffline` before connecting,
+  /// and `TransportFailed` when the mailbox post failed and the code names no direct route.
   ///
-  /// Returns the answer's check code, to show the user now and not before, and the format
-  /// the answer went out in, always `Native`.
+  /// Returns the answer's check code, to show the user now and not before, the format the
+  /// answer went out in, always `Native`, and what each route did with it.
   Future<InPersonPosted> inPersonPost({
     required String slateId,
     required ContactRelayMode relayMode,

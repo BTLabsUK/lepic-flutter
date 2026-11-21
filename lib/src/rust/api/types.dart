@@ -12,7 +12,7 @@ import 'policy.dart';
 import 'tor.dart';
 
 // These functions are ignored because they are not marked as `pub`: `engine`, `network`, `of`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Why the wallet ended a transaction `Cancelled`. Values are only added, at the end.
 enum CancelledReason {
@@ -1220,6 +1220,35 @@ class InPersonAnswerView {
           receivedAtMs == other.receivedAtMs;
 }
 
+/// The domain an in-person code is signed for, as the code claims it.
+class InPersonClaim {
+  final String domain;
+
+  /// The Ed25519 key that signed the code, as 64 hex digits.
+  final String key;
+
+  /// Unix seconds when the code was signed, as the code says; informational.
+  final BigInt issuedAt;
+
+  const InPersonClaim({
+    required this.domain,
+    required this.key,
+    required this.issuedAt,
+  });
+
+  @override
+  int get hashCode => domain.hashCode ^ key.hashCode ^ issuedAt.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonClaim &&
+          runtimeType == other.runtimeType &&
+          domain == other.domain &&
+          key == other.key &&
+          issuedAt == other.issuedAt;
+}
+
 /// An in-person code to show, from `EpicWallet::in_person_invoice` or
 /// `EpicWallet::in_person_send`.
 class InPersonCode {
@@ -1326,6 +1355,46 @@ class InPersonCodeView {
           answers == other.answers;
 }
 
+/// The result of `in_person_request_verify`.
+class InPersonDomainCheck {
+  final InPersonDomainState state;
+
+  /// The domain the code names; `None` when it is unsigned.
+  final String? domain;
+
+  /// For `Refused`, why, as a snake_case word: `file_too_large`, `file_malformed`,
+  /// `unsupported_version`, `network_absent`, `domain_mismatch`, `no_key_matches`,
+  /// `bad_signature` or `key_not_listed`.
+  final String? reason;
+
+  const InPersonDomainCheck({required this.state, this.domain, this.reason});
+
+  @override
+  int get hashCode => state.hashCode ^ domain.hashCode ^ reason.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonDomainCheck &&
+          runtimeType == other.runtimeType &&
+          state == other.state &&
+          domain == other.domain &&
+          reason == other.reason;
+}
+
+/// What a check of a code's domain claim against the domain's file found.
+enum InPersonDomainState {
+  /// The code carries no domain claim.
+  unsigned,
+
+  /// The domain's file lists the key that signed the code.
+  checked,
+
+  /// The code names a domain, but the claim is not proven: do not show the domain as the
+  /// payee's, and do not pay.
+  refused,
+}
+
 /// A reply mailbox an in-person code names, as `EpicWallet::in_person_read` reports it: show
 /// it before the answer is posted there.
 class InPersonHost {
@@ -1363,6 +1432,63 @@ class InPersonHost {
           localNetwork == other.localNetwork;
 }
 
+/// How an in-person invoice is issued, for `EpicWallet::in_person_invoice_with`.
+class InPersonInvoiceOptions {
+  /// The slate id to issue under; a new one when `None`. Issuing an id again while its code
+  /// is stored returns the stored code.
+  final String? slateId;
+
+  /// Routes where the payer may also post the answer directly: `http` or `tor` entries, at
+  /// most four, in the order to try them.
+  final List<InPersonRoute> direct;
+
+  /// Signs the code for this domain with the wallet's domain key; the domain's file must list
+  /// the key for a payer to see the domain as checked.
+  final String? claimDomain;
+
+  /// The answer comes to the account's one shared reply mailbox rather than one for this code.
+  final bool sharedSlot;
+
+  const InPersonInvoiceOptions({
+    this.slateId,
+    required this.direct,
+    this.claimDomain,
+    required this.sharedSlot,
+  });
+
+  static Future<InPersonInvoiceOptions> default_() =>
+      RustLib.instance.api.crateApiTypesInPersonInvoiceOptionsDefault();
+
+  @override
+  int get hashCode =>
+      slateId.hashCode ^
+      direct.hashCode ^
+      claimDomain.hashCode ^
+      sharedSlot.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonInvoiceOptions &&
+          runtimeType == other.runtimeType &&
+          slateId == other.slateId &&
+          direct == other.direct &&
+          claimDomain == other.claimDomain &&
+          sharedSlot == other.sharedSlot;
+}
+
+/// What became of an in-person answer posted to one route.
+enum InPersonPostOutcome {
+  /// The mailbox stored the answer, or the payee's listener took it.
+  accepted,
+
+  /// The payee's listener refused the answer. Nothing is cancelled: show the reason.
+  refused,
+
+  /// The route could not be reached, or was not tried.
+  failed,
+}
+
 /// An answer posted by `EpicWallet::in_person_post`.
 class InPersonPosted {
   /// Four digits to show now that the answer is posted: the other party finalizes the
@@ -1372,10 +1498,17 @@ class InPersonPosted {
   /// How the answer went out: always `Native`, a sealed `lepic.v1` slate.
   final SlateWire format;
 
-  const InPersonPosted({required this.checkCode, required this.format});
+  /// One per route, the reply mailbox first, then each direct route the code names.
+  final List<InPersonRoutePost> routes;
+
+  const InPersonPosted({
+    required this.checkCode,
+    required this.format,
+    required this.routes,
+  });
 
   @override
-  int get hashCode => checkCode.hashCode ^ format.hashCode;
+  int get hashCode => checkCode.hashCode ^ format.hashCode ^ routes.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1383,7 +1516,8 @@ class InPersonPosted {
       other is InPersonPosted &&
           runtimeType == other.runtimeType &&
           checkCode == other.checkCode &&
-          format == other.format;
+          format == other.format &&
+          routes == other.routes;
 }
 
 /// How far the scanned parts of an in-person QR code got, from `in_person_qr_read`.
@@ -1442,6 +1576,13 @@ class InPersonRead {
   /// The reply mailbox the answer would be posted to; `None` when the answer is shown back.
   final InPersonHost? mailbox;
 
+  /// The domain the code is signed for, as the code claims it: show it as checked only after
+  /// `in_person_request_verify` gives `Checked` for the domain's file.
+  final InPersonClaim? claim;
+
+  /// The direct routes the code names, in the payee's order; `in_person_post` posts to each.
+  final List<InPersonRoute> direct;
+
   const InPersonRead({
     required this.slateId,
     required this.stage,
@@ -1450,6 +1591,8 @@ class InPersonRead {
     this.message,
     required this.ttlCutoff,
     this.mailbox,
+    this.claim,
+    required this.direct,
   });
 
   @override
@@ -1460,7 +1603,9 @@ class InPersonRead {
       fee.hashCode ^
       message.hashCode ^
       ttlCutoff.hashCode ^
-      mailbox.hashCode;
+      mailbox.hashCode ^
+      claim.hashCode ^
+      direct.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1473,7 +1618,9 @@ class InPersonRead {
           fee == other.fee &&
           message == other.message &&
           ttlCutoff == other.ttlCutoff &&
-          mailbox == other.mailbox;
+          mailbox == other.mailbox &&
+          claim == other.claim &&
+          direct == other.direct;
 }
 
 /// The answer to a scanned in-person code, from `EpicWallet::in_person_pay` or
@@ -1522,6 +1669,55 @@ class InPersonReply {
           armored == other.armored &&
           mailbox == other.mailbox &&
           format == other.format;
+}
+
+/// A route an in-person answer goes to: `epicbox` for the reply mailbox, `http` or `tor` for a
+/// direct route, and its address.
+class InPersonRoute {
+  final String method;
+  final String value;
+
+  const InPersonRoute({required this.method, required this.value});
+
+  @override
+  int get hashCode => method.hashCode ^ value.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonRoute &&
+          runtimeType == other.runtimeType &&
+          method == other.method &&
+          value == other.value;
+}
+
+/// The post of an in-person answer to one route.
+class InPersonRoutePost {
+  final InPersonRoute route;
+  final InPersonPostOutcome outcome;
+
+  /// For `Refused`, the listener's reason when it gave one: `already_finalized`, `expired`,
+  /// `inputs_spent` or `bad_answer`. For `Failed`, what went wrong; `tor_expected` for an
+  /// `http` route not tried because the wallet reaches relays over Tor only.
+  final String? reason;
+
+  const InPersonRoutePost({
+    required this.route,
+    required this.outcome,
+    this.reason,
+  });
+
+  @override
+  int get hashCode => route.hashCode ^ outcome.hashCode ^ reason.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InPersonRoutePost &&
+          runtimeType == other.runtimeType &&
+          route == other.route &&
+          outcome == other.outcome &&
+          reason == other.reason;
 }
 
 /// An answer taken by `EpicWallet::in_person_take` or `EpicWallet::in_person_take_qr`.
