@@ -1322,8 +1322,9 @@ has the format.
   `InvalidArgument` for text that is not a proof, and with `NodeUnreachable` when `onChain` cannot
   reach the node.
 - `epic1Pay(..., requireProof: true)` refuses an answer without a proof that holds: the payment is
-  cancelled unfinalized, its inputs are unlocked, and the payee is told it was declined. A payee
-  that signs no proofs cannot be paid this way.
+  cancelled unfinalized, its inputs are unlocked, and the payee is told it was declined. Only the
+  payee's genuine answer cancels it: an answer that would not finalize is dropped and the payment
+  keeps waiting. A payee that signs no proofs cannot be paid this way.
 
 ### The mailbox list
 
