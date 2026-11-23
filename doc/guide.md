@@ -1262,7 +1262,9 @@ describes the address and the link.
 | Payee | `epic1Answers()` | the answers made for payments taken, and whether each was posted |
 | Payee | `epic1Restore(relayMode:)` | after a restore from the phrase, reads the delivery mailbox of each account's address once, on each mailbox of the list, and names those it could not read |
 | Payer | `epic1LinkRead(link:)` | shows the payee, amount, message and the host of an `http` or `tor` entry; stores nothing |
-| Payer | `epic1Pay(link:, amount:, message:, minimumConfirmations:, mailboxes:, ...)` | pays the link, at its amount and with its message unless the call gives others |
+| Payer | `epic1Pay(link:, amount:, message:, minimumConfirmations:, mailboxes:, ..., requireProof:)` | pays the link, at its amount and with its message unless the call gives others |
+| Payer | `epic1Proof(txId:)` | the payment proof of a payment, as the text of a proof file, or null |
+| Anyone | `epic1ProofVerify(proof:, onChain:)` | checks a proof file's text, and with `onChain` asks the node for its kernel |
 | Both | `mailboxSet`, `mailboxList`, `mailboxAdd`, `mailboxRemove`, `mailboxProbe` | the [mailbox list](#the-mailbox-list) |
 
 `epic1LinkMake` returns an `Epic1Link` with the `link` text (`epic:epic1…`), the `qr` text and the
@@ -1297,6 +1299,31 @@ The payee answers each payment on the relay it read the payment from, during a t
 loop, or in the reply to an `http` or `tor` post. `epic1Answers` lists the answers with that relay
 (`mailbox`) and whether each was `posted`. Both sides write native slates (`format` is always
 `Native`).
+
+### Payment proofs
+
+A LEPIC payee signs a payment proof into its answer to every payment to its epic1 address: that
+the owner of the address took this amount in this transaction. The payer checks it when it
+finalizes and keeps one that holds with the payment. Anyone checks a proof with only the address;
+the chain shows whether the transaction was posted. A payee that does not sign proofs, a release
+before payment proofs, is paid as before, with no proof.
+[LEPIC's receipt page](https://github.com/BTLabsUK/lepic/blob/main/docs/protocols/epic1-receipt.md)
+has the format.
+
+- `epic1Proof(txId:)` returns the proof as the text of a JSON file, media type
+  `application/vnd.lepic.receipt+json`, to save or share; null when the payment has none (not an
+  epic1 payment, not answered yet, or answered without a proof). It fails with `InvalidArgument`
+  for a `txId` the wallet does not have.
+- `epic1ProofVerify(proof:, onChain:)` checks the text for the wallet's network and stores
+  nothing. `PaymentProofCheck` holds the `verdict` and what the proof states: `network`,
+  `address`, `amount`, `kernelExcess`, `slateId`, and `height` when `onChain` found the kernel.
+  `PaymentProofVerdict` is `valid`, `badSignature`, `malformed`, `wrongNetwork`, or
+  `notOnChain` when the signature holds and the node has no such kernel. It fails with
+  `InvalidArgument` for text that is not a proof, and with `NodeUnreachable` when `onChain` cannot
+  reach the node.
+- `epic1Pay(..., requireProof: true)` refuses an answer without a proof that holds: the payment is
+  cancelled unfinalized, its inputs are unlocked, and the payee is told it was declined. A payee
+  that signs no proofs cannot be paid this way.
 
 ### The mailbox list
 

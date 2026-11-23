@@ -926,6 +926,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PairingStatus dco_decode_pairing_status(dynamic raw);
 
   @protected
+  PaymentProofCheck dco_decode_payment_proof_check(dynamic raw);
+
+  @protected
+  PaymentProofVerdict dco_decode_payment_proof_verdict(dynamic raw);
+
+  @protected
   PendingPairingView dco_decode_pending_pairing_view(dynamic raw);
 
   @protected
@@ -2171,6 +2177,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   PairingStatus sse_decode_pairing_status(SseDeserializer deserializer);
+
+  @protected
+  PaymentProofCheck sse_decode_payment_proof_check(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  PaymentProofVerdict sse_decode_payment_proof_verdict(
+    SseDeserializer deserializer,
+  );
 
   @protected
   PendingPairingView sse_decode_pending_pairing_view(
@@ -3710,6 +3726,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_pairing_status(PairingStatus self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_payment_proof_check(
+    PaymentProofCheck self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_payment_proof_verdict(
+    PaymentProofVerdict self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_pending_pairing_view(

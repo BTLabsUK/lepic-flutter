@@ -811,6 +811,11 @@ abstract class EpicWallet implements RustOpaqueInterface {
   /// delivery loop reads the answer on the relays the payment went to and on those of the list,
   /// and finalizes it. A second payment to a link is made while the first waits.
   ///
+  /// A LEPIC payee signs a payment proof into its answer; one that holds is kept with the
+  /// payment ([`EpicWallet::epic1_proof`]). With `require_proof`, an answer without a proof
+  /// that holds is refused: the payment is cancelled unfinalized, its inputs are unlocked,
+  /// and the payee is told it was declined. A payee that signs none cannot be paid then.
+  ///
   /// Fails as [`EpicWallet::epic1_link_read`] does, with `InvalidArgument` for a zero amount
   /// or none when the link asks none, `MailboxInvalid` or `MailboxNotPublic` for a host of
   /// `mailboxes`, `NoSharedMailbox` before anything is stored when a payment to the
@@ -825,6 +830,27 @@ abstract class EpicWallet implements RustOpaqueInterface {
     SendOptions? options,
     required List<String> mailboxes,
     required ContactRelayMode relayMode,
+    required bool requireProof,
+  });
+
+  /// The payment proof of the payment `tx_id` to an epic1 address, as the JSON text of a
+  /// proof file (media type `application/vnd.lepic.receipt+json`,
+  /// `docs/protocols/epic1-receipt.md`), to save or share. `None` when the payment has none:
+  /// not a payment to an epic1 address, not answered yet, or answered without one.
+  ///
+  /// Fails with `InvalidArgument` for a `tx_id` the wallet does not have.
+  Future<String?> epic1Proof({required int txId});
+
+  /// Checks the payment proof `proof`, the text of a proof file, for the wallet's network,
+  /// and with `on_chain` asks the wallet's node whether the payment's kernel is on chain. The
+  /// verdict says whether it holds; the facts are what the proof states, to show beside it.
+  /// Nothing is stored.
+  ///
+  /// Fails with `InvalidArgument` for text that is not a payment proof, and as the node
+  /// fails when `on_chain` asks it.
+  Future<PaymentProofCheck> epic1ProofVerify({
+    required String proof,
+    required bool onChain,
   });
 
   /// After a restore from the phrase: reads, once, on each mailbox of the list, the delivery
