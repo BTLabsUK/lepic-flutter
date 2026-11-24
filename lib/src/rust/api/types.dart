@@ -969,6 +969,11 @@ enum ExpiredReason {
   /// A transaction that was answered but not mined before its cutoff. Its kernel may still be
   /// mined.
   notMined,
+
+  /// A block reward whose block a reorganisation replaced after it was confirmed. Its output
+  /// is unconfirmed again and counts in no balance. It becomes `Confirmed` again if the chain
+  /// returns to that block.
+  orphaned,
 }
 
 /// What a send would take and pay, from `EpicWallet::estimate_fee` and

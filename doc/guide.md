@@ -658,6 +658,7 @@ For an `Expired` transaction, `expiredReason` says why the wallet ended it:
 | `rejectedByNode` | the node's pool refused every push of a send until its cutoff; its inputs are spendable again, and it becomes `Confirmed` if another node mines it |
 | `noAnswer` | the answer to a payment or invoice this wallet started never came before its cutoff; no kernel of it can be mined |
 | `notMined` | the transaction was answered but not mined before its cutoff; its kernel may still be mined |
+| `orphaned` | a block reward whose block a reorganisation replaced after it was confirmed; its output counts in no balance, and it becomes `Confirmed` again if the chain returns to that block |
 
 `post.lastError`, `delivery.error`, `recovery.error` and the `relay` of a `deliveryChanged` event
 carry a node's or a relay's text. LEPIC escapes its control characters and the characters that
