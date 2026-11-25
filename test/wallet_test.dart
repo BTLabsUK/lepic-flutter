@@ -193,6 +193,7 @@ const errorCodes = {
   WalletErrorKind.lastMailbox: 123,
   WalletErrorKind.damagedKept: 124,
   WalletErrorKind.earlierEpic1Address: 125,
+  WalletErrorKind.inputsReorged: 126,
 };
 
 Matcher throwsWalletError(WalletErrorKind kind) => throwsA(
