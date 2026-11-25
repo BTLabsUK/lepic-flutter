@@ -466,7 +466,15 @@ enum WalletErrorKind {
   /// it, and nothing was stored. When the link names a mailbox, [`WalletError::mailbox`] has
   /// it. Ask the payee for their Epicbox address (the one with an `@`) or an epic1 address
   /// or link from an updated wallet.
-  earlierEpic1Address;
+  earlierEpic1Address,
+
+  /// The node refused the transaction because inputs of it are no longer unspent, and a
+  /// chain reorganisation took them: the blocks that made them were replaced, and the
+  /// transactions that made them are off chain for now. The transaction is finalized and
+  /// stored, and stays open with its coins held; a refresh posts it again once they are
+  /// mined again. Nothing was spent elsewhere. `repost_transaction` tries now, and a cancel
+  /// gives up.
+  inputsReorged;
 
   /// The stable number of this kind.
   Future<int> code() =>

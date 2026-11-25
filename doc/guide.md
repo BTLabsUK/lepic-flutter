@@ -659,6 +659,16 @@ For an `Expired` transaction, `expiredReason` says why the wallet ended it:
 | `noAnswer` | the answer to a payment or invoice this wallet started never came before its cutoff; no kernel of it can be mined |
 | `notMined` | the transaction was answered but not mined before its cutoff; its kernel may still be mined |
 | `orphaned` | a block reward whose block a reorganisation replaced after it was confirmed; its output counts in no balance, and it becomes `Confirmed` again if the chain returns to that block |
+| `inputsReorged` | a send whose inputs a reorganisation took, still gone 60 blocks after the wallet first saw them gone; its coins went back to the transactions that made them and count as unconfirmed until those are mined again |
+
+For an open transaction, `chainReplaced` says how a reorganisation touched it; it is null for an
+ended one and when the wallet saw no replaced block. The wallet waits in each case:
+
+| `ChainReplaced` | Meaning |
+|---|---|
+| `inputsReplaced` | a send whose inputs a reorganisation took; it goes through once the transaction that made them is mined again, and ends `Expired` with `inputsReorged` after 60 blocks |
+| `reopened` | a transaction that was `Confirmed` until its block was replaced; it confirms again when a block of the new chain includes it, and a receive's amount is pending until then |
+| `recent` | an incoming payment still open while the wallet saw a block replaced in the last 60 blocks; it may take a few blocks more |
 
 `post.lastError`, `delivery.error`, `recovery.error` and the `relay` of a `deliveryChanged` event
 carry a node's or a relay's text. LEPIC escapes its control characters and the characters that
@@ -1637,6 +1647,7 @@ locked, and `txId` is set.
 | 122 | `mailboxListFull` | the mailbox list holds 16 |
 | 123 | `lastMailbox` | the last mailbox of the list cannot be removed |
 | 125 | `earlierEpic1Address` | the text is an epic1 address or link of LEPIC 0.5 or earlier, which this version cannot read; nothing was stored. `mailbox` names the link's mailbox when it has one. Ask for the payee's Epicbox address or an epic1 address or link from an updated wallet |
+| 126 | `inputsReorged` | a reorganisation took inputs of the send; it stays open and the wallet posts it again once they are back on chain. Not another wallet's spend |
 
 ## Testing
 

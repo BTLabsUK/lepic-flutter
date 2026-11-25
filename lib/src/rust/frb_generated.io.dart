@@ -235,6 +235,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   CancelledReason dco_decode_box_autoadd_cancelled_reason(dynamic raw);
 
   @protected
+  ChainReplaced dco_decode_box_autoadd_chain_replaced(dynamic raw);
+
+  @protected
   ContactChange dco_decode_box_autoadd_contact_change(dynamic raw);
 
   @protected
@@ -381,6 +384,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ChainCheck dco_decode_chain_check(dynamic raw);
+
+  @protected
+  ChainReplaced dco_decode_chain_replaced(dynamic raw);
 
   @protected
   ContactChange dco_decode_contact_change(dynamic raw);
@@ -749,6 +755,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   CancelledReason? dco_decode_opt_box_autoadd_cancelled_reason(dynamic raw);
+
+  @protected
+  ChainReplaced? dco_decode_opt_box_autoadd_chain_replaced(dynamic raw);
 
   @protected
   ContactChange? dco_decode_opt_box_autoadd_contact_change(dynamic raw);
@@ -1306,6 +1315,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  ChainReplaced sse_decode_box_autoadd_chain_replaced(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   ContactChange sse_decode_box_autoadd_contact_change(
     SseDeserializer deserializer,
   );
@@ -1500,6 +1514,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ChainCheck sse_decode_chain_check(SseDeserializer deserializer);
+
+  @protected
+  ChainReplaced sse_decode_chain_replaced(SseDeserializer deserializer);
 
   @protected
   ContactChange sse_decode_contact_change(SseDeserializer deserializer);
@@ -1936,6 +1953,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   CancelledReason? sse_decode_opt_box_autoadd_cancelled_reason(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  ChainReplaced? sse_decode_opt_box_autoadd_chain_replaced(
     SseDeserializer deserializer,
   );
 
@@ -2628,6 +2650,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_chain_replaced(
+    ChainReplaced self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_contact_change(
     ContactChange self,
     SseSerializer serializer,
@@ -2896,6 +2924,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_chain_check(ChainCheck self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_chain_replaced(ChainReplaced self, SseSerializer serializer);
 
   @protected
   void sse_encode_contact_change(ContactChange self, SseSerializer serializer);
@@ -3428,6 +3459,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_cancelled_reason(
     CancelledReason? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_chain_replaced(
+    ChainReplaced? self,
     SseSerializer serializer,
   );
 

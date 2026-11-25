@@ -10734,6 +10734,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ChainReplaced dco_decode_box_autoadd_chain_replaced(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_chain_replaced(raw);
+  }
+
+  @protected
   ContactChange dco_decode_box_autoadd_contact_change(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_contact_change(raw);
@@ -11025,6 +11031,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ChainCheck dco_decode_chain_check(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return ChainCheck.values[raw as int];
+  }
+
+  @protected
+  ChainReplaced dco_decode_chain_replaced(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ChainReplaced.values[raw as int];
   }
 
   @protected
@@ -12353,6 +12365,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ChainReplaced? dco_decode_opt_box_autoadd_chain_replaced(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_chain_replaced(raw);
+  }
+
+  @protected
   ContactChange? dco_decode_opt_box_autoadd_contact_change(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_box_autoadd_contact_change(raw);
@@ -13296,8 +13314,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TransactionDetails dco_decode_transaction_details(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 38)
-      throw Exception('unexpected arr length: expect 38 but see ${arr.length}');
+    if (arr.length != 39)
+      throw Exception('unexpected arr length: expect 39 but see ${arr.length}');
     return TransactionDetails(
       txId: dco_decode_u_32(arr[0]),
       direction: dco_decode_tx_direction(arr[1]),
@@ -13337,6 +13355,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       delivery: dco_decode_opt_box_autoadd_delivery_view(arr[35]),
       post: dco_decode_opt_box_autoadd_node_post_view(arr[36]),
       receivedAtEpic1: dco_decode_bool(arr[37]),
+      chainReplaced: dco_decode_opt_box_autoadd_chain_replaced(arr[38]),
     );
   }
 
@@ -13913,6 +13932,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ChainReplaced sse_decode_box_autoadd_chain_replaced(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_chain_replaced(deserializer));
+  }
+
+  @protected
   ContactChange sse_decode_box_autoadd_contact_change(
     SseDeserializer deserializer,
   ) {
@@ -14265,6 +14292,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_i_32(deserializer);
     return ChainCheck.values[inner];
+  }
+
+  @protected
+  ChainReplaced sse_decode_chain_replaced(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return ChainReplaced.values[inner];
   }
 
   @protected
@@ -15982,6 +16016,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ChainReplaced? sse_decode_opt_box_autoadd_chain_replaced(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_chain_replaced(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   ContactChange? sse_decode_opt_box_autoadd_contact_change(
     SseDeserializer deserializer,
   ) {
@@ -17324,6 +17371,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_delivery = sse_decode_opt_box_autoadd_delivery_view(deserializer);
     var var_post = sse_decode_opt_box_autoadd_node_post_view(deserializer);
     var var_receivedAtEpic1 = sse_decode_bool(deserializer);
+    var var_chainReplaced = sse_decode_opt_box_autoadd_chain_replaced(
+      deserializer,
+    );
     return TransactionDetails(
       txId: var_txId,
       direction: var_direction,
@@ -17363,6 +17413,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       delivery: var_delivery,
       post: var_post,
       receivedAtEpic1: var_receivedAtEpic1,
+      chainReplaced: var_chainReplaced,
     );
   }
 
@@ -18157,6 +18208,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_chain_replaced(
+    ChainReplaced self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_chain_replaced(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_contact_change(
     ContactChange self,
     SseSerializer serializer,
@@ -18566,6 +18626,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_chain_check(ChainCheck self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
+  void sse_encode_chain_replaced(ChainReplaced self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.index, serializer);
   }
@@ -19868,6 +19934,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_opt_box_autoadd_chain_replaced(
+    ChainReplaced? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_chain_replaced(self, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_opt_box_autoadd_contact_change(
     ContactChange? self,
     SseSerializer serializer,
@@ -21006,6 +21085,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_delivery_view(self.delivery, serializer);
     sse_encode_opt_box_autoadd_node_post_view(self.post, serializer);
     sse_encode_bool(self.receivedAtEpic1, serializer);
+    sse_encode_opt_box_autoadd_chain_replaced(self.chainReplaced, serializer);
   }
 
   @protected
